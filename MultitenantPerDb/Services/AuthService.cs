@@ -12,11 +12,16 @@ public class AuthService : IAuthService
 {
     private readonly TenantDbContext _tenantDbContext;
     private readonly IConfiguration _configuration;
+    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(TenantDbContext tenantDbContext, IConfiguration configuration)
+    public AuthService(
+        TenantDbContext tenantDbContext, 
+        IConfiguration configuration,
+        ILogger<AuthService> logger)
     {
         _tenantDbContext = tenantDbContext;
         _configuration = configuration;
+        _logger = logger;
     }
 
     public async Task<LoginResponse?> LoginAsync(LoginRequest request)
@@ -37,6 +42,18 @@ public class AuthService : IAuthService
             return null;
         }
 
+        // Kullanıcının tenant'ını bul ve migration çalıştır
+        var tenant = await _tenantDbContext.Tenants
+            .FirstOrDefaultAsync(t => t.Id == user.TenantId && t.IsActive);
+
+        if (tenant == null)
+        {
+            throw new InvalidOperationException($"Tenant bulunamadı: {user.TenantId}");
+        }
+
+        // Tenant database'inde migration çalıştır
+        await RunTenantMigrationsAsync(tenant);
+
         // JWT token oluştur
         var token = GenerateJwtToken(user);
         var expiresAt = DateTime.UtcNow.AddHours(24);
@@ -48,6 +65,47 @@ public class AuthService : IAuthService
             TenantId = user.TenantId,
             ExpiresAt = expiresAt
         };
+    }
+
+    /// <summary>
+    /// Tenant database'inde pending migration'ları çalıştırır
+    /// </summary>
+    private async Task RunTenantMigrationsAsync(Tenant tenant)
+    {
+        try
+        {
+            _logger.LogInformation("Tenant database migration kontrolü: TenantId={TenantId}, Database={Database}", 
+                tenant.Id, tenant.Name);
+
+            // Tenant'ın connection string'i ile ApplicationDbContext oluştur
+            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            optionsBuilder.UseSqlServer(tenant.ConnectionString);
+
+            await using var context = new ApplicationDbContext(optionsBuilder.Options);
+
+            // Pending migration'ları kontrol et
+            var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+            
+            if (pendingMigrations.Any())
+            {
+                _logger.LogInformation("Pending migration'lar bulundu: {Count} adet. Migration çalıştırılıyor...", 
+                    pendingMigrations.Count());
+                
+                // Migration'ları uygula
+                await context.Database.MigrateAsync();
+                
+                _logger.LogInformation("Migration başarıyla tamamlandı: TenantId={TenantId}", tenant.Id);
+            }
+            else
+            {
+                _logger.LogInformation("Pending migration yok: TenantId={TenantId}", tenant.Id);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Tenant database migration hatası: TenantId={TenantId}", tenant.Id);
+            throw new InvalidOperationException($"Tenant database migration başarısız: {ex.Message}", ex);
+        }
     }
 
     public string GenerateJwtToken(User user)

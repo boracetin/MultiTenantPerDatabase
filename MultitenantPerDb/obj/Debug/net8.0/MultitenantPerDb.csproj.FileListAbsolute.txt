@@ -136,3 +136,4 @@ C:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb\obj\Deb
 C:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb\obj\Debug\net8.0\MultitenantPerDb.genruntimeconfig.cache
 C:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb\obj\Debug\net8.0\ref\MultitenantPerDb.dll
 C:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb\obj\Debug\net8.0\MultitenantPerDb.sourcelink.json
