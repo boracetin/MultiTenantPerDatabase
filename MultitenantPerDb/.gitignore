@@ -399,9 +399,9 @@ FodyWeavers.xsd
 .idea/
 
 # Custom - Add your own ignores below
-appsettings.Development.json
-appsettings.*.json
-!appsettings.json
+# Environment specific settings (keep example files)
+appsettings.Production.json
+!appsettings.Production.example.json
 
 # Database files
 *.db
