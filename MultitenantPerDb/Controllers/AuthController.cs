@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MultitenantPerDb.Models;
-using MultitenantPerDb.Services;
+using MultitenantPerDb.Application.DTOs;
+using MultitenantPerDb.Application.Services;
 using System.Security.Claims;
 
 namespace MultitenantPerDb.Controllers;
@@ -22,7 +22,7 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<ActionResult<LoginResponse>> Login([FromBody] LoginRequest request)
+    public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginRequestDto request)
     {
         var response = await _authService.LoginAsync(request);
 

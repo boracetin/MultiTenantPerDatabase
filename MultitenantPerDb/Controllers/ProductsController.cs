@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using MultitenantPerDb.Models;
-using MultitenantPerDb.Repositories;
-using MultitenantPerDb.UnitOfWork;
+using MultitenantPerDb.Domain.Entities;
+using MultitenantPerDb.Domain.Repositories;
+using MultitenantPerDb.Infrastructure.Persistence;
+using MultitenantPerDb.Application.DTOs;
 
 namespace MultitenantPerDb.Controllers;
 
@@ -17,17 +18,28 @@ public class ProductsController : ControllerBase
     }
 
     /// <summary>
-    /// Tüm ürünleri getirir (Tenant'a özgü)
+    /// Tüm ürünleri listeler
     /// Header: X-Tenant-ID: 1
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+    public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
     {
         try
         {
             var repository = _unitOfWork.GetRepository<ProductRepository>();
             var products = await repository.GetAllAsync();
-            return Ok(products);
+            var productDtos = products.Select(p => new ProductDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Description = p.Description,
+                Price = p.Price,
+                Stock = p.Stock,
+                IsInStock = p.IsInStock,
+                CreatedAt = p.CreatedAt,
+                UpdatedAt = p.UpdatedAt
+            });
+            return Ok(productDtos);
         }
         catch (InvalidOperationException ex)
         {
@@ -103,16 +115,30 @@ public class ProductsController : ControllerBase
     /// Header: X-Tenant-ID: 1
     /// </summary>
     [HttpPost]
-    public async Task<ActionResult<Product>> CreateProduct(Product product)
+    public async Task<ActionResult<ProductDto>> CreateProduct([FromBody] CreateProductDto request)
     {
         try
         {
             var repository = _unitOfWork.GetRepository<ProductRepository>();
-            product.CreatedAt = DateTime.UtcNow;
+            
+            // DDD factory method kullan
+            var product = Product.Create(request.Name, request.Description, request.Price, request.Stock);
+            
             await repository.AddAsync(product);
             await _unitOfWork.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, product);
+            var productDto = new ProductDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                Stock = product.Stock,
+                IsInStock = product.IsInStock,
+                CreatedAt = product.CreatedAt,
+                UpdatedAt = product.UpdatedAt
+            };
+            return CreatedAtAction(nameof(GetProduct), new { id = product.Id }, productDto);
         }
         catch (InvalidOperationException ex)
         {
@@ -125,23 +151,21 @@ public class ProductsController : ControllerBase
     /// Header: X-Tenant-ID: 1
     /// </summary>
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateProduct(int id, Product product)
+    public async Task<IActionResult> UpdateProduct(int id, [FromBody] UpdateProductDto request)
     {
-        if (id != product.Id)
-        {
-            return BadRequest();
-        }
-
         try
         {
             var repository = _unitOfWork.GetRepository<ProductRepository>();
-            var existingProduct = await repository.GetByIdAsync(id);
+            var product = await repository.GetByIdAsync(id);
             
-            if (existingProduct == null)
+            if (product == null)
             {
                 return NotFound();
             }
 
+            // DDD business method kullan
+            product.UpdateDetails(request.Name, request.Description, request.Price);
+            
             repository.Update(product);
             await _unitOfWork.SaveChangesAsync();
             
@@ -186,22 +210,23 @@ public class ProductsController : ControllerBase
     /// Authorization: Bearer {token}
     /// </summary>
     [HttpPost("bulk")]
-    public async Task<ActionResult> CreateMultipleProducts([FromBody] List<Product> products)
+    public async Task<ActionResult> CreateMultipleProducts([FromBody] List<CreateProductDto> requests)
     {
         try
         {
             var repository = _unitOfWork.GetRepository<ProductRepository>();
             
-            foreach (var product in products)
+            foreach (var request in requests)
             {
-                product.CreatedAt = DateTime.UtcNow;
+                // DDD factory method kullan
+                var product = Product.Create(request.Name, request.Description, request.Price, request.Stock);
                 await repository.AddAsync(product);
             }
 
             // Transaction otomatik olarak başlatılır, commit edilir veya rollback olur
             await _unitOfWork.SaveChangesAsync();
 
-            return Ok(new { message = $"{products.Count} ürün başarıyla eklendi" });
+            return Ok(new { message = $"{requests.Count} ürün başarıyla eklendi" });
         }
         catch (Exception ex)
         {

@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MultitenantPerDb.Data;
-using MultitenantPerDb.Services;
-using MultitenantPerDb.Middleware;
+using MultitenantPerDb.Infrastructure.Persistence;
+using MultitenantPerDb.Infrastructure.Services;
+using MultitenantPerDb.Infrastructure.Middleware;
+using MultitenantPerDb.Domain.Repositories;
+using MultitenantPerDb.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -102,7 +104,7 @@ builder.Services.AddScoped<ITenantResolver, TenantResolver>();
 builder.Services.AddScoped<ITenantDbContextFactory, TenantDbContextFactory>();
 
 // Unit of Work Pattern - Repository'leri yönetir
-builder.Services.AddScoped<MultitenantPerDb.UnitOfWork.IUnitOfWork, MultitenantPerDb.UnitOfWork.UnitOfWork>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Auth Service
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -110,8 +112,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // Background Job Service - Hangfire ve background işlemler için
 builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
 
-// Background Jobs
-builder.Services.AddScoped<MultitenantPerDb.BackgroundJobs.ProductBackgroundJob>();
+// Background Jobs (Application Layer)
+builder.Services.AddScoped<MultitenantPerDb.Application.Jobs.ProductBackgroundJob>();
 
 // NOT: ApplicationDbContext artık DI container'a eklenmez
 // Runtime'da ITenantDbContextFactory ile oluşturulacak

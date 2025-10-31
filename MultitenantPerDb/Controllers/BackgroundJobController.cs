@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MultitenantPerDb.BackgroundJobs;
-using MultitenantPerDb.Services;
+using MultitenantPerDb.Application.Services;
+using MultitenantPerDb.Application.Jobs;
+using MultitenantPerDb.Domain.Repositories;
+using MultitenantPerDb.Infrastructure.Persistence;
 
 namespace MultitenantPerDb.Controllers;
 
@@ -76,7 +78,7 @@ public class BackgroundJobController : ControllerBase
             {
                 // İhtiyacınız olan servisleri alın
                 var logger = serviceProvider.GetRequiredService<ILogger<BackgroundJobController>>();
-                var unitOfWork = serviceProvider.GetRequiredService<MultitenantPerDb.UnitOfWork.IUnitOfWork>();
+                var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
                 
                 logger.LogInformation("Background işlem çalışıyor: TenantId={TenantId}", tenantContext.TenantId);
                 
@@ -107,8 +109,8 @@ public class BackgroundJobController : ControllerBase
             // Generic wrapper ile sonuç döndür
             var totalStock = await _backgroundJobService.ExecuteJobAsync<int>(tenantContext.TenantId, async (serviceProvider) =>
             {
-                var unitOfWork = serviceProvider.GetRequiredService<MultitenantPerDb.UnitOfWork.IUnitOfWork>();
-                var repository = unitOfWork.GetRepository<MultitenantPerDb.Repositories.ProductRepository>();
+                var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
+                var repository = unitOfWork.GetRepository<ProductRepository>();
                 
                 var products = await repository.GetAllAsync();
                 return products.Sum(p => p.Stock);
