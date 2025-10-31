@@ -1,0 +1,169 @@
+@MultitenantPerDb_HostAddress = http://localhost:5210
+@token = 
+
+### ============================================
+### AUTHENTICATION
+### ============================================
+
+### Login - User 1 (Tenant 1)
+# @name loginUser1
+POST {{MultitenantPerDb_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "user1",
+  "password": "123456"
+}
+
+###
+
+### Login - User 2 (Tenant 2)
+# @name loginUser2
+POST {{MultitenantPerDb_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "user2",
+  "password": "123456"
+}
+
+###
+
+### Get Current User Info (Requires token)
+GET {{MultitenantPerDb_HostAddress}}/api/auth/me
+Authorization: Bearer {{token}}
+
+###
+
+### Test Authentication
+GET {{MultitenantPerDb_HostAddress}}/api/auth/test
+Authorization: Bearer {{token}}
+
+###
+
+### ============================================
+### PRODUCTS - With JWT Token (TenantId from Claims)
+### ============================================
+
+### Get All Products (Token'dan TenantId alınır)
+GET {{MultitenantPerDb_HostAddress}}/api/products
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Get Product by ID
+GET {{MultitenantPerDb_HostAddress}}/api/products/1
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Get In Stock Products
+GET {{MultitenantPerDb_HostAddress}}/api/products/in-stock
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Get Products by Price Range
+GET {{MultitenantPerDb_HostAddress}}/api/products/price-range?minPrice=0&maxPrice=1000
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+### Create Product (Transaction otomatik yönetilir)
+POST {{MultitenantPerDb_HostAddress}}/api/products
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Keyboard",
+  "description": "Mechanical Gaming Keyboard",
+  "price": 149.99,
+  "stock": 25
+}
+
+###
+
+### Update Product
+PUT {{MultitenantPerDb_HostAddress}}/api/products/1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id": 1,
+  "name": "Laptop Pro",
+  "description": "Updated high performance laptop",
+  "price": 1499.99,
+  "stock": 15,
+  "createdAt": "2025-11-01T00:00:00Z"
+}
+
+###
+
+### Delete Product
+DELETE {{MultitenantPerDb_HostAddress}}/api/products/1
+Authorization: Bearer {{token}}
+
+###
+
+### Bulk Create Products (Transaction otomatik)
+POST {{MultitenantPerDb_HostAddress}}/api/products/bulk
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+[
+  {
+    "name": "Monitor",
+    "description": "4K Gaming Monitor",
+    "price": 599.99,
+    "stock": 15
+  },
+  {
+    "name": "Headset",
+    "description": "Wireless Gaming Headset",
+    "price": 199.99,
+    "stock": 30
+  },
+  {
+    "name": "Webcam",
+    "description": "HD Webcam",
+    "price": 79.99,
+    "stock": 20
+  }
+]
+
+###
+
+### Complex Operation (ExecuteInTransactionAsync örneği)
+POST {{MultitenantPerDb_HostAddress}}/api/products/complex-operation
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Test Product",
+  "description": "Complex transaction test",
+  "price": 99.99,
+  "stock": 10
+}
+
+###
+
+### ============================================
+### FALLBACK - Header ile TenantId (Eski yöntem)
+### ============================================
+
+### Get All Products - With Header (Token olmadan)
+GET {{MultitenantPerDb_HostAddress}}/api/products
+Accept: application/json
+X-Tenant-ID: 1
+
+###
+
+### Test without Authentication (Should fail)
+GET {{MultitenantPerDb_HostAddress}}/api/products
+Accept: application/json
+
+###
