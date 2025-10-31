@@ -43,7 +43,7 @@ public class TenantDbContext : DbContext
             {
                 Id = 1,
                 Name = "Tenant1",
-                ConnectionString = "Server=BORA\\BRCTN;Database=SubTenant1;Integrated Security=true; trusted_connection=true; Encrypt=False; TrustServerCertificate=True;Max Pool Size=2000;",
+                ConnectionString = "Server=BORA\\\\BRCTN;Database=Tenant1Db;Integrated Security=true;Encrypt=False;TrustServerCertificate=True;Max Pool Size=2000;",
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             },
@@ -51,7 +51,7 @@ public class TenantDbContext : DbContext
             {
                 Id = 2,
                 Name = "Tenant2",
-                ConnectionString = "Server=BORA\\BRCTN;Database=SubTenant2;Integrated Security=true; trusted_connection=true; Encrypt=False; TrustServerCertificate=True;Max Pool Size=2000;",
+                ConnectionString = "Server=BORA\\\\BRCTN;Database=Tenant2Db;Integrated Security=true;Encrypt=False;TrustServerCertificate=True;Max Pool Size=2000;",
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             }

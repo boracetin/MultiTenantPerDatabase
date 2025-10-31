@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "AAkiAPadyST0MZAZGgO2m2nVysqqsImA5EKLgOhlwRkkdLd5nzr1UW3L6ZUrLmmm1PxX8Hzv5YyMoAc3BCvnPQ==",
+  "dgSpecHash": "tRq0bJxhFiuF5+j0Ka0WHuuMLdreejy5QwK4vccAAJdwpWOJpZwcT63WxWzZHmnCfWhOYL2+5thzD4lU3Zavkw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\borac\\Desktop\\DemoCodes\\MultiTenantPerDatabase\\MultitenantPerDb\\MultitenantPerDb.csproj",
+  "projectFilePath": "c:\\Users\\borac\\Desktop\\DemoCodes\\MultiTenantPerDatabase\\MultitenantPerDb\\MultitenantPerDb.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\borac\\.nuget\\packages\\azure.core\\1.25.0\\azure.core.1.25.0.nupkg.sha512",
     "C:\\Users\\borac\\.nuget\\packages\\azure.identity\\1.7.0\\azure.identity.1.7.0.nupkg.sha512",

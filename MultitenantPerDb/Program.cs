@@ -12,6 +12,25 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
+// CORS Policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+    
+    options.AddPolicy("AllowSpecific", policy =>
+    {
+        policy.WithOrigins("http://localhost:5231", "https://localhost:5231")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
+    });
+});
+
 // HttpContextAccessor - TenantResolver için gerekli
 builder.Services.AddHttpContextAccessor();
 
@@ -107,6 +126,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// CORS - Authentication'dan ÖNCE olmalı
+app.UseCors("AllowSpecific");
 
 // Authentication & Authorization
 app.UseAuthentication();

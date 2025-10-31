@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MultitenantPerDb")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8bef0d957cb61673f0d6069dd0d38b3c9bc011e2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3fdc1d0314eabcf3fddc38c300b4b4b977d49ecb")]
 [assembly: System.Reflection.AssemblyProductAttribute("MultitenantPerDb")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MultitenantPerDb")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
