@@ -12,9 +12,10 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
     {
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
         
-        // Migration oluştururken kullanılacak dummy connection string
-        // Gerçek tenant database'leri runtime'da oluşturulacak
-        optionsBuilder.UseSqlServer("Server=BORA\\BRCTN;Database=TenantTemplateDb;Trusted_Connection=True;TrustServerCertificate=True;");
+        // Design-time only - migration kod generate etmek için kullanılır
+        // Gerçek database bağlantısı yapılmaz, sadece model şeması oluşturulur
+        // Runtime'da tenant'ların kendi connection string'leri kullanılır
+        optionsBuilder.UseSqlServer("Server=.;Database=DesignTimeOnly;");
 
         return new ApplicationDbContext(optionsBuilder.Options);
     }

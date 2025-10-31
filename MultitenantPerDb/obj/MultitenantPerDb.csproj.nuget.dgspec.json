@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\borac\\Desktop\\DemoCodes\\MultiTenantPerDatabase\\MultitenantPerDb\\MultitenantPerDb.csproj": {}
+    "C:\\Users\\borac\\Desktop\\DemoCodes\\MultiTenantPerDatabase\\MultitenantPerDb\\MultitenantPerDb.csproj": {}
   },
   "projects": {
-    "c:\\Users\\borac\\Desktop\\DemoCodes\\MultiTenantPerDatabase\\MultitenantPerDb\\MultitenantPerDb.csproj": {
+    "C:\\Users\\borac\\Desktop\\DemoCodes\\MultiTenantPerDatabase\\MultitenantPerDb\\MultitenantPerDb.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\borac\\Desktop\\DemoCodes\\MultiTenantPerDatabase\\MultitenantPerDb\\MultitenantPerDb.csproj",
+        "projectUniqueName": "C:\\Users\\borac\\Desktop\\DemoCodes\\MultiTenantPerDatabase\\MultitenantPerDb\\MultitenantPerDb.csproj",
         "projectName": "MultitenantPerDb",
-        "projectPath": "c:\\Users\\borac\\Desktop\\DemoCodes\\MultiTenantPerDatabase\\MultitenantPerDb\\MultitenantPerDb.csproj",
+        "projectPath": "C:\\Users\\borac\\Desktop\\DemoCodes\\MultiTenantPerDatabase\\MultitenantPerDb\\MultitenantPerDb.csproj",
         "packagesPath": "C:\\Users\\borac\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\borac\\Desktop\\DemoCodes\\MultiTenantPerDatabase\\MultitenantPerDb\\obj\\",
+        "outputPath": "C:\\Users\\borac\\Desktop\\DemoCodes\\MultiTenantPerDatabase\\MultitenantPerDb\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "c:\\Users\\borac\\NuGet.Config",
+          "C:\\Users\\borac\\NuGet.Config",
           "C:\\Users\\borac\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
