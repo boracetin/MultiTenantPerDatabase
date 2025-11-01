@@ -1,8 +1,12 @@
+using MediatR;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
 
 namespace MultitenantPerDb.Modules.Products.Application.Commands;
 
-public record CreateProductCommand
+/// <summary>
+/// Command to create a new product
+/// </summary>
+public record CreateProductCommand : IRequest<ProductDto>
 {
     public string Name { get; init; } = string.Empty;
     public string Description { get; init; } = string.Empty;
@@ -10,7 +14,10 @@ public record CreateProductCommand
     public int Stock { get; init; }
 }
 
-public record UpdateProductCommand
+/// <summary>
+/// Command to update an existing product
+/// </summary>
+public record UpdateProductCommand : IRequest<ProductDto>
 {
     public int Id { get; init; }
     public string Name { get; init; } = string.Empty;
@@ -18,12 +25,15 @@ public record UpdateProductCommand
     public decimal Price { get; init; }
 }
 
-public record DeleteProductCommand
-{
-    public int Id { get; init; }
-}
+/// <summary>
+/// Command to delete a product
+/// </summary>
+public record DeleteProductCommand(int Id) : IRequest<bool>;
 
-public record UpdateProductStockCommand
+/// <summary>
+/// Command to update product stock
+/// </summary>
+public record UpdateProductStockCommand : IRequest<ProductDto>
 {
     public int ProductId { get; init; }
     public int Quantity { get; init; }

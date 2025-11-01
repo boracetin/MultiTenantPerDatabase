@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MediatR;
+using MultitenantPerDb.Modules.Identity.Application.Commands;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
-using MultitenantPerDb.Modules.Identity.Application.Services;
 using System.Security.Claims;
 
 namespace MultitenantPerDb.Modules.Identity.API;
@@ -10,11 +11,11 @@ namespace MultitenantPerDb.Modules.Identity.API;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthService _authService;
+    private readonly IMediator _mediator;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IMediator mediator)
     {
-        _authService = authService;
+        _mediator = mediator;
     }
 
     /// <summary>
@@ -22,16 +23,35 @@ public class AuthController : ControllerBase
     /// </summary>
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginRequestDto request)
+    public async Task<ActionResult<LoginResponseDto>> Login([FromBody] LoginCommand command)
     {
-        var response = await _authService.LoginAsync(request);
-
-        if (response == null)
+        try
         {
-            return Unauthorized(new { message = "Kullanıcı adı veya şifre hatalı" });
+            var response = await _mediator.Send(command);
+            return Ok(response);
         }
+        catch (UnauthorizedAccessException ex)
+        {
+            return Unauthorized(new { message = ex.Message });
+        }
+    }
 
-        return Ok(response);
+    /// <summary>
+    /// Yeni kullanıcı kaydı oluşturur
+    /// </summary>
+    [HttpPost("register")]
+    [AllowAnonymous]
+    public async Task<ActionResult<UserDto>> Register([FromBody] RegisterCommand command)
+    {
+        try
+        {
+            var user = await _mediator.Send(command);
+            return CreatedAtAction(nameof(GetCurrentUser), null, user);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     /// <summary>
