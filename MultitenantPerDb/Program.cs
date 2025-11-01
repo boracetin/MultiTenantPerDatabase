@@ -1,13 +1,9 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MultitenantPerDb.Infrastructure.Persistence;
-using MultitenantPerDb.Infrastructure.Services;
-using MultitenantPerDb.Infrastructure.Middleware;
-using MultitenantPerDb.Domain.Repositories;
-using MultitenantPerDb.Application.Services;
+using MultitenantPerDb.Shared.Kernel.Infrastructure;
+using MultitenantPerDb.Shared.Kernel.Domain;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -93,30 +89,14 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// TenantDbContext - Tenant bilgilerini tutan master database
-builder.Services.AddDbContext<TenantDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("TenantConnection")));
+// ===============================================
+// MODULAR MONOLITH - Automatic Module Discovery
+// ===============================================
+builder.Services.AddModules(builder.Configuration);
 
-// Tenant Resolver - HTTP Context'ten TenantId'yi çözer (Scoped)
-builder.Services.AddScoped<ITenantResolver, TenantResolver>();
-
-// Tenant DbContext Factory - Runtime'da ApplicationDbContext oluşturur
-builder.Services.AddScoped<ITenantDbContextFactory, TenantDbContextFactory>();
-
-// Unit of Work Pattern - Repository'leri yönetir
+// Shared Kernel Services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-// Auth Service
-builder.Services.AddScoped<IAuthService, AuthService>();
-
-// Background Job Service - Hangfire ve background işlemler için
 builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
-
-// Background Jobs (Application Layer)
-builder.Services.AddScoped<MultitenantPerDb.Application.Jobs.ProductBackgroundJob>();
-
-// NOT: ApplicationDbContext artık DI container'a eklenmez
-// Runtime'da ITenantDbContextFactory ile oluşturulacak
 
 var app = builder.Build();
 
@@ -136,8 +116,10 @@ app.UseCors("AllowSpecific");
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Tenant Middleware - Her request'te TenantId'yi yakalar (Authentication'dan SONRA)
-app.UseTenantResolver();
+// ===============================================
+// MODULAR MONOLITH - Module Middleware Pipeline
+// ===============================================
+app.UseModules();
 
 app.MapControllers();
 
