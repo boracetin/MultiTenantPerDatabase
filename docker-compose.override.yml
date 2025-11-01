@@ -1,0 +1,22 @@
+version: '3.8'
+
+# ============================================
+# Development Overrides
+# Fast iteration with volume mounting
+# ============================================
+
+services:
+  multitenantapp:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_LOGGING__LOGLEVEL__DEFAULT=Debug
+      - ASPNETCORE_LOGGING__LOGLEVEL__MICROSOFT=Warning
+    volumes:
+      # Mount appsettings for easy config changes
+      - ./MultitenantPerDb/appsettings.Development.json:/app/appsettings.Development.json:ro
+    # Override health check for faster feedback
+    healthcheck:
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

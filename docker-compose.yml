@@ -1,0 +1,37 @@
+version: '3.8'
+
+# ============================================
+# Multi-Tenant Per Database - Docker Compose
+# Application only (SQL Server on host machine)
+# ============================================
+
+services:
+  # ==========================================
+  # Main Application - ASP.NET Core 8.0
+  # ==========================================
+  multitenantapp:
+    build:
+      context: ./MultitenantPerDb
+      dockerfile: Dockerfile
+    container_name: multitenant-app
+    ports:
+      - "5231:8080"
+      - "5232:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      # Use host.docker.internal to connect to SQL Server on host machine
+      - ConnectionStrings__DefaultConnection=Server=host.docker.internal;Database=MultiTenantMaster;User Id=sa;Password=YourStrong@Passw0rd123;TrustServerCertificate=True;
+      - JwtSettings__SecretKey=YourSuperSecretKeyThatIsAtLeast32CharactersLong!
+      - JwtSettings__Issuer=MultitenantPerDb
+      - JwtSettings__Audience=MultitenantPerDbClient
+      - JwtSettings__ExpiryMinutes=60
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

@@ -132,6 +132,17 @@ app.UseModules();
 
 app.MapControllers();
 
+// Health Check Endpoint for Docker
+app.MapGet("/health", () => Results.Ok(new 
+{ 
+    status = "Healthy",
+    timestamp = DateTime.UtcNow,
+    version = "1.0.0",
+    environment = app.Environment.EnvironmentName
+}))
+.WithName("HealthCheck")
+.WithOpenApi();
+
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"

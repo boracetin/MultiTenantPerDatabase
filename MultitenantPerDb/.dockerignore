@@ -1,0 +1,71 @@
+# .dockerignore - Exclude unnecessary files from Docker build context
+
+# Build output
+**/bin/
+**/obj/
+**/out/
+
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Test coverage
+**/TestResults/
+**/coverage/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+
+# Database files
+*.mdf
+*.ldf
+*.db
+*.sqlite
+
+# Documentation (will be in repo, not in image)
+**/Docs/
+*.md
+!README.md
+
+# Docker files
+**/Dockerfile*
+**/docker-compose*
+**/.dockerignore
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+.azure/
+**/*.yml
+**/*.yaml
+
+# Node modules (if any frontend)
+**/node_modules/
+
+# Logs
+**/logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files (security)
+**/.env
+**/.env.*
+!**/.env.example
+
+# Temporary files
+**/tmp/
+**/temp/
