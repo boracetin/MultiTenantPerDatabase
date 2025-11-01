@@ -1,7 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
-using MultitenantPerDb.Modules.Products.Application.Commands;
-using MultitenantPerDb.Modules.Products.Application.Queries;
+using MultitenantPerDb.Modules.Products.Application.Features.Products.CreateProduct;
+using MultitenantPerDb.Modules.Products.Application.Features.Products.UpdateProduct;
+using MultitenantPerDb.Modules.Products.Application.Features.Products.DeleteProduct;
+using MultitenantPerDb.Modules.Products.Application.Features.Products.GetProductById;
+using MultitenantPerDb.Modules.Products.Application.Features.Products.GetProducts;
+using MultitenantPerDb.Modules.Products.Application.Features.Products.GetInStockProducts;
+using MultitenantPerDb.Modules.Products.Application.Features.Products.GetProductsByPriceRange;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
 
 namespace MultitenantPerDb.Modules.Products.API;
@@ -24,7 +29,7 @@ public class ProductsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ProductDto>>> GetProducts()
     {
-        var query = new GetAllProductsQuery();
+        var query = new GetProductsQuery();
         var products = await _mediator.Send(query);
         return Ok(products);
     }

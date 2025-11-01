@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
-using MultitenantPerDb.Modules.Identity.Application.Commands;
+using MultitenantPerDb.Modules.Identity.Application.Features.Auth.Login;
+using MultitenantPerDb.Modules.Identity.Application.Features.Auth.Register;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
 using System.Security.Claims;
 

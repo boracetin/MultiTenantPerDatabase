@@ -1,12 +1,14 @@
 using Mapster;
 using MultitenantPerDb.Modules.Products.Domain.Entities;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
-using MultitenantPerDb.Modules.Products.Application.Commands;
+using MultitenantPerDb.Modules.Products.Application.Features.Products.CreateProduct;
+using MultitenantPerDb.Modules.Products.Application.Features.Products.UpdateProduct;
 
 namespace MultitenantPerDb.Modules.Products.Application.Mappings;
 
 /// <summary>
 /// Mapster configuration for Product mappings
+/// Feature-Based Architecture
 /// </summary>
 public class ProductMappingConfig : IRegister
 {
