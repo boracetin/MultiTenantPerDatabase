@@ -7,15 +7,20 @@ namespace MultitenantPerDb.Shared.Kernel.Application;
 
 /// <summary>
 /// Shared Services Registration
-/// Tüm modüller tarafından kullanılabilecek service'ler burada kayıt edilir
+/// Generic infrastructure services - reusable across all modules
 /// </summary>
 public static class SharedServicesRegistration
 {
     public static IServiceCollection AddSharedServices(this IServiceCollection services, IConfiguration configuration)
     {
-        // Infrastructure Services
-        // Production'da real implementation, Development'ta fake
-        if (configuration.GetValue<bool>("UseFakeServices", true))
+        // Check if we should use fake services (for development/testing)
+        var useFakeServices = configuration.GetValue<bool>("UseFakeServices", true);
+
+        // ===== INFRASTRUCTURE SERVICES (GENERIC) =====
+        // Pure infrastructure - no domain knowledge
+        
+        // Email Service
+        if (useFakeServices)
         {
             services.AddScoped<IEmailService, FakeEmailService>();
         }
@@ -24,9 +29,42 @@ public static class SharedServicesRegistration
             services.AddScoped<IEmailService, EmailService>();
         }
 
-        // Domain Services - Stateless, thread-safe
+        // SMS Service
+        if (useFakeServices)
+        {
+            services.AddScoped<ISmsService, FakeSmsService>();
+        }
+        else
+        {
+            services.AddScoped<ISmsService, SmsService>();
+        }
+
+        // File Storage Service
+        if (useFakeServices)
+        {
+            services.AddScoped<IFileStorageService, FakeFileStorageService>();
+        }
+        else
+        {
+            services.AddScoped<IFileStorageService, FileStorageService>();
+        }
+
+        // HTTP Client Service (Generic API calls)
+        services.AddHttpClient(); // Required for HttpClientService
+        if (useFakeServices)
+        {
+            services.AddScoped<IHttpClientService, FakeHttpClientService>();
+        }
+        else
+        {
+            services.AddScoped<IHttpClientService, HttpClientService>();
+        }
+
+        // ===== DOMAIN SERVICES (SHARED) =====
+        // Stateless business logic - thread-safe
         services.AddSingleton<IPriceCalculationService, PriceCalculationService>();
 
         return services;
     }
 }
+

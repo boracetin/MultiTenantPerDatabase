@@ -1,10 +1,11 @@
 using MultitenantPerDb.Shared.Kernel.Infrastructure.Services;
+using System.Text;
 
 namespace MultitenantPerDb.Shared.Kernel.Infrastructure.Services.Implementations;
 
 /// <summary>
-/// Email service implementation
-/// Infrastructure layer'da external dependency (SMTP, SendGrid, etc.)
+/// Generic Email Service Implementation
+/// Pure infrastructure - no domain knowledge
 /// </summary>
 public class EmailService : IEmailService
 {
@@ -19,33 +20,86 @@ public class EmailService : IEmailService
 
     public async Task SendEmailAsync(string to, string subject, string body)
     {
-        // Production'da: SMTP, SendGrid, AWS SES, etc.
+        // Production: SMTP, SendGrid, AWS SES, Mailgun, etc.
         _logger.LogInformation("Sending email to {To} - Subject: {Subject}", to, subject);
         
-        // Demo için sadece log
-        await Task.Delay(100); // Simulate external call
-        
-        _logger.LogInformation("Email sent successfully to {To}", to);
+        try
+        {
+            // Demo - simulate external SMTP call
+            await Task.Delay(100);
+            
+            // Production code example:
+            // using var client = new SmtpClient();
+            // client.Connect(_configuration["Smtp:Host"], int.Parse(_configuration["Smtp:Port"]));
+            // client.Authenticate(_configuration["Smtp:Username"], _configuration["Smtp:Password"]);
+            // await client.SendAsync(message);
+            
+            _logger.LogInformation("Email sent successfully to {To}", to);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send email to {To}", to);
+            throw;
+        }
     }
 
-    public async Task SendProductCreatedNotificationAsync(int productId, string productName)
+    public async Task SendTemplatedEmailAsync(string to, string subject, string templateName, Dictionary<string, string> templateData)
     {
-        var adminEmail = _configuration["AdminEmail"] ?? "admin@example.com";
+        // Load template and replace placeholders
+        var templateBody = LoadEmailTemplate(templateName);
         
-        var subject = "New Product Created";
-        var body = $@"
-            <h2>New Product Added</h2>
-            <p><strong>Product ID:</strong> {productId}</p>
-            <p><strong>Product Name:</strong> {productName}</p>
-            <p>This is an automated notification.</p>
-        ";
+        foreach (var (key, value) in templateData)
+        {
+            templateBody = templateBody.Replace($"{{{key}}}", value);
+        }
 
-        await SendEmailAsync(adminEmail, subject, body);
+        await SendEmailAsync(to, subject, templateBody);
+    }
+
+    public async Task SendEmailWithAttachmentsAsync(string to, string subject, string body, List<EmailAttachment> attachments)
+    {
+        _logger.LogInformation("Sending email with {AttachmentCount} attachments to {To}", 
+            attachments.Count, to);
+        
+        try
+        {
+            // Production: Build email message with attachments
+            await Task.Delay(100);
+            
+            _logger.LogInformation("Email with attachments sent successfully to {To}", to);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send email with attachments to {To}", to);
+            throw;
+        }
+    }
+
+    private string LoadEmailTemplate(string templateName)
+    {
+        // Production: Load from file system or database
+        var templatePath = Path.Combine("EmailTemplates", $"{templateName}.html");
+        
+        if (File.Exists(templatePath))
+        {
+            return File.ReadAllText(templatePath);
+        }
+
+        // Default template
+        return @"
+            <html>
+                <body>
+                    <div style='font-family: Arial, sans-serif;'>
+                        {{Content}}
+                    </div>
+                </body>
+            </html>
+        ";
     }
 }
 
 /// <summary>
-/// Fake implementation for testing
+/// Fake Email Service for Development/Testing
 /// </summary>
 public class FakeEmailService : IEmailService
 {
@@ -58,14 +112,22 @@ public class FakeEmailService : IEmailService
 
     public Task SendEmailAsync(string to, string subject, string body)
     {
-        _logger.LogInformation("[FAKE EMAIL] To: {To}, Subject: {Subject}", to, subject);
+        _logger.LogInformation("[FAKE EMAIL] To: {To}, Subject: {Subject}, Body Length: {BodyLength}", 
+            to, subject, body.Length);
         return Task.CompletedTask;
     }
 
-    public Task SendProductCreatedNotificationAsync(int productId, string productName)
+    public Task SendTemplatedEmailAsync(string to, string subject, string templateName, Dictionary<string, string> templateData)
     {
-        _logger.LogInformation("[FAKE EMAIL] Product created notification: {ProductId} - {ProductName}", 
-            productId, productName);
+        _logger.LogInformation("[FAKE EMAIL] Templated - To: {To}, Template: {Template}, Data: {@Data}", 
+            to, templateName, templateData);
+        return Task.CompletedTask;
+    }
+
+    public Task SendEmailWithAttachmentsAsync(string to, string subject, string body, List<EmailAttachment> attachments)
+    {
+        _logger.LogInformation("[FAKE EMAIL] With Attachments - To: {To}, Attachments: {Count}", 
+            to, attachments.Count);
         return Task.CompletedTask;
     }
 }

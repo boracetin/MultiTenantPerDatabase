@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MultitenantPerDb.Shared.Kernel.Infrastructure;
 using MultitenantPerDb.Shared.Kernel.Domain;
+using MultitenantPerDb.Shared.Kernel.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -96,6 +97,11 @@ builder.Services.AddSwaggerGen(c =>
 // MODULAR MONOLITH - Automatic Module Discovery
 // ===============================================
 builder.Services.AddModules(builder.Configuration);
+
+// ===============================================
+// SHARED SERVICES - Domain & Infrastructure
+// ===============================================
+builder.Services.AddSharedServices(builder.Configuration);
 
 // Shared Kernel Services
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();

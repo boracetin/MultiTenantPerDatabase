@@ -4,6 +4,7 @@ using MapsterMapper;
 using MediatR;
 using MultitenantPerDb.Shared.Kernel.Infrastructure;
 using MultitenantPerDb.Shared.Kernel.Application.Behaviors;
+using MultitenantPerDb.Modules.Products.Application.Services;
 using System.Reflection;
 
 namespace MultitenantPerDb.Modules.Products;
@@ -44,6 +45,9 @@ public class ProductsModule : ModuleBase
         services.AddSingleton(config);
         services.AddScoped<IMapper, ServiceMapper>();
         
+        // Application Services - Domain-specific orchestration
+        services.AddScoped<IProductNotificationService, ProductNotificationService>();
+        
         // Note: Repositories are created dynamically by UnitOfWork using Activator.CreateInstance
         // No need to register them in DI container
         
@@ -56,4 +60,5 @@ public class ProductsModule : ModuleBase
         // No specific middleware for Products module
     }
 }
+
 
