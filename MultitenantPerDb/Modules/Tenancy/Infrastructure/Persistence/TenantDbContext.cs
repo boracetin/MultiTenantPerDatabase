@@ -25,7 +25,16 @@ public class TenantDbContext : DbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
             entity.Property(e => e.ConnectionString).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.Subdomain).HasMaxLength(50);
+            entity.Property(e => e.DisplayName).HasMaxLength(200);
+            entity.Property(e => e.LogoUrl).HasMaxLength(500);
+            entity.Property(e => e.BackgroundImageUrl).HasMaxLength(500);
+            entity.Property(e => e.PrimaryColor).HasMaxLength(7); // #RRGGBB
+            entity.Property(e => e.SecondaryColor).HasMaxLength(7);
+            entity.Property(e => e.CustomCss).HasMaxLength(4000);
+            
             entity.HasIndex(e => e.Name).IsUnique();
+            entity.HasIndex(e => e.Subdomain).IsUnique();
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -44,7 +53,14 @@ public class TenantDbContext : DbContext
             {
                 Id = 1,
                 Name = "Tenant1",
+                Subdomain = "tenant1",
+                DisplayName = "Tenant 1 Company",
                 ConnectionString = "Server=BORA\\\\BRCTN;Database=Tenant1Db;Integrated Security=true;Encrypt=False;TrustServerCertificate=True;Max Pool Size=2000;",
+                LogoUrl = (string?)null,
+                BackgroundImageUrl = (string?)null,
+                PrimaryColor = "#1976D2",
+                SecondaryColor = "#424242",
+                CustomCss = (string?)null,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = (DateTime?)null
@@ -53,7 +69,14 @@ public class TenantDbContext : DbContext
             {
                 Id = 2,
                 Name = "Tenant2",
+                Subdomain = "tenant2",
+                DisplayName = "Tenant 2 Corporation",
                 ConnectionString = "Server=BORA\\\\BRCTN;Database=Tenant2Db;Integrated Security=true;Encrypt=False;TrustServerCertificate=True;Max Pool Size=2000;",
+                LogoUrl = (string?)null,
+                BackgroundImageUrl = (string?)null,
+                PrimaryColor = "#D32F2F",
+                SecondaryColor = "#616161",
+                CustomCss = (string?)null,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = (DateTime?)null

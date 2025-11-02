@@ -3,12 +3,16 @@ using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Middleware;
 
 /// <summary>
-/// Middleware for tenant identification from multiple sources
-/// Priority Order:
-/// 1. JWT Claims (authenticated requests) - Handled in TenantResolver
-/// 2. Subdomain (e.g., tenant1.myapp.com) - Handled in TenantResolver
-/// 3. HTTP Header (X-Tenant-ID) - Handled here
-/// 4. Query String (tenantId) - Handled here
+/// Middleware for tenant identification
+/// SECURITY: TenantId comes ONLY from JWT claims (after authentication)
+/// Subdomain is used ONLY for UI branding/customization, NOT for tenant identification
+/// 
+/// Flow:
+/// 1. User navigates to tenant1.myapp.com
+/// 2. Login endpoint uses subdomain to show custom branding (logo, colors, etc.)
+/// 3. After successful login, JWT contains TenantId claim
+/// 4. All subsequent requests use JWT TenantId for data access
+/// 5. Subdomain continues to provide UI customization
 /// </summary>
 public class TenantMiddleware
 {
@@ -21,32 +25,13 @@ public class TenantMiddleware
 
     public async Task InvokeAsync(HttpContext context, ITenantResolver tenantResolver)
     {
-        // TenantResolver automatically tries:
-        // 1. JWT Claims (if authenticated)
-        // 2. Subdomain extraction
-        // So we only need to handle Header and Query String as fallback
-
-        // Only set tenant explicitly if not authenticated and subdomain extraction failed
-        if (context.User?.Identity?.IsAuthenticated != true)
-        {
-            // Check if subdomain already resolved the tenant
-            var currentTenant = tenantResolver.TenantId;
-            
-            if (string.IsNullOrEmpty(currentTenant))
-            {
-                // Fallback 1: HTTP Header (X-Tenant-ID)
-                if (context.Request.Headers.TryGetValue("X-Tenant-ID", out var tenantId))
-                {
-                    tenantResolver.SetTenant(tenantId.ToString());
-                }
-                // Fallback 2: Query string (tenantId)
-                else if (context.Request.Query.TryGetValue("tenantId", out var queryTenantId))
-                {
-                    tenantResolver.SetTenant(queryTenantId.ToString());
-                }
-            }
-        }
-
+        // TenantResolver automatically resolves TenantId from:
+        // 1. Explicit set (background jobs)
+        // 2. JWT Claims (authenticated requests)
+        
+        // NO manual setting from headers/query strings - Security risk!
+        // Subdomain is available via GetSubdomainForBranding() for UI customization only
+        
         await _next(context);
     }
 }

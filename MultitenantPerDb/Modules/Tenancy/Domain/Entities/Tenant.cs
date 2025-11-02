@@ -5,12 +5,24 @@ namespace MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 
 /// <summary>
 /// Tenant aggregate root - Multi-tenancy için ana entity
+/// Includes branding and customization settings for subdomain-based UI
 /// </summary>
 public class Tenant : BaseEntity, IAggregateRoot
 {
     public string Name { get; private set; }
     public string ConnectionString { get; private set; }
     public bool IsActive { get; private set; }
+    
+    // Subdomain for tenant identification (e.g., "tenant1" in tenant1.myapp.com)
+    public string? Subdomain { get; private set; }
+    
+    // Branding & Customization
+    public string? DisplayName { get; private set; }
+    public string? LogoUrl { get; private set; }
+    public string? BackgroundImageUrl { get; private set; }
+    public string? PrimaryColor { get; private set; }
+    public string? SecondaryColor { get; private set; }
+    public string? CustomCss { get; private set; }
 
     // Navigation
     private readonly List<User> _users = new();
@@ -25,7 +37,7 @@ public class Tenant : BaseEntity, IAggregateRoot
     }
 
     // Factory method
-    public static Tenant Create(string name, string connectionString)
+    public static Tenant Create(string name, string connectionString, string? subdomain = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Tenant name cannot be empty", nameof(name));
@@ -37,7 +49,9 @@ public class Tenant : BaseEntity, IAggregateRoot
         {
             Name = name,
             ConnectionString = connectionString,
-            IsActive = true
+            Subdomain = subdomain?.ToLowerInvariant(),
+            IsActive = true,
+            DisplayName = name // Default to Name
         };
     }
 
@@ -66,6 +80,30 @@ public class Tenant : BaseEntity, IAggregateRoot
             throw new ArgumentException("Connection string cannot be empty", nameof(connectionString));
 
         ConnectionString = connectionString;
+        SetUpdatedAt();
+    }
+
+    public void UpdateSubdomain(string? subdomain)
+    {
+        Subdomain = subdomain?.ToLowerInvariant();
+        SetUpdatedAt();
+    }
+
+    public void UpdateBranding(
+        string? displayName = null,
+        string? logoUrl = null,
+        string? backgroundImageUrl = null,
+        string? primaryColor = null,
+        string? secondaryColor = null,
+        string? customCss = null)
+    {
+        if (displayName != null) DisplayName = displayName;
+        if (logoUrl != null) LogoUrl = logoUrl;
+        if (backgroundImageUrl != null) BackgroundImageUrl = backgroundImageUrl;
+        if (primaryColor != null) PrimaryColor = primaryColor;
+        if (secondaryColor != null) SecondaryColor = secondaryColor;
+        if (customCss != null) CustomCss = customCss;
+        
         SetUpdatedAt();
     }
 }

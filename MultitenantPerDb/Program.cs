@@ -107,6 +107,9 @@ builder.Services.AddSharedServices(builder.Configuration);
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
 
+// Encryption Service - TenantId encryption in JWT
+builder.Services.AddSingleton<MultitenantPerDb.Shared.Kernel.Infrastructure.Security.IEncryptionService, MultitenantPerDb.Shared.Kernel.Infrastructure.Security.AesEncryptionService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
