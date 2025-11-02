@@ -16,7 +16,7 @@ public class UserMappingConfig : IRegister
             .Map(dest => dest.Id, src => src.Id)
             .Map(dest => dest.Username, src => src.Username)
             .Map(dest => dest.Email, src => src.Email)
-            .Map(dest => dest.TenantId, src => src.TenantId)
+            // TenantId removed from User entity - it's implicit in tenant database
             .Map(dest => dest.IsActive, src => src.IsActive)
             .Map(dest => dest.CreatedAt, src => src.CreatedAt);
     }

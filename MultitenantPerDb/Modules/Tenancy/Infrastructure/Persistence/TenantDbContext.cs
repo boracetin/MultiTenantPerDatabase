@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
-using MultitenantPerDb.Modules.Identity.Domain.Entities;
 
 namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 
 /// <summary>
-/// TenantDbContext - Tenant bilgilerini ve connection string'leri yöneten DbContext
+/// TenantDbContext - Master DB - Only tenant metadata
+/// Contains: Tenant configurations, connection strings, branding settings
+/// Does NOT contain: Users (moved to ApplicationDbContext)
 /// </summary>
 public class TenantDbContext : DbContext
 {
@@ -14,7 +15,6 @@ public class TenantDbContext : DbContext
     }
 
     public DbSet<Tenant> Tenants { get; set; }
-    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,16 +35,6 @@ public class TenantDbContext : DbContext
             
             entity.HasIndex(e => e.Name).IsUnique();
             entity.HasIndex(e => e.Subdomain).IsUnique();
-        });
-
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            entity.Property(e => e.Username).IsRequired().HasMaxLength(100);
-            entity.Property(e => e.Email).IsRequired().HasMaxLength(200);
-            entity.Property(e => e.PasswordHash).IsRequired();
-            entity.HasIndex(e => e.Username).IsUnique();
-            entity.HasIndex(e => e.Email).IsUnique();
         });
 
         // Seed data - Demo tenant'lar (Anonim objeler kullanılıyor)
@@ -82,31 +72,7 @@ public class TenantDbContext : DbContext
                 UpdatedAt = (DateTime?)null
             }
         );
-
-        // Seed data - Demo users (Password: "123456", anonim objeler kullanılıyor)
-        modelBuilder.Entity<User>().HasData(
-            new
-            {
-                Id = 1,
-                Username = "user1",
-                Email = "user1@tenant1.com",
-                PasswordHash = "$2a$11$5ZqJKbGjmJ5J5YqHxJH5XO5mZxJH5XO5mZxJH5XO5mZxJH5XO5mZx", // 123456
-                TenantId = 1,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = (DateTime?)null
-            },
-            new
-            {
-                Id = 2,
-                Username = "user2",
-                Email = "user2@tenant2.com",
-                PasswordHash = "$2a$11$5ZqJKbGjmJ5J5YqHxJH5XO5mZxJH5XO5mZxJH5XO5mZxJH5XO5mZx", // 123456
-                TenantId = 2,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = (DateTime?)null
-            }
-        );
+        
+        // Note: Users moved to ApplicationDbContext (tenant-specific database)
     }
 }

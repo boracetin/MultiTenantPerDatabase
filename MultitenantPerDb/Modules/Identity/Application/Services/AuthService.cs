@@ -31,47 +31,9 @@ public class AuthService : IAuthService
 
     public async Task<LoginResponseDto?> LoginAsync(LoginRequestDto request)
     {
-        // Kullanıcıyı username'e göre bul
-        var user = await _tenantDbContext.Users
-            .FirstOrDefaultAsync(u => u.Username == request.Username && u.IsActive);
-
-        if (user == null)
-        {
-            return null;
-        }
-
-        // Password verification (demo - production'da BCrypt kullanılmalı)
-        if (!VerifyPassword(request.Password, user.PasswordHash))
-        {
-            return null;
-        }
-
-        // Kullanıcının tenant'ını bul ve migration çalıştır
-        var tenant = await _tenantDbContext.Tenants
-            .FirstOrDefaultAsync(t => t.Id == user.TenantId && t.IsActive);
-
-        if (tenant == null)
-        {
-            throw new InvalidOperationException($"Tenant bulunamadı: {user.TenantId}");
-        }
-
-        // Tenant database'inde migration çalıştır
-        await RunTenantMigrationsAsync(tenant);
-
-        // Domain event
-        user.RaiseLoginEvent();
-
-        // JWT token oluştur
-        var token = GenerateJwtToken(user.Id, user.Username, user.Email, user.TenantId);
-        var expiresAt = DateTime.UtcNow.AddHours(24);
-
-        return new LoginResponseDto
-        {
-            Token = token,
-            Username = user.Username,
-            TenantId = user.TenantId,
-            ExpiresAt = expiresAt
-        };
+        // NOTE: This service is DEPRECATED - Use LoginCommandHandler with subdomain-based auth instead
+        await Task.CompletedTask; // Suppress async warning
+        throw new NotImplementedException("Use LoginCommandHandler with subdomain-based authentication instead");
     }
 
     public string GenerateJwtToken(int userId, string username, string email, int tenantId)

@@ -7,14 +7,14 @@ using MultitenantPerDb.Shared.Kernel.Infrastructure;
 namespace MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
 
 /// <summary>
-/// User repository implementation using Master DB (TenantDbContext)
-/// Tenant-independent repository for authentication
-/// Uses TenantDbContext to access Users table WITHOUT requiring TenantId
+/// User repository implementation using Tenant-specific DB (ApplicationDbContext)
+/// Each tenant has its own Users table in their dedicated database
+/// Uses ApplicationDbContext to access tenant-specific Users table
 /// Inherits from Repository<User> for common CRUD operations
 /// </summary>
 public class UserRepository : Repository<User>, IUserRepository
 {
-    public UserRepository(TenantDbContext context) : base(context)
+    public UserRepository(ApplicationDbContext context) : base(context)
     {
     }
 

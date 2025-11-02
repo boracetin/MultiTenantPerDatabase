@@ -44,11 +44,12 @@ public class IdentityModule : ModuleBase
         services.AddSingleton(config);
         services.AddScoped<IMapper, ServiceMapper>();
         
-        // Authentication service
+        // Authentication service (DEPRECATED - use LoginCommandHandler instead)
         services.AddScoped<Application.Services.IAuthService, Application.Services.AuthService>();
         
-        // User Repository - Uses TenantDbContext for Master DB access (tenant-independent)
-        services.AddScoped<Domain.Repositories.IUserRepository, Infrastructure.Persistence.UserRepository>();
+        // NOTE: UserRepository NOT registered in DI anymore
+        // Users are now tenant-specific and created per-request in LoginCommandHandler
+        // Each tenant has its own ApplicationDbContext with different connection string
     }
 
     public override void ConfigureMiddleware(IApplicationBuilder app)

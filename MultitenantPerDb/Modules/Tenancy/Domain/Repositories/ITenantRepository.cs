@@ -9,5 +9,6 @@ namespace MultitenantPerDb.Modules.Tenancy.Domain.Repositories;
 public interface ITenantRepository : IRepository<Tenant>
 {
     Task<Tenant?> GetByNameAsync(string name);
+    Task<Tenant?> GetBySubdomainAsync(string subdomain);
     Task<IEnumerable<Tenant>> GetActiveTenantsAsync();
 }

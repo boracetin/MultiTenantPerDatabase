@@ -43,12 +43,11 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, UserDto>
         // Hash password (demo - production'da BCrypt kullanılmalı)
         var passwordHash = request.Password; // Plain text for demo
 
-        // Create user (demo için TenantId = 1 olarak hardcoded)
+        // Create user (TenantId is implicit - user is created in current tenant's database)
         var user = User.Create(
             username: request.Username,
             email: request.Email,
-            passwordHash: passwordHash,
-            tenantId: 1
+            passwordHash: passwordHash
         );
 
         await repository.AddAsync(user);

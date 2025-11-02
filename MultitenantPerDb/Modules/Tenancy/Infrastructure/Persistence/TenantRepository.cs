@@ -20,6 +20,11 @@ public class TenantRepository : Repository<Tenant>, ITenantRepository
         return await _dbSet.FirstOrDefaultAsync(t => t.Name == name);
     }
 
+    public async Task<Tenant?> GetBySubdomainAsync(string subdomain)
+    {
+        return await _dbSet.FirstOrDefaultAsync(t => t.Subdomain == subdomain);
+    }
+
     public async Task<IEnumerable<Tenant>> GetActiveTenantsAsync()
     {
         return await _dbSet.Where(t => t.IsActive).ToListAsync();

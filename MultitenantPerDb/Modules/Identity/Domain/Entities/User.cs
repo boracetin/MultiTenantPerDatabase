@@ -1,22 +1,18 @@
 using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Modules.Identity.Domain.Events;
-using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 
 namespace MultitenantPerDb.Modules.Identity.Domain.Entities;
 
 /// <summary>
-/// User entity - Tenant'a ait kullanıcı
+/// User entity - Tenant-specific user (stored in tenant's own database)
+/// TenantId is implicit - determined by which database the user is stored in
 /// </summary>
 public class User : BaseEntity
 {
     public string Username { get; private set; }
     public string Email { get; private set; }
     public string PasswordHash { get; private set; }
-    public int TenantId { get; private set; }
     public bool IsActive { get; private set; }
-
-    // Navigation
-    public Tenant? Tenant { get; private set; }
 
     // EF Core için parameterless constructor
     private User() : base()
@@ -28,7 +24,7 @@ public class User : BaseEntity
     }
 
     // Factory method
-    public static User Create(string username, string email, string passwordHash, int tenantId)
+    public static User Create(string username, string email, string passwordHash)
     {
         if (string.IsNullOrWhiteSpace(username))
             throw new ArgumentException("Username cannot be empty", nameof(username));
@@ -39,15 +35,11 @@ public class User : BaseEntity
         if (string.IsNullOrWhiteSpace(passwordHash))
             throw new ArgumentException("Password hash cannot be empty", nameof(passwordHash));
 
-        if (tenantId <= 0)
-            throw new ArgumentException("Invalid tenant ID", nameof(tenantId));
-
         return new User
         {
             Username = username,
             Email = email,
             PasswordHash = passwordHash,
-            TenantId = tenantId,
             IsActive = true
         };
     }
