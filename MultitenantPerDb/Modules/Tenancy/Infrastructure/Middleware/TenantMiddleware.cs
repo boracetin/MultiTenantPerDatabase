@@ -2,6 +2,14 @@ using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 
 namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Middleware;
 
+/// <summary>
+/// Middleware for tenant identification from multiple sources
+/// Priority Order:
+/// 1. JWT Claims (authenticated requests) - Handled in TenantResolver
+/// 2. Subdomain (e.g., tenant1.myapp.com) - Handled in TenantResolver
+/// 3. HTTP Header (X-Tenant-ID) - Handled here
+/// 4. Query String (tenantId) - Handled here
+/// </summary>
 public class TenantMiddleware
 {
     private readonly RequestDelegate _next;
@@ -13,26 +21,29 @@ public class TenantMiddleware
 
     public async Task InvokeAsync(HttpContext context, ITenantResolver tenantResolver)
     {
-        // Öncelik sırası:
-        // 1. User Claim'den TenantId (Authentication varsa) - TenantResolver içinde otomatik çalışır
-        // 2. HTTP Header'dan TenantId (X-Tenant-ID)
-        // 3. Query string'den TenantId
+        // TenantResolver automatically tries:
+        // 1. JWT Claims (if authenticated)
+        // 2. Subdomain extraction
+        // So we only need to handle Header and Query String as fallback
 
-        // User authenticated ise TenantId claim'i TenantResolver içinde otomatik çözülür
-        // Manuel set etmeye gerek yok - TenantResolver.TenantId getter'ı zaten claim'e bakıyor
-        
-        // Eğer authenticated değilse, header veya query string'den al
+        // Only set tenant explicitly if not authenticated and subdomain extraction failed
         if (context.User?.Identity?.IsAuthenticated != true)
         {
-            // HTTP Header'dan TenantId'yi al (Authentication olmayan istekler için)
-            if (context.Request.Headers.TryGetValue("X-Tenant-ID", out var tenantId))
+            // Check if subdomain already resolved the tenant
+            var currentTenant = tenantResolver.TenantId;
+            
+            if (string.IsNullOrEmpty(currentTenant))
             {
-                tenantResolver.SetTenant(tenantId.ToString());
-            }
-            // Query string'den de alınabilir (opsiyonel)
-            else if (context.Request.Query.TryGetValue("tenantId", out var queryTenantId))
-            {
-                tenantResolver.SetTenant(queryTenantId.ToString());
+                // Fallback 1: HTTP Header (X-Tenant-ID)
+                if (context.Request.Headers.TryGetValue("X-Tenant-ID", out var tenantId))
+                {
+                    tenantResolver.SetTenant(tenantId.ToString());
+                }
+                // Fallback 2: Query string (tenantId)
+                else if (context.Request.Query.TryGetValue("tenantId", out var queryTenantId))
+                {
+                    tenantResolver.SetTenant(queryTenantId.ToString());
+                }
             }
         }
 

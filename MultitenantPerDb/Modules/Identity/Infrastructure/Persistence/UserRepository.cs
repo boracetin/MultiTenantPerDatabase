@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Identity.Domain.Entities;
 using MultitenantPerDb.Modules.Identity.Domain.Repositories;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
+using MultitenantPerDb.Shared.Kernel.Infrastructure;
 
 namespace MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
 
@@ -9,29 +10,27 @@ namespace MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
 /// User repository implementation using Master DB (TenantDbContext)
 /// Tenant-independent repository for authentication
 /// Uses TenantDbContext to access Users table WITHOUT requiring TenantId
+/// Inherits from Repository<User> for common CRUD operations
 /// </summary>
-public class UserRepository : IUserRepository
+public class UserRepository : Repository<User>, IUserRepository
 {
-    private readonly TenantDbContext _context;
-
-    public UserRepository(TenantDbContext context)
+    public UserRepository(TenantDbContext context) : base(context)
     {
-        _context = context;
     }
 
     public async Task<User?> GetByUsernameAsync(string username)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        return await _dbSet.FirstOrDefaultAsync(u => u.Username == username);
     }
 
     public async Task<User?> GetByEmailAsync(string email)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        return await _dbSet.FirstOrDefaultAsync(u => u.Email == email);
     }
 
     public async Task AddAsync(User user)
     {
-        await _context.Users.AddAsync(user);
+        await _dbSet.AddAsync(user);
     }
 
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)

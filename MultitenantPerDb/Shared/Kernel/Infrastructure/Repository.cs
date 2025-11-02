@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using MultitenantPerDb.Shared.Kernel.Domain;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 using Mapster;
 
 namespace MultitenantPerDb.Shared.Kernel.Infrastructure;
@@ -9,13 +8,14 @@ namespace MultitenantPerDb.Shared.Kernel.Infrastructure;
 /// <summary>
 /// Generic repository implementation with advanced querying and projection capabilities
 /// Supports efficient DTO projection using Mapster for optimized database queries
+/// Can work with any DbContext (TenantDbContext or ApplicationDbContext)
 /// </summary>
 public class Repository<T> : IRepository<T> where T : class
 {
-    protected readonly ApplicationDbContext _context;
+    protected readonly DbContext _context;
     protected readonly DbSet<T> _dbSet;
 
-    public Repository(ApplicationDbContext context)
+    public Repository(DbContext context)
     {
         _context = context;
         _dbSet = context.Set<T>();

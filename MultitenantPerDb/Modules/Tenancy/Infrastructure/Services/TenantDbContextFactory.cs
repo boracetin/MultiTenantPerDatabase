@@ -27,20 +27,24 @@ public class TenantDbContextFactory : ITenantDbContextFactory
 
     public async Task<ApplicationDbContext> CreateDbContextAsync()
     {
-        var tenantId = _tenantResolver.TenantId;
+        var tenantIdentifier = _tenantResolver.TenantId;
         
-        if (string.IsNullOrEmpty(tenantId))
+        if (string.IsNullOrEmpty(tenantIdentifier))
         {
-            throw new InvalidOperationException("Tenant ID bulunamadı. Lütfen X-Tenant-ID header'ını kontrol edin.");
+            throw new InvalidOperationException("Tenant bilgisi bulunamadı. Subdomain, JWT claim, Header (X-Tenant-ID) veya Query string kullanın.");
         }
 
-        // Tenant bilgisini TenantDbContext'ten al
+        // Tenant'ı ID veya Name ile bul
+        // Subdomain'den gelen "tenant1" gibi bir string olabilir (Name)
+        // veya JWT claim'den gelen "1" gibi bir ID olabilir
         var tenant = await _tenantDbContext.Tenants
-            .FirstOrDefaultAsync(t => t.Id.ToString() == tenantId && t.IsActive);
+            .FirstOrDefaultAsync(t => 
+                (t.Id.ToString() == tenantIdentifier || t.Name.ToLower() == tenantIdentifier.ToLower()) 
+                && t.IsActive);
 
         if (tenant == null)
         {
-            throw new InvalidOperationException($"Tenant bulunamadı veya aktif değil: {tenantId}");
+            throw new InvalidOperationException($"Tenant bulunamadı veya aktif değil: {tenantIdentifier}");
         }
 
         // Tenant'ın connection string'i ile ApplicationDbContext oluştur
