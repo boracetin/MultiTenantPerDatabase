@@ -47,7 +47,8 @@ public class IdentityModule : ModuleBase
         // Authentication service
         services.AddScoped<Application.Services.IAuthService, Application.Services.AuthService>();
         
-        // Note: UserRepository is created dynamically by UnitOfWork
+        // User Repository - Uses TenantDbContext for Master DB access (tenant-independent)
+        services.AddScoped<Domain.Repositories.IUserRepository, Infrastructure.Persistence.UserRepository>();
     }
 
     public override void ConfigureMiddleware(IApplicationBuilder app)

@@ -119,7 +119,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // CORS - Authentication'dan ÖNCE olmalı
-app.UseCors("AllowSpecific");
+app.UseCors("AllowAll");
 
 // Authentication & Authorization
 app.UseAuthentication();

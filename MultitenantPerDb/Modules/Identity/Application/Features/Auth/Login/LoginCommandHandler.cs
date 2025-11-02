@@ -3,31 +3,30 @@ using MapsterMapper;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
 using MultitenantPerDb.Modules.Identity.Domain.Entities;
 using MultitenantPerDb.Modules.Identity.Domain.Repositories;
-using MultitenantPerDb.Shared.Kernel.Domain;
 
 namespace MultitenantPerDb.Modules.Identity.Application.Features.Auth.Login;
 
 /// <summary>
 /// Handler for LoginCommand
 /// Authenticates user and generates JWT token
+/// Uses Master DB (tenant-independent) via IUserRepository
 /// </summary>
 public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDto>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserRepository _userRepository;
     private readonly IMapper _mapper;
     private readonly IConfiguration _configuration;
 
-    public LoginCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration)
+    public LoginCommandHandler(IUserRepository userRepository, IMapper mapper, IConfiguration configuration)
     {
-        _unitOfWork = unitOfWork;
+        _userRepository = userRepository;
         _mapper = mapper;
         _configuration = configuration;
     }
 
     public async Task<LoginResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var repository = _unitOfWork.GetRepository<IUserRepository>();
-        var user = await repository.GetByUsernameAsync(request.Username);
+        var user = await _userRepository.GetByUsernameAsync(request.Username);
 
         if (user == null)
         {
@@ -52,7 +51,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
 
         // Raise domain event
         user.RaiseLoginEvent();
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
+        await _userRepository.SaveChangesAsync(cancellationToken);
 
         return new LoginResponseDto
         {
