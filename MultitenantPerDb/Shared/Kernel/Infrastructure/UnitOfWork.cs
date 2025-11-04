@@ -1,17 +1,18 @@
+using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 
 namespace MultitenantPerDb.Shared.Kernel.Infrastructure;
 
 /// <summary>
-/// Unit of Work implementation for managing transactions and repositories
-/// Uses generic Repository<T> pattern for all entities
+/// Unit of Work implementation with generic TDbContext and TEntity support
+/// Provides transaction management and repository creation for any DbContext
+/// Uses generic Repository<TEntity, TDbContext> pattern
 /// </summary>
 public class UnitOfWork : IUnitOfWork
 {
     private readonly ITenantDbContextFactory _dbContextFactory;
-    private ApplicationDbContext? _context;
+    private DbContext? _context;
     private readonly Dictionary<Type, object> _repositories;
     private bool _disposed;
 
@@ -21,7 +22,7 @@ public class UnitOfWork : IUnitOfWork
         _repositories = new Dictionary<Type, object>();
     }
 
-    private async Task<ApplicationDbContext> GetContextAsync()
+    private async Task<DbContext> GetContextAsync()
     {
         if (_context == null)
         {
@@ -30,20 +31,20 @@ public class UnitOfWork : IUnitOfWork
         return _context;
     }
 
-    public IRepository<T> GetGenericRepository<T>() where T : class
+    public IRepository<TEntity> GetGenericRepository<TEntity>() where TEntity : class
     {
-        var repositoryType = typeof(IRepository<T>);
+        var repositoryType = typeof(IRepository<TEntity>);
 
         if (_repositories.ContainsKey(repositoryType))
         {
-            return (IRepository<T>)_repositories[repositoryType];
+            return (IRepository<TEntity>)_repositories[repositoryType];
         }
 
-        // Context'i senkron olarak almak için Task.Run kullanıyoruz
+        // Get DbContext (can be any DbContext: ApplicationDbContext, MainDbContext, etc.)
         var context = GetContextAsync().GetAwaiter().GetResult();
 
-        // Create Repository<T> instance
-        var repositoryInstance = new Repository<T>(context);
+        // Create Repository<TEntity> instance with generic DbContext
+        var repositoryInstance = new Repository<TEntity>(context);
 
         _repositories.Add(repositoryType, repositoryInstance);
         return repositoryInstance;

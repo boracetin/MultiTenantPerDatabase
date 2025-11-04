@@ -102,4 +102,19 @@ public class Tenant : BaseEntity, IAggregateRoot
         
         SetUpdatedAt();
     }
+
+    public void UpdateDetails(string name, string subdomain, string connectionString)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Tenant name cannot be empty", nameof(name));
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+            throw new ArgumentException("Connection string cannot be empty", nameof(connectionString));
+
+        Name = name;
+        Subdomain = subdomain?.ToLowerInvariant();
+        ConnectionString = connectionString;
+        
+        SetUpdatedAt();
+    }
 }

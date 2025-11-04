@@ -3,7 +3,7 @@ using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
 using MultitenantPerDb.Modules.Identity.Domain.Entities;
-using MultitenantPerDb.Modules.Tenancy.Domain.Repositories;
+using MultitenantPerDb.Modules.Tenancy.Application.Services;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 using MultitenantPerDb.Shared.Kernel.Infrastructure.Security;
@@ -14,7 +14,7 @@ namespace MultitenantPerDb.Modules.Identity.Application.Features.Auth.Login;
 /// Handler for LoginCommand with subdomain-based tenant resolution
 /// Login Flow:
 /// 1. Extract subdomain from request (via TenantResolver)
-/// 2. Query Master DB (MainDbContext) to find Tenant by subdomain
+/// 2. Query Master DB (MainDbContext) to find Tenant by subdomain via TenantService
 /// 3. Create ApplicationDbContext with tenant's connection string
 /// 4. Query User from tenant-specific database
 /// 5. Validate password
@@ -24,20 +24,20 @@ namespace MultitenantPerDb.Modules.Identity.Application.Features.Auth.Login;
 public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDto>
 {
     private readonly ITenantResolver _tenantResolver;
-    private readonly ITenantRepository _tenantRepository;
+    private readonly ITenantService _tenantService;
     private readonly IMapper _mapper;
     private readonly IConfiguration _configuration;
     private readonly IEncryptionService _encryptionService;
 
     public LoginCommandHandler(
         ITenantResolver tenantResolver,
-        ITenantRepository tenantRepository,
+        ITenantService tenantService,
         IMapper mapper, 
         IConfiguration configuration,
         IEncryptionService encryptionService)
     {
         _tenantResolver = tenantResolver;
-        _tenantRepository = tenantRepository;
+        _tenantService = tenantService;
         _mapper = mapper;
         _configuration = configuration;
         _encryptionService = encryptionService;
@@ -53,8 +53,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
             throw new UnauthorizedAccessException("Cannot determine tenant from subdomain. Please use tenant-specific subdomain (e.g., tenant1.yourdomain.com)");
         }
 
-        // Step 2: Find Tenant by subdomain from Master DB
-        var tenant = await _tenantRepository.GetBySubdomainAsync(subdomain);
+        // Step 2: Find Tenant by subdomain from Master DB via TenantService
+        var tenant = await _tenantService.GetBySubdomainAsync(subdomain, cancellationToken);
         
         if (tenant == null || !tenant.IsActive)
         {

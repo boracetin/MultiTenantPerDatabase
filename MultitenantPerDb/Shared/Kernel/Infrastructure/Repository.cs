@@ -10,15 +10,15 @@ namespace MultitenantPerDb.Shared.Kernel.Infrastructure;
 /// Supports efficient DTO projection using Mapster for optimized database queries
 /// Can work with any DbContext (TenantDbContext or ApplicationDbContext)
 /// </summary>
-public class Repository<T> : IRepository<T> where T : class
+public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
 {
     protected readonly DbContext _context;
-    protected readonly DbSet<T> _dbSet;
+    protected readonly DbSet<TEntity> _dbSet;
 
     public Repository(DbContext context)
     {
         _context = context;
-        _dbSet = context.Set<T>();
+        _dbSet = context.Set<TEntity>();
     }
 
     #region Query Methods - Entity
@@ -26,7 +26,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Get entity by ID (primary key lookup)
     /// </summary>
-    public virtual async Task<T?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         return await _dbSet.FindAsync(new object[] { id }, cancellationToken);
     }
@@ -34,7 +34,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Get all entities with optional tracking
     /// </summary>
-    public virtual async Task<IEnumerable<T>> GetAllAsync(bool asNoTracking = true, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> GetAllAsync(bool asNoTracking = true, CancellationToken cancellationToken = default)
     {
         var query = asNoTracking ? _dbSet.AsNoTracking() : _dbSet;
         return await query.ToListAsync(cancellationToken);
@@ -43,8 +43,8 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Find entities matching predicate
     /// </summary>
-    public virtual async Task<IEnumerable<T>> FindAsync(
-        Expression<Func<T, bool>> predicate, 
+    public virtual async Task<IEnumerable<TEntity>> FindAsync(
+        Expression<Func<TEntity, bool>> predicate, 
         bool asNoTracking = true, 
         CancellationToken cancellationToken = default)
     {
@@ -55,8 +55,8 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Get first entity matching predicate or null
     /// </summary>
-    public virtual async Task<T?> FirstOrDefaultAsync(
-        Expression<Func<T, bool>> predicate, 
+    public virtual async Task<TEntity?> FirstOrDefaultAsync(
+        Expression<Func<TEntity, bool>> predicate, 
         bool asNoTracking = true, 
         CancellationToken cancellationToken = default)
     {
@@ -67,8 +67,8 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Get single entity matching predicate or throw exception
     /// </summary>
-    public virtual async Task<T> SingleAsync(
-        Expression<Func<T, bool>> predicate, 
+    public virtual async Task<TEntity> SingleAsync(
+        Expression<Func<TEntity, bool>> predicate, 
         CancellationToken cancellationToken = default)
     {
         return await _dbSet.SingleAsync(predicate, cancellationToken);
@@ -78,7 +78,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// Check if any entity matches predicate
     /// </summary>
     public virtual async Task<bool> AnyAsync(
-        Expression<Func<T, bool>> predicate, 
+        Expression<Func<TEntity, bool>> predicate, 
         CancellationToken cancellationToken = default)
     {
         return await _dbSet.AnyAsync(predicate, cancellationToken);
@@ -88,7 +88,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// Count entities matching predicate
     /// </summary>
     public virtual async Task<int> CountAsync(
-        Expression<Func<T, bool>>? predicate = null, 
+        Expression<Func<TEntity, bool>>? predicate = null, 
         CancellationToken cancellationToken = default)
     {
         return predicate == null 
@@ -130,7 +130,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// Efficient database query - only DTO fields selected
     /// </summary>
     public virtual async Task<IEnumerable<TDto>> FindAsync<TDto>(
-        Expression<Func<T, bool>> predicate, 
+        Expression<Func<TEntity, bool>> predicate, 
         CancellationToken cancellationToken = default) 
         where TDto : class
     {
@@ -144,7 +144,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// Get first entity matching predicate and project to DTO
     /// </summary>
     public virtual async Task<TDto?> FirstOrDefaultAsync<TDto>(
-        Expression<Func<T, bool>> predicate, 
+        Expression<Func<TEntity, bool>> predicate, 
         CancellationToken cancellationToken = default) 
         where TDto : class
     {
@@ -161,8 +161,8 @@ public class Repository<T> : IRepository<T> where T : class
     public virtual async Task<PagedResult<TDto>> GetPagedAsync<TDto>(
         int pageNumber, 
         int pageSize,
-        Expression<Func<T, bool>>? predicate = null,
-        Expression<Func<T, object>>? orderBy = null,
+        Expression<Func<TEntity, bool>>? predicate = null,
+        Expression<Func<TEntity, object>>? orderBy = null,
         bool ascending = true,
         CancellationToken cancellationToken = default) 
         where TDto : class
@@ -208,7 +208,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Add new entity to repository
     /// </summary>
-    public virtual async Task AddAsync(T entity, CancellationToken cancellationToken = default)
+    public virtual async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
         await _dbSet.AddAsync(entity, cancellationToken);
     }
@@ -216,7 +216,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Add multiple entities to repository
     /// </summary>
-    public virtual async Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+    public virtual async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
         await _dbSet.AddRangeAsync(entities, cancellationToken);
     }
@@ -224,7 +224,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Update existing entity
     /// </summary>
-    public virtual void Update(T entity)
+    public virtual void Update(TEntity entity)
     {
         _dbSet.Update(entity);
     }
@@ -232,7 +232,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Update multiple entities
     /// </summary>
-    public virtual void UpdateRange(IEnumerable<T> entities)
+    public virtual void UpdateRange(IEnumerable<TEntity> entities)
     {
         _dbSet.UpdateRange(entities);
     }
@@ -240,7 +240,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Remove entity from repository
     /// </summary>
-    public virtual void Remove(T entity)
+    public virtual void Remove(TEntity entity)
     {
         _dbSet.Remove(entity);
     }
@@ -248,7 +248,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Remove multiple entities from repository
     /// </summary>
-    public virtual void RemoveRange(IEnumerable<T> entities)
+    public virtual void RemoveRange(IEnumerable<TEntity> entities)
     {
         _dbSet.RemoveRange(entities);
     }
@@ -256,10 +256,10 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Soft delete - marks entity as deleted (if supported)
     /// </summary>
-    public virtual void SoftDelete(T entity)
+    public virtual void SoftDelete(TEntity entity)
     {
         // Check if entity has IsDeleted property
-        var isDeletedProperty = typeof(T).GetProperty("IsDeleted");
+        var isDeletedProperty = typeof(TEntity).GetProperty("IsDeleted");
         if (isDeletedProperty != null && isDeletedProperty.PropertyType == typeof(bool))
         {
             isDeletedProperty.SetValue(entity, true);
@@ -280,7 +280,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// Get queryable for complex queries
     /// Use with caution - prefer specific repository methods
     /// </summary>
-    public virtual IQueryable<T> GetQueryable(bool asNoTracking = true)
+    public virtual IQueryable<TEntity> GetQueryable(bool asNoTracking = true)
     {
         return asNoTracking ? _dbSet.AsNoTracking() : _dbSet;
     }
@@ -288,7 +288,7 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Execute raw SQL query
     /// </summary>
-    public virtual async Task<IEnumerable<T>> FromSqlRawAsync(
+    public virtual async Task<IEnumerable<TEntity>> FromSqlRawAsync(
         string sql, 
         params object[] parameters)
     {
@@ -298,11 +298,11 @@ public class Repository<T> : IRepository<T> where T : class
     /// <summary>
     /// Get entities with includes (eager loading)
     /// </summary>
-    public virtual async Task<IEnumerable<T>> GetWithIncludesAsync(
-        Expression<Func<T, bool>>? predicate = null,
-        params Expression<Func<T, object>>[] includes)
+    public virtual async Task<IEnumerable<TEntity>> GetWithIncludesAsync(
+        Expression<Func<TEntity, bool>>? predicate = null,
+        params Expression<Func<TEntity, object>>[] includes)
     {
-        IQueryable<T> query = _dbSet.AsNoTracking();
+        IQueryable<TEntity> query = _dbSet.AsNoTracking();
 
         // Apply includes
         foreach (var include in includes)
@@ -325,9 +325,9 @@ public class Repository<T> : IRepository<T> where T : class
 /// <summary>
 /// Paged result model for pagination
 /// </summary>
-public class PagedResult<T>
+public class PagedResult<TEntity>
 {
-    public IEnumerable<T> Items { get; set; } = new List<T>();
+    public IEnumerable<TEntity> Items { get; set; } = new List<TEntity>();
     public int TotalCount { get; set; }
     public int PageNumber { get; set; }
     public int PageSize { get; set; }
