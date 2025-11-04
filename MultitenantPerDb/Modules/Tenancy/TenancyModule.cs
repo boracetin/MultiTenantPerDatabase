@@ -26,7 +26,7 @@ public class TenancyModule : ModuleBase
         services.AddScoped<Application.Services.ITenantService, Application.Services.TenantService>();
         
         // Main database context (master database)
-        services.AddDbContext<Infrastructure.Persistence.MainDbContext>(options =>
+        services.AddDbContext<MainDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("TenantConnection")));
     }
 
