@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
 using MultitenantPerDb.Modules.Identity.Domain.Entities;
+using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Shared.Kernel.Infrastructure;
 
@@ -13,9 +14,9 @@ namespace MultitenantPerDb.Modules.Identity.Application.Services;
 /// </summary>
 public class UserService : IUserService
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWork<ApplicationDbContext> _unitOfWork;
 
-    public UserService(IUnitOfWork unitOfWork)
+    public UserService(IUnitOfWork<ApplicationDbContext> unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }

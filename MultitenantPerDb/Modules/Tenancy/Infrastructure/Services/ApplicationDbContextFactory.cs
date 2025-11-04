@@ -1,21 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
+using MultitenantPerDb.Shared.Kernel.Domain;
 
 namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 
 /// <summary>
 /// Factory interface for creating tenant-specific ApplicationDbContext
 /// </summary>
-public interface IApplicationDbContextFactory
+public interface IApplicationDbContextFactory : ITenantDbContextFactory<ApplicationDbContext>
 {
-    Task<ApplicationDbContext> CreateDbContextAsync();
 }
 
 /// <summary>
 /// Creates ApplicationDbContext with tenant-specific connection string
 /// Resolves tenant from request (subdomain, JWT, header, or query string)
 /// </summary>
-public class ApplicationDbContextFactory : IApplicationDbContextFactory
+public class ApplicationDbContextFactory : IApplicationDbContextFactory, ITenantDbContextFactory<ApplicationDbContext>
 {
     private readonly ITenantResolver _tenantResolver;
     private readonly MainDbContext _mainDbContext;

@@ -1,28 +1,29 @@
 using Microsoft.EntityFrameworkCore;
-using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
+using MultitenantPerDb.Shared.Kernel.Domain;
 
 namespace MultitenantPerDb.Shared.Kernel.Infrastructure;
 
 /// <summary>
-/// Unit of Work implementation with generic TDbContext and TEntity support
+/// Unit of Work implementation with generic TDbContext support
 /// Provides transaction management and repository creation for any DbContext
-/// Uses ApplicationDbContextFactory to create tenant-specific ApplicationDbContext
+/// Uses factory pattern for lazy DbContext initialization
 /// </summary>
-public class UnitOfWork : IUnitOfWork
+public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>
+    where TDbContext : DbContext
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-    private DbContext? _context;
+    private readonly ITenantDbContextFactory<TDbContext> _dbContextFactory;
+    private TDbContext? _context;
     private readonly Dictionary<Type, object> _repositories;
     private bool _disposed;
 
-    public UnitOfWork(IApplicationDbContextFactory dbContextFactory)
+    public UnitOfWork(ITenantDbContextFactory<TDbContext> dbContextFactory)
     {
         _dbContextFactory = dbContextFactory;
         _repositories = new Dictionary<Type, object>();
     }
 
-    private async Task<DbContext> GetContextAsync()
+    private async Task<TDbContext> GetOrCreateContextAsync()
     {
         if (_context == null)
         {
@@ -41,7 +42,7 @@ public class UnitOfWork : IUnitOfWork
         }
 
         // Get DbContext (can be any DbContext: ApplicationDbContext, MainDbContext, etc.)
-        var context = GetContextAsync().GetAwaiter().GetResult();
+        var context = GetOrCreateContextAsync().GetAwaiter().GetResult();
 
         // Create Repository<TEntity> instance with generic DbContext
         var repositoryInstance = new Repository<TEntity>(context);
@@ -52,20 +53,34 @@ public class UnitOfWork : IUnitOfWork
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var context = await GetContextAsync();
+        var context = await GetOrCreateContextAsync();
+        // Transaction yönetimi TransactionBehavior'da yapılıyor
+        // Burada sadece değişiklikleri kaydet
+        return await context.SaveChangesAsync(cancellationToken);
+    }
 
-        // Transaction kullanarak kaydet
-        await using var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
-        try
+    public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        var context = await GetOrCreateContextAsync();
+        await context.Database.BeginTransactionAsync(cancellationToken);
+    }
+
+    public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        var context = await GetOrCreateContextAsync();
+        if (context.Database.CurrentTransaction != null)
         {
-            var result = await context.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-            return result;
+            await context.SaveChangesAsync(cancellationToken);
+            await context.Database.CurrentTransaction.CommitAsync(cancellationToken);
         }
-        catch
+    }
+
+    public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
+    {
+        var context = await GetOrCreateContextAsync();
+        if (context.Database.CurrentTransaction != null)
         {
-            await transaction.RollbackAsync(cancellationToken);
-            throw;
+            await context.Database.CurrentTransaction.RollbackAsync(cancellationToken);
         }
     }
 

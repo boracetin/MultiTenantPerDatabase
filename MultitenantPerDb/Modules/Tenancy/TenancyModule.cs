@@ -16,6 +16,10 @@ public class TenancyModule : ModuleBase
         services.AddScoped<Infrastructure.Services.ITenantResolver, Infrastructure.Services.TenantResolver>();
         services.AddScoped<Infrastructure.Services.IApplicationDbContextFactory, Infrastructure.Services.ApplicationDbContextFactory>();
         
+        // Generic factory registrations for UnitOfWork
+        services.AddScoped<Shared.Kernel.Domain.ITenantDbContextFactory<Infrastructure.Persistence.ApplicationDbContext>, Infrastructure.Services.ApplicationDbContextFactory>();
+        services.AddScoped<Shared.Kernel.Domain.ITenantDbContextFactory<Infrastructure.Persistence.MainDbContext>, Infrastructure.Services.MainDbContextFactory>();
+        
         // Tenant service - Uses MainDbContext directly (not via UnitOfWork)
         services.AddScoped<Application.Services.ITenantService, Application.Services.TenantService>();
         

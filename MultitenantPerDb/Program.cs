@@ -103,8 +103,8 @@ builder.Services.AddModules(builder.Configuration);
 // ===============================================
 builder.Services.AddSharedServices(builder.Configuration);
 
-// Shared Kernel Services
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+// Shared Kernel Services - Generic UnitOfWork
+builder.Services.AddScoped(typeof(IUnitOfWork<>), typeof(UnitOfWork<>));
 builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
 
 // Encryption Service - TenantId encryption in JWT

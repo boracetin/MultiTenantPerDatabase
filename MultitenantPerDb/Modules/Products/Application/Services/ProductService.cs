@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
 using MultitenantPerDb.Modules.Products.Domain.Entities;
+using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Shared.Kernel.Infrastructure;
 
@@ -13,9 +14,9 @@ namespace MultitenantPerDb.Modules.Products.Application.Services;
 /// </summary>
 public class ProductService : IProductService
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWork<ApplicationDbContext> _unitOfWork;
 
-    public ProductService(IUnitOfWork unitOfWork)
+    public ProductService(IUnitOfWork<ApplicationDbContext> unitOfWork)
     {
         _unitOfWork = unitOfWork;
     }

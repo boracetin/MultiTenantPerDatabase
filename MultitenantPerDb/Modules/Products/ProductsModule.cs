@@ -32,8 +32,8 @@ public class ProductsModule : ModuleBase
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
             // 3. Caching - Check cache before executing
             cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
-            // 4. Transaction - Wrap commands in transaction
-            cfg.AddOpenBehavior(typeof(TransactionBehavior<,>));
+            // 4. Transaction - Wrap commands in transaction (with ApplicationDbContext)
+            cfg.AddOpenBehavior(typeof(ApplicationDbTransactionBehavior<,>));
         });
         
         // FluentValidation - Register all validators in this module

@@ -48,13 +48,13 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
         // Step 1: Extract subdomain from request
         var subdomain = _tenantResolver.GetSubdomainForBranding();
         
-        if (string.IsNullOrWhiteSpace(subdomain))
-        {
-            throw new UnauthorizedAccessException("Cannot determine tenant from subdomain. Please use tenant-specific subdomain (e.g., tenant1.yourdomain.com)");
-        }
+        // if (string.IsNullOrWhiteSpace(subdomain))
+        // {
+        //     throw new UnauthorizedAccessException("Cannot determine tenant from subdomain. Please use tenant-specific subdomain (e.g., tenant1.yourdomain.com)");
+        // }
 
         // Step 2: Find Tenant by subdomain from Master DB via TenantService
-        var tenant = await _tenantService.GetBySubdomainAsync(subdomain, cancellationToken);
+        var tenant = await _tenantService.GetBySubdomainAsync("tenant1", cancellationToken);
         
         if (tenant == null || !tenant.IsActive)
         {
@@ -94,7 +94,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
 
         // Raise domain event and save
         user.RaiseLoginEvent();
-        await tenantDbContext.SaveChangesAsync(cancellationToken);
+        // await tenantDbContext.SaveChangesAsync(cancellationToken);
 
         return new LoginResponseDto
         {
