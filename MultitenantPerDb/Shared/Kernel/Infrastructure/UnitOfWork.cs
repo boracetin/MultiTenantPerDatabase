@@ -7,16 +7,16 @@ namespace MultitenantPerDb.Shared.Kernel.Infrastructure;
 /// <summary>
 /// Unit of Work implementation with generic TDbContext and TEntity support
 /// Provides transaction management and repository creation for any DbContext
-/// Uses generic Repository<TEntity, TDbContext> pattern
+/// Uses ApplicationDbContextFactory to create tenant-specific ApplicationDbContext
 /// </summary>
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly ITenantDbContextFactory _dbContextFactory;
+    private readonly IApplicationDbContextFactory _dbContextFactory;
     private DbContext? _context;
     private readonly Dictionary<Type, object> _repositories;
     private bool _disposed;
 
-    public UnitOfWork(ITenantDbContextFactory dbContextFactory)
+    public UnitOfWork(IApplicationDbContextFactory dbContextFactory)
     {
         _dbContextFactory = dbContextFactory;
         _repositories = new Dictionary<Type, object>();

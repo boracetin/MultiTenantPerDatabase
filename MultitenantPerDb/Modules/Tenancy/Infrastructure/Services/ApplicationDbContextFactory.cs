@@ -4,22 +4,23 @@ using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 
 /// <summary>
-/// Factory interface for creating tenant-specific DbContext
+/// Factory interface for creating tenant-specific ApplicationDbContext
 /// </summary>
-public interface ITenantDbContextFactory
+public interface IApplicationDbContextFactory
 {
     Task<ApplicationDbContext> CreateDbContextAsync();
 }
 
 /// <summary>
 /// Creates ApplicationDbContext with tenant-specific connection string
+/// Resolves tenant from request (subdomain, JWT, header, or query string)
 /// </summary>
-public class TenantDbContextFactory : ITenantDbContextFactory
+public class ApplicationDbContextFactory : IApplicationDbContextFactory
 {
     private readonly ITenantResolver _tenantResolver;
     private readonly MainDbContext _mainDbContext;
 
-    public TenantDbContextFactory(ITenantResolver tenantResolver, MainDbContext mainDbContext)
+    public ApplicationDbContextFactory(ITenantResolver tenantResolver, MainDbContext mainDbContext)
     {
         _tenantResolver = tenantResolver;
         _mainDbContext = mainDbContext;

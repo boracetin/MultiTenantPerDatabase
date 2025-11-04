@@ -14,9 +14,9 @@ public class TenancyModule : ModuleBase
     {
         // Tenant resolution services
         services.AddScoped<Infrastructure.Services.ITenantResolver, Infrastructure.Services.TenantResolver>();
-        services.AddScoped<Infrastructure.Services.ITenantDbContextFactory, Infrastructure.Services.TenantDbContextFactory>();
+        services.AddScoped<Infrastructure.Services.IApplicationDbContextFactory, Infrastructure.Services.ApplicationDbContextFactory>();
         
-        // Tenant service - Uses IUnitOfWork with MainDbContext
+        // Tenant service - Uses MainDbContext directly (not via UnitOfWork)
         services.AddScoped<Application.Services.ITenantService, Application.Services.TenantService>();
         
         // Main database context (master database)
