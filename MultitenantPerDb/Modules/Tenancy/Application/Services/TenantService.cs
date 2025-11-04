@@ -8,31 +8,25 @@ namespace MultitenantPerDb.Modules.Tenancy.Application.Services;
 
 /// <summary>
 /// Tenant service implementation
-/// Uses MainDbContext directly for data access (Master DB)
-/// Note: Different from other services - uses MainDbContext, not ApplicationDbContext via factory
-/// MainDbContext manages all tenants, not tenant-specific data
+/// Uses IUnitOfWork<MainDbContext> to access Repository<Tenant> for data access
+/// UnitOfWork manages the MainDbContext and ensures single instance per request
 /// </summary>
 public class TenantService : ITenantService
 {
-    private readonly MainDbContext _mainDbContext;
-    private IRepository<Tenant>? _tenantRepository;
+    private readonly IUnitOfWork<MainDbContext> _unitOfWork;
 
-    public TenantService(MainDbContext mainDbContext)
+    public TenantService(IUnitOfWork<MainDbContext> unitOfWork)
     {
-        _mainDbContext = mainDbContext;
+        _unitOfWork = unitOfWork;
     }
 
     /// <summary>
-    /// Gets Repository<Tenant> using MainDbContext
-    /// MainDbContext is injected directly, not via factory
+    /// Gets Repository<Tenant> from UnitOfWork
+    /// UnitOfWork ensures same context instance is used for all repositories
     /// </summary>
     private IRepository<Tenant> GetRepository()
     {
-        if (_tenantRepository == null)
-        {
-            _tenantRepository = new Repository<Tenant>(_mainDbContext);
-        }
-        return _tenantRepository;
+        return _unitOfWork.GetGenericRepository<Tenant>();
     }
 
     #region Query Methods
@@ -111,7 +105,7 @@ public class TenantService : ITenantService
 
         // ✅ Save via repository
         await repository.AddAsync(tenant, cancellationToken);
-        await _mainDbContext.SaveChangesAsync(cancellationToken);
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return tenant;
     }
@@ -149,7 +143,7 @@ public class TenantService : ITenantService
         tenant.UpdateDetails(finalName, finalSubdomain, finalConnectionString);
 
         repository.Update(tenant);
-        await _mainDbContext.SaveChangesAsync(cancellationToken);
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;
     }
@@ -166,7 +160,7 @@ public class TenantService : ITenantService
         tenant.Activate();
 
         repository.Update(tenant);
-        await _mainDbContext.SaveChangesAsync(cancellationToken);
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;
     }
@@ -183,7 +177,7 @@ public class TenantService : ITenantService
         tenant.Deactivate();
 
         repository.Update(tenant);
-        await _mainDbContext.SaveChangesAsync(cancellationToken);
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;
     }
@@ -202,7 +196,7 @@ public class TenantService : ITenantService
 
         // ✅ Soft delete if supported, otherwise hard delete
         repository.SoftDelete(tenant);
-        await _mainDbContext.SaveChangesAsync(cancellationToken);
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;
     }

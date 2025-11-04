@@ -1,5 +1,7 @@
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MultitenantPerDb.Modules.Tenancy.Application.Features.Tenants.GetAllTenants;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 
@@ -8,7 +10,7 @@ namespace MultitenantPerDb.Modules.Tenancy.API;
 /// <summary>
 /// Tenant branding and customization API
 /// Returns UI customization settings based on subdomain
-/// Does NOT provide data access - only branding information
+/// Uses CQRS pattern for data access
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -16,11 +18,28 @@ public class TenantBrandingController : ControllerBase
 {
     private readonly MainDbContext _mainDbContext;
     private readonly ITenantResolver _tenantResolver;
+    private readonly IMediator _mediator;
 
-    public TenantBrandingController(MainDbContext mainDbContext, ITenantResolver tenantResolver)
+    public TenantBrandingController(
+        MainDbContext mainDbContext, 
+        ITenantResolver tenantResolver,
+        IMediator mediator)
     {
         _mainDbContext = mainDbContext;
         _tenantResolver = tenantResolver;
+        _mediator = mediator;
+    }
+
+    /// <summary>
+    /// Get all tenants
+    /// CQRS Query endpoint
+    /// </summary>
+    [HttpGet("all")]
+    public async Task<IActionResult> GetAllTenants([FromQuery] bool? activeOnly = null)
+    {
+        var query = new GetAllTenantsQuery(activeOnly);
+        var tenants = await _mediator.Send(query);
+        return Ok(tenants);
     }
 
     /// <summary>
