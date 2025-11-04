@@ -1,52 +1,45 @@
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
 using MultitenantPerDb.Modules.Identity.Domain.Entities;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
+using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Shared.Kernel.Infrastructure;
 
 namespace MultitenantPerDb.Modules.Identity.Application.Services;
 
 /// <summary>
 /// User service implementation
-/// Uses Repository<User> for data access and implements business logic
-/// Creates tenant-specific ApplicationDbContext using TenantDbContextFactory
+/// Uses IUnitOfWork to access Repository<User> for data access
+/// UnitOfWork manages the ApplicationDbContext and ensures single instance per request
 /// </summary>
 public class UserService : IUserService
 {
-    private readonly ITenantDbContextFactory _dbContextFactory;
-    private ApplicationDbContext? _context;
-    private Repository<User>? _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public UserService(ITenantDbContextFactory dbContextFactory)
+    public UserService(IUnitOfWork unitOfWork)
     {
-        _dbContextFactory = dbContextFactory;
+        _unitOfWork = unitOfWork;
     }
 
     /// <summary>
-    /// Lazily creates the ApplicationDbContext and Repository<User>
+    /// Gets Repository<User> from UnitOfWork
+    /// UnitOfWork ensures same context instance is used for all repositories
     /// </summary>
-    private async Task<Repository<User>> GetRepositoryAsync()
+    private IRepository<User> GetRepository()
     {
-        if (_userRepository == null)
-        {
-            _context = await _dbContextFactory.CreateDbContextAsync();
-            _userRepository = new Repository<User>(_context);
-        }
-        return _userRepository;
+        return _unitOfWork.GetGenericRepository<User>();
     }
 
     #region Query Methods
 
     public async Task<User?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         return await repository.GetByIdAsync(id, cancellationToken);
     }
 
     public async Task<User?> GetByUsernameAsync(string username, CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         return await repository.FirstOrDefaultAsync(
             u => u.Username == username && u.IsActive,
             asNoTracking: true,
@@ -55,7 +48,7 @@ public class UserService : IUserService
 
     public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         return await repository.FirstOrDefaultAsync(
             u => u.Email == email && u.IsActive,
             asNoTracking: true,
@@ -64,7 +57,7 @@ public class UserService : IUserService
 
     public async Task<UserDto?> GetUserDtoByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         // ✅ Mapster projection - only DTO fields are queried
         return await repository.GetByIdAsync<UserDto>(id, cancellationToken);
     }
@@ -75,7 +68,7 @@ public class UserService : IUserService
         bool? isActive = null,
         CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         // ✅ Built-in pagination with DTO projection
         return await repository.GetPagedAsync<UserDto>(
             pageNumber: pageNumber,
@@ -96,7 +89,7 @@ public class UserService : IUserService
         string password,
         CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
 
         // ✅ Business validation
         var usernameExists = await repository.AnyAsync(
@@ -118,11 +111,7 @@ public class UserService : IUserService
 
         // ✅ Save via repository
         await repository.AddAsync(user, cancellationToken);
-        
-        if (_context != null)
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return user;
     }
@@ -133,7 +122,7 @@ public class UserService : IUserService
         string? password = null,
         CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         var user = await repository.GetByIdAsync(userId, cancellationToken);
         if (user == null)
             throw new InvalidOperationException($"User with ID {userId} not found");
@@ -159,18 +148,14 @@ public class UserService : IUserService
         }
 
         repository.Update(user);
-        
-        if (_context != null)
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;
     }
 
     public async Task<bool> ActivateUserAsync(int userId, CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         var user = await repository.GetByIdAsync(userId, cancellationToken);
         if (user == null)
             throw new InvalidOperationException($"User with ID {userId} not found");
@@ -179,18 +164,14 @@ public class UserService : IUserService
         user.Activate();
 
         repository.Update(user);
-        
-        if (_context != null)
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;
     }
 
     public async Task<bool> DeactivateUserAsync(int userId, CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         var user = await repository.GetByIdAsync(userId, cancellationToken);
         if (user == null)
             throw new InvalidOperationException($"User with ID {userId} not found");
@@ -199,18 +180,14 @@ public class UserService : IUserService
         user.Deactivate();
 
         repository.Update(user);
-        
-        if (_context != null)
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;
     }
 
     public async Task<bool> DeleteUserAsync(int userId, CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         var user = await repository.GetByIdAsync(userId, cancellationToken);
         if (user == null)
             throw new InvalidOperationException($"User with ID {userId} not found");
@@ -221,11 +198,7 @@ public class UserService : IUserService
 
         // ✅ Soft delete if supported, otherwise hard delete
         repository.SoftDelete(user);
-        
-        if (_context != null)
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;
     }
@@ -236,7 +209,7 @@ public class UserService : IUserService
 
     public async Task<bool> IsUsernameAvailableAsync(string username, CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         var exists = await repository.AnyAsync(
             u => u.Username == username, 
             cancellationToken);
@@ -246,7 +219,7 @@ public class UserService : IUserService
 
     public async Task<bool> IsEmailAvailableAsync(string email, CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         var exists = await repository.AnyAsync(
             u => u.Email == email, 
             cancellationToken);

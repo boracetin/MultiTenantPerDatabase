@@ -1,5 +1,3 @@
-using System.Reflection;
-using Microsoft.EntityFrameworkCore.Storage;
 using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
@@ -8,6 +6,7 @@ namespace MultitenantPerDb.Shared.Kernel.Infrastructure;
 
 /// <summary>
 /// Unit of Work implementation for managing transactions and repositories
+/// Uses generic Repository<T> pattern for all entities
 /// </summary>
 public class UnitOfWork : IUnitOfWork
 {
@@ -15,43 +14,6 @@ public class UnitOfWork : IUnitOfWork
     private ApplicationDbContext? _context;
     private readonly Dictionary<Type, object> _repositories;
     private bool _disposed;
-    private static readonly Dictionary<Type, Type> _repositoryMappings = new();
-
-    static UnitOfWork()
-    {
-        // Scan all loaded assemblies for repository implementations
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-        foreach (var assembly in assemblies)
-        {
-            try
-            {
-                var types = assembly.GetTypes();
-                foreach (var type in types)
-                {
-                    if (type.IsClass && !type.IsAbstract)
-                    {
-                        var interfaces = type.GetInterfaces();
-                        foreach (var @interface in interfaces)
-                        {
-                            if (@interface.IsGenericType && @interface.GetGenericTypeDefinition() == typeof(IRepository<>))
-                            {
-                                continue; // Skip base IRepository<T>
-                            }
-                            
-                            if (@interface.Name.StartsWith("I") && @interface.Name.EndsWith("Repository"))
-                            {
-                                _repositoryMappings[@interface] = type;
-                            }
-                        }
-                    }
-                }
-            }
-            catch
-            {
-                // Skip assemblies that can't be scanned
-            }
-        }
-    }
 
     public UnitOfWork(ITenantDbContextFactory dbContextFactory)
     {
@@ -68,32 +30,23 @@ public class UnitOfWork : IUnitOfWork
         return _context;
     }
 
-    public TRepository GetRepository<TRepository>() where TRepository : class
+    public IRepository<T> GetGenericRepository<T>() where T : class
     {
-        var interfaceType = typeof(TRepository);
+        var repositoryType = typeof(IRepository<T>);
 
-        if (_repositories.ContainsKey(interfaceType))
+        if (_repositories.ContainsKey(repositoryType))
         {
-            return (TRepository)_repositories[interfaceType];
+            return (IRepository<T>)_repositories[repositoryType];
         }
 
         // Context'i senkron olarak almak için Task.Run kullanıyoruz
         var context = GetContextAsync().GetAwaiter().GetResult();
 
-        // Find implementation type for the interface
-        if (!_repositoryMappings.TryGetValue(interfaceType, out var implementationType))
-        {
-            throw new InvalidOperationException(
-                $"Repository implementation for {interfaceType.Name} not found. " +
-                $"Ensure the repository class implements {interfaceType.Name}.");
-        }
+        // Create Repository<T> instance
+        var repositoryInstance = new Repository<T>(context);
 
-        // Repository instance'ını oluştur
-        var repositoryInstance = Activator.CreateInstance(implementationType, context) 
-            ?? throw new InvalidOperationException($"Repository {implementationType.Name} oluşturulamadı");
-
-        _repositories.Add(interfaceType, repositoryInstance);
-        return (TRepository)repositoryInstance;
+        _repositories.Add(repositoryType, repositoryInstance);
+        return repositoryInstance;
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

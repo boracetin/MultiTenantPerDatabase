@@ -36,6 +36,9 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
             // Execute the handler within a transaction
             var response = await next();
 
+            // Commit changes to database
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
             _logger.LogInformation("[TRANSACTION COMMIT] {RequestName}", requestName);
 
             return response;

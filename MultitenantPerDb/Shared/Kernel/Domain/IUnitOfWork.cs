@@ -5,6 +5,11 @@ namespace MultitenantPerDb.Shared.Kernel.Domain;
 /// </summary>
 public interface IUnitOfWork : IDisposable
 {
-    TRepository GetRepository<TRepository>() where TRepository : class;
+    /// <summary>
+    /// Gets a generic Repository<T> for entity T
+    /// All entities use generic Repository<T> pattern
+    /// </summary>
+    IRepository<T> GetGenericRepository<T>() where T : class;
+    
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

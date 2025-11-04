@@ -1,52 +1,45 @@
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
 using MultitenantPerDb.Modules.Products.Domain.Entities;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
+using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Shared.Kernel.Infrastructure;
 
 namespace MultitenantPerDb.Modules.Products.Application.Services;
 
 /// <summary>
 /// Product service implementation
-/// Uses Repository<Product> for data access and implements business logic
-/// Creates tenant-specific ApplicationDbContext using TenantDbContextFactory
+/// Uses IUnitOfWork to access Repository<Product> for data access
+/// UnitOfWork manages the ApplicationDbContext and ensures single instance per request
 /// </summary>
 public class ProductService : IProductService
 {
-    private readonly ITenantDbContextFactory _dbContextFactory;
-    private ApplicationDbContext? _context;
-    private Repository<Product>? _productRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public ProductService(ITenantDbContextFactory dbContextFactory)
+    public ProductService(IUnitOfWork unitOfWork)
     {
-        _dbContextFactory = dbContextFactory;
+        _unitOfWork = unitOfWork;
     }
 
     /// <summary>
-    /// Lazily creates the ApplicationDbContext and Repository<Product>
+    /// Gets Repository<Product> from UnitOfWork
+    /// UnitOfWork ensures same context instance is used for all repositories
     /// </summary>
-    private async Task<Repository<Product>> GetRepositoryAsync()
+    private IRepository<Product> GetRepository()
     {
-        if (_productRepository == null)
-        {
-            _context = await _dbContextFactory.CreateDbContextAsync();
-            _productRepository = new Repository<Product>(_context);
-        }
-        return _productRepository;
+        return _unitOfWork.GetGenericRepository<Product>();
     }
 
     #region Query Methods
 
     public async Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         return await repository.GetByIdAsync(id, cancellationToken);
     }
 
     public async Task<ProductDto?> GetProductDtoByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         // ✅ Mapster projection - only DTO fields are queried
         return await repository.GetByIdAsync<ProductDto>(id, cancellationToken);
     }
@@ -56,7 +49,7 @@ public class ProductService : IProductService
         int pageSize, 
         CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         // ✅ Built-in pagination with DTO projection
         return await repository.GetPagedAsync<ProductDto>(
             pageNumber: pageNumber,
@@ -72,7 +65,7 @@ public class ProductService : IProductService
         decimal maxPrice, 
         CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         var query = repository.GetQueryable()
             .Where(p => p.Price >= minPrice && p.Price <= maxPrice)
             .OrderBy(p => p.Price);
@@ -81,7 +74,7 @@ public class ProductService : IProductService
 
     public async Task<IEnumerable<Product>> GetInStockProductsAsync(CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         return await repository.FindAsync(
             p => p.Stock > 0,
             cancellationToken: cancellationToken);
@@ -91,7 +84,7 @@ public class ProductService : IProductService
         int threshold = 10, 
         CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         var query = repository.GetQueryable()
             .Where(p => p.Stock > 0 && p.Stock <= threshold)
             .OrderBy(p => p.Stock);
@@ -109,7 +102,7 @@ public class ProductService : IProductService
         int stock,
         CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
 
         // ✅ Business validation
         var nameExists = await repository.AnyAsync(
@@ -130,11 +123,7 @@ public class ProductService : IProductService
 
         // ✅ Save via repository
         await repository.AddAsync(product, cancellationToken);
-        
-        if (_context != null)
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return product;
     }
@@ -147,7 +136,7 @@ public class ProductService : IProductService
         int? stock = null,
         CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         var product = await repository.GetByIdAsync(productId, cancellationToken);
         
         if (product == null)
@@ -185,11 +174,7 @@ public class ProductService : IProductService
         }
 
         repository.Update(product);
-        
-        if (_context != null)
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;
     }
@@ -199,7 +184,7 @@ public class ProductService : IProductService
         int quantity, 
         CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         var product = await repository.GetByIdAsync(productId, cancellationToken);
         
         if (product == null)
@@ -212,18 +197,14 @@ public class ProductService : IProductService
         product.UpdateStock(quantity);
 
         repository.Update(product);
-        
-        if (_context != null)
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;
     }
 
     public async Task<bool> DeleteProductAsync(int productId, CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         var product = await repository.GetByIdAsync(productId, cancellationToken);
         
         if (product == null)
@@ -231,11 +212,7 @@ public class ProductService : IProductService
 
         // ✅ Soft delete if supported, otherwise hard delete
         repository.SoftDelete(product);
-        
-        if (_context != null)
-        {
-            await _context.SaveChangesAsync(cancellationToken);
-        }
+        // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;
     }
@@ -246,7 +223,7 @@ public class ProductService : IProductService
 
     public async Task<bool> IsProductNameAvailableAsync(string name, CancellationToken cancellationToken = default)
     {
-        var repository = await GetRepositoryAsync();
+        var repository = GetRepository();
         var exists = await repository.AnyAsync(
             p => p.Name == name, 
             cancellationToken);
