@@ -17,12 +17,12 @@ public interface ITenantDbContextFactory
 public class TenantDbContextFactory : ITenantDbContextFactory
 {
     private readonly ITenantResolver _tenantResolver;
-    private readonly TenantDbContext _tenantDbContext;
+    private readonly MainDbContext _mainDbContext;
 
-    public TenantDbContextFactory(ITenantResolver tenantResolver, TenantDbContext tenantDbContext)
+    public TenantDbContextFactory(ITenantResolver tenantResolver, MainDbContext mainDbContext)
     {
         _tenantResolver = tenantResolver;
-        _tenantDbContext = tenantDbContext;
+        _mainDbContext = mainDbContext;
     }
 
     public async Task<ApplicationDbContext> CreateDbContextAsync()
@@ -37,7 +37,7 @@ public class TenantDbContextFactory : ITenantDbContextFactory
         // Tenant'ı ID veya Name ile bul
         // Subdomain'den gelen "tenant1" gibi bir string olabilir (Name)
         // veya JWT claim'den gelen "1" gibi bir ID olabilir
-        var tenant = await _tenantDbContext.Tenants
+        var tenant = await _mainDbContext.Tenants
             .FirstOrDefaultAsync(t => 
                 (t.Id.ToString() == tenantIdentifier || t.Name.ToLower() == tenantIdentifier.ToLower()) 
                 && t.IsActive);

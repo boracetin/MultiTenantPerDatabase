@@ -11,7 +11,7 @@ using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 
 namespace MultitenantPerDb.Migrations.Application
 {
-    [DbContext(typeof(TenantDbContext))]
+    [DbContext(typeof(MainDbContext))]
     [Migration("20251031223918_UpdatedConnectionStrings")]
     partial class UpdatedConnectionStrings
     {

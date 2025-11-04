@@ -1,29 +1,28 @@
 using MediatR;
 using MapsterMapper;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
-using MultitenantPerDb.Modules.Identity.Domain.Repositories;
-using MultitenantPerDb.Shared.Kernel.Domain;
+using MultitenantPerDb.Modules.Identity.Application.Services;
 
 namespace MultitenantPerDb.Modules.Identity.Application.Features.Users.GetUserByEmail;
 
 /// <summary>
 /// Handler for GetUserByEmailQuery
+/// Uses UserService for data access
 /// </summary>
 public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, UserDto?>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserService _userService;
     private readonly IMapper _mapper;
 
-    public GetUserByEmailQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public GetUserByEmailQueryHandler(IUserService userService, IMapper mapper)
     {
-        _unitOfWork = unitOfWork;
+        _userService = userService;
         _mapper = mapper;
     }
 
     public async Task<UserDto?> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
     {
-        var repository = _unitOfWork.GetRepository<IUserRepository>();
-        var user = await repository.GetByEmailAsync(request.Email);
+        var user = await _userService.GetByEmailAsync(request.Email, cancellationToken);
 
         if (user == null)
             return null;

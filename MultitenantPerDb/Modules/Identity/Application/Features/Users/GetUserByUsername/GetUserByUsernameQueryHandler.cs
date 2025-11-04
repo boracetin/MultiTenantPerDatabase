@@ -1,29 +1,28 @@
 using MediatR;
 using MapsterMapper;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
-using MultitenantPerDb.Modules.Identity.Domain.Repositories;
-using MultitenantPerDb.Shared.Kernel.Domain;
+using MultitenantPerDb.Modules.Identity.Application.Services;
 
 namespace MultitenantPerDb.Modules.Identity.Application.Features.Users.GetUserByUsername;
 
 /// <summary>
 /// Handler for GetUserByUsernameQuery
+/// Uses UserService for data access
 /// </summary>
 public class GetUserByUsernameQueryHandler : IRequestHandler<GetUserByUsernameQuery, UserDto?>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IUserService _userService;
     private readonly IMapper _mapper;
 
-    public GetUserByUsernameQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public GetUserByUsernameQueryHandler(IUserService userService, IMapper mapper)
     {
-        _unitOfWork = unitOfWork;
+        _userService = userService;
         _mapper = mapper;
     }
 
     public async Task<UserDto?> Handle(GetUserByUsernameQuery request, CancellationToken cancellationToken)
     {
-        var repository = _unitOfWork.GetRepository<IUserRepository>();
-        var user = await repository.GetByUsernameAsync(request.Username);
+        var user = await _userService.GetByUsernameAsync(request.Username, cancellationToken);
 
         if (user == null)
             return null;

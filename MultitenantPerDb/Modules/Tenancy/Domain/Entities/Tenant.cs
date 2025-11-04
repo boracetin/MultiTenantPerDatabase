@@ -1,11 +1,11 @@
 using MultitenantPerDb.Shared.Kernel.Domain;
-using MultitenantPerDb.Modules.Identity.Domain.Entities;
 
 namespace MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 
 /// <summary>
 /// Tenant aggregate root - Multi-tenancy için ana entity
 /// Includes branding and customization settings for subdomain-based UI
+/// Note: Users are NOT in MainDbContext - they're in tenant-specific ApplicationDbContext
 /// </summary>
 public class Tenant : BaseEntity, IAggregateRoot
 {
@@ -23,10 +23,6 @@ public class Tenant : BaseEntity, IAggregateRoot
     public string? PrimaryColor { get; private set; }
     public string? SecondaryColor { get; private set; }
     public string? CustomCss { get; private set; }
-
-    // Navigation
-    private readonly List<User> _users = new();
-    public IReadOnlyCollection<User> Users => _users.AsReadOnly();
 
     // EF Core için parameterless constructor
     private Tenant() : base()

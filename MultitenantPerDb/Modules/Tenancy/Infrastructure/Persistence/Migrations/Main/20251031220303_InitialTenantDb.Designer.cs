@@ -9,11 +9,11 @@ using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 
 #nullable disable
 
-namespace MultitenantPerDb.Infrastructure.Persistence.Migrations.Tenant
+namespace MultitenantPerDb.Migrations.Tenant
 {
-    [DbContext(typeof(TenantDbContext))]
-    [Migration("20251031232439_AddUpdatedAtColumn")]
-    partial class AddUpdatedAtColumn
+    [DbContext(typeof(MainDbContext))]
+    [Migration("20251031220303_InitialTenantDb")]
+    partial class InitialTenantDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace MultitenantPerDb.Infrastructure.Persistence.Migrations.Tenant
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("MultitenantPerDb.Domain.Entities.Tenant", b =>
+            modelBuilder.Entity("MultitenantPerDb.Models.Tenant", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -49,9 +49,6 @@ namespace MultitenantPerDb.Infrastructure.Persistence.Migrations.Tenant
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
@@ -63,22 +60,22 @@ namespace MultitenantPerDb.Infrastructure.Persistence.Migrations.Tenant
                         new
                         {
                             Id = 1,
-                            ConnectionString = "Server=BORA\\\\BRCTN;Database=Tenant1Db;Integrated Security=true;Encrypt=False;TrustServerCertificate=True;Max Pool Size=2000;",
-                            CreatedAt = new DateTime(2025, 10, 31, 23, 24, 39, 248, DateTimeKind.Utc).AddTicks(4382),
+                            ConnectionString = "Server=localhost;Database=Tenant1Db;Trusted_Connection=True;TrustServerCertificate=True;",
+                            CreatedAt = new DateTime(2025, 10, 31, 22, 3, 2, 878, DateTimeKind.Utc).AddTicks(9415),
                             IsActive = true,
                             Name = "Tenant1"
                         },
                         new
                         {
                             Id = 2,
-                            ConnectionString = "Server=BORA\\\\BRCTN;Database=Tenant2Db;Integrated Security=true;Encrypt=False;TrustServerCertificate=True;Max Pool Size=2000;",
-                            CreatedAt = new DateTime(2025, 10, 31, 23, 24, 39, 248, DateTimeKind.Utc).AddTicks(4385),
+                            ConnectionString = "Server=localhost;Database=Tenant2Db;Trusted_Connection=True;TrustServerCertificate=True;",
+                            CreatedAt = new DateTime(2025, 10, 31, 22, 3, 2, 878, DateTimeKind.Utc).AddTicks(9417),
                             IsActive = true,
                             Name = "Tenant2"
                         });
                 });
 
-            modelBuilder.Entity("MultitenantPerDb.Domain.Entities.User", b =>
+            modelBuilder.Entity("MultitenantPerDb.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -104,9 +101,6 @@ namespace MultitenantPerDb.Infrastructure.Persistence.Migrations.Tenant
                     b.Property<int>("TenantId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -117,8 +111,6 @@ namespace MultitenantPerDb.Infrastructure.Persistence.Migrations.Tenant
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("TenantId");
-
                     b.HasIndex("Username")
                         .IsUnique();
 
@@ -128,7 +120,7 @@ namespace MultitenantPerDb.Infrastructure.Persistence.Migrations.Tenant
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 10, 31, 23, 24, 39, 248, DateTimeKind.Utc).AddTicks(4422),
+                            CreatedAt = new DateTime(2025, 10, 31, 22, 3, 2, 878, DateTimeKind.Utc).AddTicks(9540),
                             Email = "user1@tenant1.com",
                             IsActive = true,
                             PasswordHash = "$2a$11$5ZqJKbGjmJ5J5YqHxJH5XO5mZxJH5XO5mZxJH5XO5mZxJH5XO5mZx",
@@ -138,29 +130,13 @@ namespace MultitenantPerDb.Infrastructure.Persistence.Migrations.Tenant
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 10, 31, 23, 24, 39, 248, DateTimeKind.Utc).AddTicks(4423),
+                            CreatedAt = new DateTime(2025, 10, 31, 22, 3, 2, 878, DateTimeKind.Utc).AddTicks(9542),
                             Email = "user2@tenant2.com",
                             IsActive = true,
                             PasswordHash = "$2a$11$5ZqJKbGjmJ5J5YqHxJH5XO5mZxJH5XO5mZxJH5XO5mZxJH5XO5mZx",
                             TenantId = 2,
                             Username = "user2"
                         });
-                });
-
-            modelBuilder.Entity("MultitenantPerDb.Domain.Entities.User", b =>
-                {
-                    b.HasOne("MultitenantPerDb.Domain.Entities.Tenant", "Tenant")
-                        .WithMany("Users")
-                        .HasForeignKey("TenantId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("MultitenantPerDb.Domain.Entities.Tenant", b =>
-                {
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

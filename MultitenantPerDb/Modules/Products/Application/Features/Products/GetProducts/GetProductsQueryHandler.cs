@@ -1,30 +1,32 @@
 using MediatR;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
-using MultitenantPerDb.Modules.Products.Domain.Repositories;
-using MultitenantPerDb.Shared.Kernel.Domain;
+using MultitenantPerDb.Modules.Products.Application.Services;
+using MultitenantPerDb.Shared.Kernel.Infrastructure;
 
 namespace MultitenantPerDb.Modules.Products.Application.Features.Products.GetProducts;
 
 /// <summary>
 /// Handler for GetProductsQuery
-/// Uses DTO projection for efficient database queries
+/// Uses IProductService with DTO projection and pagination
 /// </summary>
 public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, List<ProductDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IProductService _productService;
 
-    public GetProductsQueryHandler(IUnitOfWork unitOfWork)
+    public GetProductsQueryHandler(IProductService productService)
     {
-        _unitOfWork = unitOfWork;
+        _productService = productService;
     }
 
     public async Task<List<ProductDto>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
-        var repository = _unitOfWork.GetRepository<IProductRepository>();
-        
-        // ✅ EFFICIENT - Uses DTO projection
-        var products = await repository.GetAllAsync<ProductDto>(cancellationToken);
+        // ✅ EFFICIENT - Uses DTO projection with pagination
+        var pagedResult = await _productService.GetProductsPagedAsync(
+            pageNumber: 1,
+            pageSize: 1000, // Large page size for "get all" behavior
+            cancellationToken: cancellationToken
+        );
 
-        return products.ToList();
+        return pagedResult.Items.ToList();
     }
 }

@@ -48,8 +48,12 @@ public class ProductsModule : ModuleBase
         // Application Services - Domain-specific orchestration
         services.AddScoped<IProductNotificationService, ProductNotificationService>();
         
-        // Note: Repositories are created dynamically by UnitOfWork using Activator.CreateInstance
-        // No need to register them in DI container
+        // Product Service - Business logic for product operations
+        // Uses Repository<Product> for data access
+        services.AddScoped<IProductService, Application.Services.ProductService>();
+        
+        // NOTE: Repository<Product> is registered in Shared.Kernel but requires ApplicationDbContext per tenant
+        // ApplicationDbContext is tenant-specific and created with tenant's connection string via TenantDbContextFactory
         
         // Product background jobs
         services.AddScoped<Application.Jobs.ProductBackgroundJob>();

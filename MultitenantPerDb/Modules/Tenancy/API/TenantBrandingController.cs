@@ -14,12 +14,12 @@ namespace MultitenantPerDb.Modules.Tenancy.API;
 [Route("api/[controller]")]
 public class TenantBrandingController : ControllerBase
 {
-    private readonly TenantDbContext _tenantDbContext;
+    private readonly MainDbContext _mainDbContext;
     private readonly ITenantResolver _tenantResolver;
 
-    public TenantBrandingController(TenantDbContext tenantDbContext, ITenantResolver tenantResolver)
+    public TenantBrandingController(MainDbContext mainDbContext, ITenantResolver tenantResolver)
     {
-        _tenantDbContext = tenantDbContext;
+        _mainDbContext = mainDbContext;
         _tenantResolver = tenantResolver;
     }
 
@@ -44,7 +44,7 @@ public class TenantBrandingController : ControllerBase
         }
 
         // Find tenant by subdomain
-        var tenant = await _tenantDbContext.Tenants
+        var tenant = await _mainDbContext.Tenants
             .Where(t => t.Subdomain == subdomain && t.IsActive)
             .Select(t => new
             {
@@ -90,7 +90,7 @@ public class TenantBrandingController : ControllerBase
     [HttpGet("by-subdomain/{subdomain}")]
     public async Task<IActionResult> GetBrandingBySubdomain(string subdomain)
     {
-        var tenant = await _tenantDbContext.Tenants
+        var tenant = await _mainDbContext.Tenants
             .Where(t => t.Subdomain == subdomain.ToLower() && t.IsActive)
             .Select(t => new
             {

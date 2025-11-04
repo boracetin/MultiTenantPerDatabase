@@ -16,11 +16,11 @@ public class TenancyModule : ModuleBase
         services.AddScoped<Infrastructure.Services.ITenantResolver, Infrastructure.Services.TenantResolver>();
         services.AddScoped<Infrastructure.Services.ITenantDbContextFactory, Infrastructure.Services.TenantDbContextFactory>();
         
-        // Tenant repository - Uses Master DB (TenantDbContext)
+        // Tenant repository - Uses Master DB (MainDbContext)
         services.AddScoped<Domain.Repositories.ITenantRepository, Infrastructure.Persistence.TenantRepository>();
         
-        // Tenant database context (master database)
-        services.AddDbContext<Infrastructure.Persistence.TenantDbContext>(options =>
+        // Main database context (master database)
+        services.AddDbContext<Infrastructure.Persistence.MainDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("TenantConnection")));
     }
 

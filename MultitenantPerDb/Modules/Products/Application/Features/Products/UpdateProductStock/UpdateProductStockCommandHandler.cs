@@ -1,44 +1,37 @@
 using MediatR;
-using MapsterMapper;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
-using MultitenantPerDb.Modules.Products.Domain.Repositories;
-using MultitenantPerDb.Shared.Kernel.Domain;
+using MultitenantPerDb.Modules.Products.Application.Services;
 
 namespace MultitenantPerDb.Modules.Products.Application.Features.Products.UpdateProductStock;
 
 /// <summary>
 /// Handler for UpdateProductStockCommand
+/// Uses IProductService for business logic
 /// </summary>
 public class UpdateProductStockCommandHandler : IRequestHandler<UpdateProductStockCommand, ProductDto>
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
+    private readonly IProductService _productService;
 
-    public UpdateProductStockCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public UpdateProductStockCommandHandler(IProductService productService)
     {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
+        _productService = productService;
     }
 
     public async Task<ProductDto> Handle(UpdateProductStockCommand request, CancellationToken cancellationToken)
     {
-        var repository = _unitOfWork.GetRepository<IProductRepository>();
+        // ProductService handles business logic and validation
+        await _productService.UpdateStockAsync(
+            productId: request.ProductId,
+            quantity: request.Quantity,
+            cancellationToken: cancellationToken
+        );
+
+        // Get updated product DTO
+        var productDto = await _productService.GetProductDtoByIdAsync(request.ProductId, cancellationToken);
         
-        // Get existing product
-        var product = await repository.GetByIdAsync(request.ProductId, cancellationToken);
-        if (product == null)
-        {
-            throw new InvalidOperationException($"Product with ID {request.ProductId} not found");
-        }
+        if (productDto == null)
+            throw new InvalidOperationException($"Product with ID {request.ProductId} not found after update");
 
-        // Update stock using domain method
-        product.UpdateStock(request.Quantity);
-
-        // Save changes
-        repository.Update(product);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        // Map to DTO and return
-        return _mapper.Map<ProductDto>(product);
+        return productDto;
     }
 }

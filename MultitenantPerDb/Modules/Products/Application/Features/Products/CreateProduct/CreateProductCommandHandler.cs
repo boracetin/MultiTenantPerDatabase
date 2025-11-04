@@ -3,9 +3,7 @@ using MapsterMapper;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
 using MultitenantPerDb.Modules.Products.Application.Services;
 using MultitenantPerDb.Modules.Products.Domain.Entities;
-using MultitenantPerDb.Modules.Products.Domain.Repositories;
 using MultitenantPerDb.Modules.Products.Domain.Services;
-using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Shared.Kernel.Infrastructure.Services;
 
 namespace MultitenantPerDb.Modules.Products.Application.Features.Products.CreateProduct;
@@ -16,10 +14,11 @@ namespace MultitenantPerDb.Modules.Products.Application.Features.Products.Create
 /// - Domain Service: Price calculations (business logic)
 /// - Application Service: Product notifications (orchestration)
 /// - Infrastructure Service: HTTP client for external APIs (generic)
+/// Uses IProductService for business logic and Repository<Product> for data access
 /// </summary>
 public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ProductDto>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IProductService _productService;
     private readonly IMapper _mapper;
     private readonly IPriceCalculationService _priceCalculation; // Domain Service
     private readonly IProductNotificationService _productNotification; // Application Service
@@ -27,14 +26,14 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
     private readonly IConfiguration _configuration;
 
     public CreateProductCommandHandler(
-        IUnitOfWork unitOfWork,
+        IProductService productService,
         IMapper mapper,
         IPriceCalculationService priceCalculation,
         IProductNotificationService productNotification,
         IHttpClientService httpClient,
         IConfiguration configuration)
     {
-        _unitOfWork = unitOfWork;
+        _productService = productService;
         _mapper = mapper;
         _priceCalculation = priceCalculation;
         _productNotification = productNotification;
@@ -52,18 +51,14 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
             discountPercentage: bulkDiscountPercentage
         );
 
-        // 2. Create product using factory method (DDD approach)
-        var product = Product.Create(
-            request.Name,
-            request.Description,
-            finalPrice, // Use calculated price
-            request.Stock
+        // 2. Create product using ProductService (handles business logic and validation)
+        var product = await _productService.CreateProductAsync(
+            name: request.Name,
+            description: request.Description,
+            price: finalPrice, // Use calculated price
+            stock: request.Stock,
+            cancellationToken: cancellationToken
         );
-
-        // 3. Save to repository
-        var repository = _unitOfWork.GetRepository<IProductRepository>();
-        await repository.AddAsync(product, cancellationToken);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         // 4. INFRASTRUCTURE SERVICE - Sync with external inventory system (fire-and-forget)
         // Generic HTTP client - no domain knowledge

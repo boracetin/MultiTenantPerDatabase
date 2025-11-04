@@ -7,11 +7,11 @@ namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 
 /// <summary>
 /// Tenant repository implementation
-/// Uses TenantDbContext (Master DB)
+/// Uses MainDbContext (Master DB)
 /// </summary>
 public class TenantRepository : Repository<Tenant>, ITenantRepository
 {
-    public TenantRepository(TenantDbContext context) : base(context)
+    public TenantRepository(MainDbContext context) : base(context)
     {
     }
 

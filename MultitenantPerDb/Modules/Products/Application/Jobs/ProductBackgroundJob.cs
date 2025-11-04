@@ -1,5 +1,5 @@
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
-using MultitenantPerDb.Modules.Products.Domain.Repositories;
+using MultitenantPerDb.Modules.Products.Application.Services;
 using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 using MultitenantPerDb.Shared.Kernel.Infrastructure;
@@ -38,16 +38,13 @@ public class ProductBackgroundJob
         await backgroundJobService.ExecuteJobAsync(tenantId, async (serviceProvider) =>
         {
             // Scope ve TenantId otomatik yönetiliyor - sadece iş mantığını yaz
-            var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
-            var repository = unitOfWork.GetRepository<IProductRepository>();
+            var productService = serviceProvider.GetRequiredService<IProductService>();
 
-            var product = await repository.GetByIdAsync(productId);
+            var product = await productService.GetByIdAsync(productId);
             if (product != null)
             {
-                // DDD business method kullan
-                product.UpdateStock(newStock);
-                repository.Update(product);
-                await unitOfWork.SaveChangesAsync();
+                // ProductService handles business logic and validation
+                await productService.UpdateStockAsync(productId, newStock - product.Stock);
 
                 _logger.LogInformation("Ürün stoku güncellendi: ProductId={ProductId}, NewStock={NewStock}", productId, newStock);
             }
@@ -65,9 +62,9 @@ public class ProductBackgroundJob
         using var scope = _serviceScopeFactory.CreateScope();
         
         // Tenant listesini al
-        var tenantDbContext = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
+        var mainDbContext = scope.ServiceProvider.GetRequiredService<MainDbContext>();
         var tenants = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
-            .ToListAsync(tenantDbContext.Tenants.Where(t => t.IsActive));
+            .ToListAsync(mainDbContext.Tenants.Where(t => t.IsActive));
 
         foreach (var tenant in tenants)
         {
@@ -91,10 +88,9 @@ public class ProductBackgroundJob
 
         await backgroundJobService.ExecuteJobAsync(tenantId, async (serviceProvider) =>
         {
-            var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
-            var repository = unitOfWork.GetRepository<IProductRepository>();
+            var productService = serviceProvider.GetRequiredService<IProductService>();
 
-            var lowStockProducts = await repository.FindAsync(p => p.Stock < 10);
+            var lowStockProducts = await productService.GetLowStockProductsAsync(threshold: 10);
             
             if (lowStockProducts.Any())
             {

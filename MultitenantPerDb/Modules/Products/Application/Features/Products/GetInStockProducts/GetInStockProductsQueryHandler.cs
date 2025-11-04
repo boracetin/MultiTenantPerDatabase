@@ -1,33 +1,31 @@
 using MediatR;
+using MapsterMapper;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
-using MultitenantPerDb.Modules.Products.Domain.Repositories;
-using MultitenantPerDb.Shared.Kernel.Domain;
+using MultitenantPerDb.Modules.Products.Application.Services;
 
 namespace MultitenantPerDb.Modules.Products.Application.Features.Products.GetInStockProducts;
 
 /// <summary>
 /// Handler for GetInStockProductsQuery
-/// Uses DTO projection with predicate filtering
+/// Uses IProductService for business logic
 /// </summary>
 public class GetInStockProductsQueryHandler : IRequestHandler<GetInStockProductsQuery, List<ProductDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IProductService _productService;
+    private readonly IMapper _mapper;
 
-    public GetInStockProductsQueryHandler(IUnitOfWork unitOfWork)
+    public GetInStockProductsQueryHandler(IProductService productService, IMapper mapper)
     {
-        _unitOfWork = unitOfWork;
+        _productService = productService;
+        _mapper = mapper;
     }
 
     public async Task<List<ProductDto>> Handle(GetInStockProductsQuery request, CancellationToken cancellationToken)
     {
-        var repository = _unitOfWork.GetRepository<IProductRepository>();
-        
-        // ✅ EFFICIENT - DTO projection with predicate
-        var products = await repository.FindAsync<ProductDto>(
-            p => p.Stock > 0, 
-            cancellationToken
-        );
+        // ✅ ProductService handles the query
+        var products = await _productService.GetInStockProductsAsync(cancellationToken);
 
-        return products.ToList();
+        // Map to DTOs
+        return _mapper.Map<List<ProductDto>>(products);
     }
 }

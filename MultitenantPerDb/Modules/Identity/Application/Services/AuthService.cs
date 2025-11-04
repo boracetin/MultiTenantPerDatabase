@@ -11,20 +11,20 @@ using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 namespace MultitenantPerDb.Modules.Identity.Application.Services;
 
 /// <summary>
-/// Authentication service implementation
+/// Authentication service implementation (DEPRECATED)
 /// </summary>
 public class AuthService : IAuthService
 {
-    private readonly TenantDbContext _tenantDbContext;
+    private readonly MainDbContext _mainDbContext;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthService> _logger;
 
     public AuthService(
-        TenantDbContext tenantDbContext,
+        MainDbContext mainDbContext,
         IConfiguration configuration,
         ILogger<AuthService> logger)
     {
-        _tenantDbContext = tenantDbContext;
+        _mainDbContext = mainDbContext;
         _configuration = configuration;
         _logger = logger;
     }

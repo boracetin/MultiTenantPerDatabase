@@ -3,7 +3,6 @@ using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
 using MultitenantPerDb.Modules.Identity.Domain.Entities;
-using MultitenantPerDb.Modules.Identity.Domain.Repositories;
 using MultitenantPerDb.Modules.Tenancy.Domain.Repositories;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
@@ -15,7 +14,7 @@ namespace MultitenantPerDb.Modules.Identity.Application.Features.Auth.Login;
 /// Handler for LoginCommand with subdomain-based tenant resolution
 /// Login Flow:
 /// 1. Extract subdomain from request (via TenantResolver)
-/// 2. Query Master DB (TenantDbContext) to find Tenant by subdomain
+/// 2. Query Master DB (MainDbContext) to find Tenant by subdomain
 /// 3. Create ApplicationDbContext with tenant's connection string
 /// 4. Query User from tenant-specific database
 /// 5. Validate password

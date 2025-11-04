@@ -4,13 +4,13 @@ using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 
 /// <summary>
-/// TenantDbContext - Master DB - Only tenant metadata
+/// MainDbContext - Master DB - Only tenant metadata
 /// Contains: Tenant configurations, connection strings, branding settings
 /// Does NOT contain: Users (moved to ApplicationDbContext)
 /// </summary>
-public class TenantDbContext : DbContext
+public class MainDbContext : DbContext
 {
-    public TenantDbContext(DbContextOptions<TenantDbContext> options) : base(options)
+    public MainDbContext(DbContextOptions<MainDbContext> options) : base(options)
     {
     }
 

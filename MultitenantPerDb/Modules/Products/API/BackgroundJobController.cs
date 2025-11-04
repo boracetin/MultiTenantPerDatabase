@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MultitenantPerDb.Shared.Kernel.Infrastructure;
 using MultitenantPerDb.Modules.Products.Application.Jobs;
-using MultitenantPerDb.Modules.Products.Domain.Repositories;
+using MultitenantPerDb.Modules.Products.Application.Services;
 using MultitenantPerDb.Shared.Kernel.Domain;
 
 namespace MultitenantPerDb.Modules.Products.API;
@@ -109,11 +109,10 @@ public class BackgroundJobController : ControllerBase
             // Generic wrapper ile sonuç döndür
             var totalStock = await _backgroundJobService.ExecuteJobAsync<int>(tenantContext.TenantId, async (serviceProvider) =>
             {
-                var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
-                var repository = unitOfWork.GetRepository<IProductRepository>();
+                var productService = serviceProvider.GetRequiredService<IProductService>();
                 
-                var products = await repository.GetAllAsync();
-                return products.Sum(p => p.Stock);
+                var pagedProducts = await productService.GetProductsPagedAsync(1, 10000);
+                return pagedProducts.Items.Sum(p => p.Stock);
             });
 
             return Ok(new 

@@ -47,9 +47,12 @@ public class IdentityModule : ModuleBase
         // Authentication service (DEPRECATED - use LoginCommandHandler instead)
         services.AddScoped<Application.Services.IAuthService, Application.Services.AuthService>();
         
-        // NOTE: UserRepository NOT registered in DI anymore
-        // Users are now tenant-specific and created per-request in LoginCommandHandler
-        // Each tenant has its own ApplicationDbContext with different connection string
+        // User Service - Business logic for user operations
+        // Uses Repository<User> for data access
+        services.AddScoped<Application.Services.IUserService, Application.Services.UserService>();
+        
+        // NOTE: Repository<User> is registered in Shared.Kernel but requires ApplicationDbContext per tenant
+        // ApplicationDbContext is tenant-specific and created with tenant's connection string
     }
 
     public override void ConfigureMiddleware(IApplicationBuilder app)

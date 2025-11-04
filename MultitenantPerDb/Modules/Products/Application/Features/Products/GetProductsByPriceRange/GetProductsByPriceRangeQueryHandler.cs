@@ -1,33 +1,35 @@
 using MediatR;
+using MapsterMapper;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
-using MultitenantPerDb.Modules.Products.Domain.Repositories;
-using MultitenantPerDb.Shared.Kernel.Domain;
+using MultitenantPerDb.Modules.Products.Application.Services;
 
 namespace MultitenantPerDb.Modules.Products.Application.Features.Products.GetProductsByPriceRange;
 
 /// <summary>
 /// Handler for GetProductsByPriceRangeQuery
-/// Uses DTO projection with price range filtering
+/// Uses IProductService for business logic
 /// </summary>
 public class GetProductsByPriceRangeQueryHandler : IRequestHandler<GetProductsByPriceRangeQuery, List<ProductDto>>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IProductService _productService;
+    private readonly IMapper _mapper;
 
-    public GetProductsByPriceRangeQueryHandler(IUnitOfWork unitOfWork)
+    public GetProductsByPriceRangeQueryHandler(IProductService productService, IMapper mapper)
     {
-        _unitOfWork = unitOfWork;
+        _productService = productService;
+        _mapper = mapper;
     }
 
     public async Task<List<ProductDto>> Handle(GetProductsByPriceRangeQuery request, CancellationToken cancellationToken)
     {
-        var repository = _unitOfWork.GetRepository<IProductRepository>();
-        
-        // ✅ EFFICIENT - DTO projection with price range filter
-        var products = await repository.FindAsync<ProductDto>(
-            p => p.Price >= request.MinPrice && p.Price <= request.MaxPrice,
-            cancellationToken
+        // ✅ ProductService handles the query
+        var products = await _productService.GetProductsByPriceRangeAsync(
+            minPrice: request.MinPrice,
+            maxPrice: request.MaxPrice,
+            cancellationToken: cancellationToken
         );
 
-        return products.ToList();
+        // Map to DTOs
+        return _mapper.Map<List<ProductDto>>(products);
     }
 }

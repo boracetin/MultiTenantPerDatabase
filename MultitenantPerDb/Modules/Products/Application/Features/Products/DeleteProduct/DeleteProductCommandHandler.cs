@@ -1,36 +1,30 @@
 using MediatR;
-using MultitenantPerDb.Modules.Products.Domain.Repositories;
-using MultitenantPerDb.Shared.Kernel.Domain;
+using MultitenantPerDb.Modules.Products.Application.Services;
 
 namespace MultitenantPerDb.Modules.Products.Application.Features.Products.DeleteProduct;
 
 /// <summary>
 /// Handler for DeleteProductCommand
+/// Uses IProductService for business logic
 /// </summary>
 public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand, bool>
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IProductService _productService;
 
-    public DeleteProductCommandHandler(IUnitOfWork unitOfWork)
+    public DeleteProductCommandHandler(IProductService productService)
     {
-        _unitOfWork = unitOfWork;
+        _productService = productService;
     }
 
     public async Task<bool> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
     {
-        var repository = _unitOfWork.GetRepository<IProductRepository>();
-        
-        // Get existing product
-        var product = await repository.GetByIdAsync(request.Id, cancellationToken);
-        if (product == null)
+        try
+        {
+            return await _productService.DeleteProductAsync(request.Id, cancellationToken);
+        }
+        catch (InvalidOperationException)
         {
             return false;
         }
-
-        // Delete product
-        repository.Remove(product);
-        await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return true;
     }
 }
