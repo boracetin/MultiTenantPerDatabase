@@ -32,35 +32,17 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
         var stopwatch = Stopwatch.StartNew();
 
-        try
-        {
-            var response = await next();
+        var response = await next();
 
-            stopwatch.Stop();
+        stopwatch.Stop();
 
-            _logger.LogInformation(
-                "[END] {RequestName} - Request ID: {RequestId} - Elapsed: {ElapsedMs}ms",
-                requestName,
-                requestId,
-                stopwatch.ElapsedMilliseconds
-            );
+        _logger.LogInformation(
+            "[END] {RequestName} - Request ID: {RequestId} - Elapsed: {ElapsedMs}ms",
+            requestName,
+            requestId,
+            stopwatch.ElapsedMilliseconds
+        );
 
-            return response;
-        }
-        catch (Exception ex)
-        {
-            stopwatch.Stop();
-
-            _logger.LogError(
-                ex,
-                "[ERROR] {RequestName} - Request ID: {RequestId} - Elapsed: {ElapsedMs}ms - Error: {ErrorMessage}",
-                requestName,
-                requestId,
-                stopwatch.ElapsedMilliseconds,
-                ex.Message
-            );
-
-            throw;
-        }
+        return response;
     }
 }

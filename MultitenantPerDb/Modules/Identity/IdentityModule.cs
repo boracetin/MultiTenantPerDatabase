@@ -25,13 +25,15 @@ public class IdentityModule : ModuleBase
             cfg.RegisterServicesFromAssembly(assembly);
             
             // Register pipeline behaviors (order matters!)
-            // 1. Logging - Log everything first
+            // 1. Exception Handling - Catch all exceptions first (outermost)
+            cfg.AddOpenBehavior(typeof(ExceptionHandlingBehavior<,>));
+            // 2. Logging - Log everything
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
-            // 2. Validation - Validate before processing
+            // 3. Validation - Validate before processing
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
-            // 3. Caching - Check cache before executing
+            // 4. Caching - Check cache before executing
             cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
-            // 4. Transaction - Multiple contexts supported
+            // 5. Transaction - Multiple contexts supported
             // - MainDbContext: Login, tenant validation operations
             cfg.AddOpenBehavior(typeof(MainDbTransactionBehavior<,>));
             // - ApplicationDbContext: User CRUD operations (tenant-specific)
