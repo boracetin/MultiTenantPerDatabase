@@ -32,7 +32,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>
         return _context;
     }
 
-    public IRepository<TEntity> GetGenericRepository<TEntity>() where TEntity : BaseEntity
+    public IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
     {
         var repositoryType = typeof(IRepository<TEntity>);
 

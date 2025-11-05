@@ -11,11 +11,11 @@ public interface IUnitOfWork<TDbContext> : IDisposable
     where TDbContext : DbContext
 {
     /// <summary>
-    /// Gets a generic Repository<TEntity> for entity TEntity
+    /// Gets a Repository<TEntity> for entity TEntity
     /// TEntity: Entity type (Product, User, Tenant, etc.)
     /// Works with any DbContext injected via factory
     /// </summary>
-    IRepository<TEntity> GetGenericRepository<TEntity>() where TEntity : BaseEntity;
+    IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity;
     
     /// <summary>
     /// Saves all changes to the database

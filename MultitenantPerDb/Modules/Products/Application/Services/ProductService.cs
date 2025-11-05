@@ -27,7 +27,7 @@ public class ProductService : IProductService
     /// </summary>
     private IRepository<Product> GetRepository()
     {
-        return _unitOfWork.GetGenericRepository<Product>();
+        return _unitOfWork.GetRepository<Product>();
     }
 
     #region Query Methods

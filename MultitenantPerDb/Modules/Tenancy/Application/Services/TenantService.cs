@@ -26,7 +26,7 @@ public class TenantService : ITenantService
     /// </summary>
     private IRepository<Tenant> GetRepository()
     {
-        return _unitOfWork.GetGenericRepository<Tenant>();
+        return _unitOfWork.GetRepository<Tenant>();
     }
 
     #region Query Methods

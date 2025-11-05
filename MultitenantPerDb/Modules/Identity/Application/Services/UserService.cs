@@ -27,7 +27,7 @@ public class UserService : IUserService
     /// </summary>
     private IRepository<User> GetRepository()
     {
-        return _unitOfWork.GetGenericRepository<User>();
+        return _unitOfWork.GetRepository<User>();
     }
 
     #region Query Methods
