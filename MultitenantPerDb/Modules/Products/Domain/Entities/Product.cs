@@ -58,7 +58,6 @@ public class Product : BaseEntity, IAggregateRoot
         Name = name;
         Description = description ?? string.Empty;
         Price = price;
-        SetUpdatedAt();
 
         AddDomainEvent(new ProductUpdatedEvent(this));
     }
@@ -67,9 +66,7 @@ public class Product : BaseEntity, IAggregateRoot
     {
         if (Stock + quantity < 0)
             throw new InvalidOperationException("Insufficient stock");
-
         Stock += quantity;
-        SetUpdatedAt();
 
         AddDomainEvent(new ProductStockUpdatedEvent(this, quantity));
     }

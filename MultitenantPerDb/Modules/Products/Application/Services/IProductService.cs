@@ -1,5 +1,6 @@
 using MultitenantPerDb.Modules.Products.Application.DTOs;
 using MultitenantPerDb.Modules.Products.Domain.Entities;
+using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Shared.Kernel.Infrastructure;
 
 namespace MultitenantPerDb.Modules.Products.Application.Services;

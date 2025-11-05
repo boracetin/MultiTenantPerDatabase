@@ -15,7 +15,7 @@ public interface IUnitOfWork<TDbContext> : IDisposable
     /// TEntity: Entity type (Product, User, Tenant, etc.)
     /// Works with any DbContext injected via factory
     /// </summary>
-    IRepository<TEntity> GetGenericRepository<TEntity>() where TEntity : class;
+    IRepository<TEntity> GetGenericRepository<TEntity>() where TEntity : BaseEntity;
     
     /// <summary>
     /// Saves all changes to the database

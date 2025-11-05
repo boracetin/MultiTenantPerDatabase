@@ -197,8 +197,8 @@ public class UserService : IUserService
         if (user.IsActive)
             throw new InvalidOperationException("Cannot delete an active user. Deactivate the user first.");
 
-        // ✅ Soft delete if supported, otherwise hard delete
-        repository.SoftDelete(user);
+        // ✅ Soft delete - marks entity as deleted
+        repository.Delete(user);
         // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;

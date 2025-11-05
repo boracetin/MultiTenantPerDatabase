@@ -51,7 +51,6 @@ public class User : BaseEntity
             throw new InvalidOperationException("User is already active");
 
         IsActive = true;
-        SetUpdatedAt();
     }
 
     public void Deactivate()
@@ -60,7 +59,6 @@ public class User : BaseEntity
             throw new InvalidOperationException("User is already inactive");
 
         IsActive = false;
-        SetUpdatedAt();
     }
 
     public void ChangePassword(string newPasswordHash)
@@ -69,7 +67,7 @@ public class User : BaseEntity
             throw new ArgumentException("Password hash cannot be empty", nameof(newPasswordHash));
 
         PasswordHash = newPasswordHash;
-        SetUpdatedAt();
+        
     }
 
     public void UpdateEmail(string email)
@@ -78,7 +76,7 @@ public class User : BaseEntity
             throw new ArgumentException("Email cannot be empty", nameof(email));
 
         Email = email;
-        SetUpdatedAt();
+        
     }
 
     public void RaiseLoginEvent()

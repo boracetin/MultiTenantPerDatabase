@@ -28,7 +28,6 @@ public class BackgroundJobService : IBackgroundJobService
 
         var tenantId = httpContext.User.FindFirst("TenantId")?.Value;
         var userId = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        var username = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
 
         if (string.IsNullOrEmpty(tenantId))
         {
@@ -39,7 +38,6 @@ public class BackgroundJobService : IBackgroundJobService
         {
             TenantId = tenantId,
             UserId = userId,
-            Username = username
         };
     }
 

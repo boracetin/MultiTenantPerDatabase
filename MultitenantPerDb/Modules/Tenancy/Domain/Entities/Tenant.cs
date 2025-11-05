@@ -58,7 +58,7 @@ public class Tenant : BaseEntity, IAggregateRoot
             throw new InvalidOperationException("Tenant is already active");
 
         IsActive = true;
-        SetUpdatedAt();
+        
     }
 
     public void Deactivate()
@@ -67,7 +67,7 @@ public class Tenant : BaseEntity, IAggregateRoot
             throw new InvalidOperationException("Tenant is already inactive");
 
         IsActive = false;
-        SetUpdatedAt();
+        
     }
 
     public void UpdateConnectionString(string connectionString)
@@ -76,13 +76,13 @@ public class Tenant : BaseEntity, IAggregateRoot
             throw new ArgumentException("Connection string cannot be empty", nameof(connectionString));
 
         ConnectionString = connectionString;
-        SetUpdatedAt();
+        
     }
 
     public void UpdateSubdomain(string? subdomain)
     {
         Subdomain = subdomain?.ToLowerInvariant();
-        SetUpdatedAt();
+        
     }
 
     public void UpdateBranding(
@@ -100,7 +100,7 @@ public class Tenant : BaseEntity, IAggregateRoot
         if (secondaryColor != null) SecondaryColor = secondaryColor;
         if (customCss != null) CustomCss = customCss;
         
-        SetUpdatedAt();
+        
     }
 
     public void UpdateDetails(string name, string subdomain, string connectionString)
@@ -115,6 +115,6 @@ public class Tenant : BaseEntity, IAggregateRoot
         Subdomain = subdomain?.ToLowerInvariant();
         ConnectionString = connectionString;
         
-        SetUpdatedAt();
+        
     }
 }

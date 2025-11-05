@@ -211,8 +211,8 @@ public class ProductService : IProductService
         if (product == null)
             throw new InvalidOperationException($"Product with ID {productId} not found");
 
-        // ✅ Soft delete if supported, otherwise hard delete
-        repository.SoftDelete(product);
+        // ✅ Soft delete - marks entity as deleted
+        repository.Delete(product);
         // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;

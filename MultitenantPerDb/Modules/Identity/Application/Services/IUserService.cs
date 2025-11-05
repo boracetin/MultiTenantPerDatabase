@@ -1,5 +1,6 @@
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
 using MultitenantPerDb.Modules.Identity.Domain.Entities;
+using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Shared.Kernel.Infrastructure;
 
 namespace MultitenantPerDb.Modules.Identity.Application.Services;

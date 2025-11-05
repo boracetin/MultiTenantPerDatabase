@@ -9,7 +9,7 @@ namespace MultitenantPerDb.Shared.Kernel.Domain;
 /// TEntity: Entity type (Product, User, Tenant, etc.)
 /// Works with any DbContext (ApplicationDbContext, MainDbContext, etc.)
 /// </summary>
-public interface IRepository<TEntity> where TEntity : class
+public interface IRepository<TEntity> where TEntity : BaseEntity
 {
     #region Query Methods - Entity
     
@@ -112,19 +112,14 @@ public interface IRepository<TEntity> where TEntity : class
     void UpdateRange(IEnumerable<TEntity> entities);
     
     /// <summary>
-    /// Remove entity from repository
+    /// Soft delete - marks entity as deleted
     /// </summary>
-    void Remove(TEntity entity);
+    void Delete(TEntity entity);
     
     /// <summary>
-    /// Remove multiple entities from repository
+    /// Soft delete multiple entities - marks entities as deleted
     /// </summary>
-    void RemoveRange(IEnumerable<TEntity> entities);
-    
-    /// <summary>
-    /// Soft delete - marks entity as deleted (if supported)
-    /// </summary>
-    void SoftDelete(TEntity entity);
+    void DeleteRange(IEnumerable<TEntity> entities);
     
     #endregion
 

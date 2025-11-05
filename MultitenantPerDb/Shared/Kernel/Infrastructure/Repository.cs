@@ -10,7 +10,7 @@ namespace MultitenantPerDb.Shared.Kernel.Infrastructure;
 /// Supports efficient DTO projection using Mapster for optimized database queries
 /// Can work with any DbContext (TenantDbContext or ApplicationDbContext)
 /// </summary>
-public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
 {
     protected readonly DbContext _context;
     protected readonly DbSet<TEntity> _dbSet;
@@ -210,6 +210,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     /// </summary>
     public virtual async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default)
     {
+        entity.SetCreatedAt();
         await _dbSet.AddAsync(entity, cancellationToken);
     }
 
@@ -218,6 +219,10 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     /// </summary>
     public virtual async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken = default)
     {
+        foreach (var entity in entities)
+        {
+            entity.SetCreatedAt();
+        }
         await _dbSet.AddRangeAsync(entities, cancellationToken);
     }
 
@@ -226,6 +231,7 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     /// </summary>
     public virtual void Update(TEntity entity)
     {
+        entity.SetUpdatedAt();
         _dbSet.Update(entity);
     }
 
@@ -234,42 +240,32 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     /// </summary>
     public virtual void UpdateRange(IEnumerable<TEntity> entities)
     {
+        foreach (var entity in entities)
+        {
+            entity.SetUpdatedAt();
+        }
         _dbSet.UpdateRange(entities);
     }
 
     /// <summary>
-    /// Remove entity from repository
+    /// Soft delete - marks entity as deleted
     /// </summary>
-    public virtual void Remove(TEntity entity)
+    public virtual void Delete(TEntity entity)
     {
-        _dbSet.Remove(entity);
+        entity.SetDeleted();
+        _dbSet.Update(entity);
     }
 
     /// <summary>
-    /// Remove multiple entities from repository
+    /// Soft delete multiple entities - marks entities as deleted
     /// </summary>
-    public virtual void RemoveRange(IEnumerable<TEntity> entities)
+    public virtual void DeleteRange(IEnumerable<TEntity> entities)
     {
-        _dbSet.RemoveRange(entities);
-    }
-
-    /// <summary>
-    /// Soft delete - marks entity as deleted (if supported)
-    /// </summary>
-    public virtual void SoftDelete(TEntity entity)
-    {
-        // Check if entity has IsDeleted property
-        var isDeletedProperty = typeof(TEntity).GetProperty("IsDeleted");
-        if (isDeletedProperty != null && isDeletedProperty.PropertyType == typeof(bool))
+        foreach (var entity in entities)
         {
-            isDeletedProperty.SetValue(entity, true);
-            _dbSet.Update(entity);
+            entity.SetDeleted();
         }
-        else
-        {
-            // Fallback to hard delete
-            Remove(entity);
-        }
+        _dbSet.UpdateRange(entities);
     }
 
     #endregion
@@ -320,18 +316,4 @@ public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     }
 
     #endregion
-}
-
-/// <summary>
-/// Paged result model for pagination
-/// </summary>
-public class PagedResult<TEntity>
-{
-    public IEnumerable<TEntity> Items { get; set; } = new List<TEntity>();
-    public int TotalCount { get; set; }
-    public int PageNumber { get; set; }
-    public int PageSize { get; set; }
-    public int TotalPages { get; set; }
-    public bool HasPreviousPage => PageNumber > 1;
-    public bool HasNextPage => PageNumber < TotalPages;
 }

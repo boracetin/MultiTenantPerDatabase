@@ -194,8 +194,8 @@ public class TenantService : ITenantService
         if (tenant.IsActive)
             throw new InvalidOperationException("Cannot delete an active tenant. Deactivate the tenant first.");
 
-        // ✅ Soft delete if supported, otherwise hard delete
-        repository.SoftDelete(tenant);
+        // ✅ Soft delete - marks entity as deleted
+        repository.Delete(tenant);
         // Note: SaveChangesAsync is called by Handler via IUnitOfWork
 
         return true;
