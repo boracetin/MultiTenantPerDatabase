@@ -14,8 +14,9 @@ public interface IMainDbContextFactory : ITenantDbContextFactory<MainDbContext>
 /// <summary>
 /// Creates MainDbContext for master database operations
 /// No tenant resolution required - always uses master connection string
+/// Implements ICanAccessDbContext as infrastructure component creating DbContext
 /// </summary>
-public class MainDbContextFactory : IMainDbContextFactory, ITenantDbContextFactory<MainDbContext>
+public class MainDbContextFactory : IMainDbContextFactory, ITenantDbContextFactory<MainDbContext>, ICanAccessDbContext
 {
     private readonly IConfiguration _configuration;
 

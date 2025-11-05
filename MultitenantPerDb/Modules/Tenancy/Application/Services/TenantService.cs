@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
+using MultitenantPerDb.Shared.Kernel.Application;
 using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Shared.Kernel.Infrastructure;
 
@@ -10,14 +11,13 @@ namespace MultitenantPerDb.Modules.Tenancy.Application.Services;
 /// Tenant service implementation
 /// Uses IUnitOfWork<MainDbContext> to access Repository<Tenant> for data access
 /// UnitOfWork manages the MainDbContext and ensures single instance per request
+/// Inherits from BaseService to enforce ICanAccessUnitOfWork constraint
 /// </summary>
-public class TenantService : ITenantService
+public class TenantService : BaseService<MainDbContext>, ITenantService
 {
-    private readonly IUnitOfWork<MainDbContext> _unitOfWork;
-
     public TenantService(IUnitOfWork<MainDbContext> unitOfWork)
+        : base(unitOfWork)
     {
-        _unitOfWork = unitOfWork;
     }
 
     /// <summary>

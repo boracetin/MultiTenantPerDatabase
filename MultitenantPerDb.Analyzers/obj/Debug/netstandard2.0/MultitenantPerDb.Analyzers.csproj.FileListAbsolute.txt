@@ -1,0 +1,11 @@
+c:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb.Analyzers\obj\Debug\netstandard2.0\MultitenantPerDb.Analyzers.csproj.AssemblyReference.cache
+c:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb.Analyzers\obj\Debug\netstandard2.0\MultitenantPerDb.Analyzers.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb.Analyzers\obj\Debug\netstandard2.0\MultitenantPerDb.Analyzers.AssemblyInfoInputs.cache
+c:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb.Analyzers\obj\Debug\netstandard2.0\MultitenantPerDb.Analyzers.AssemblyInfo.cs
+c:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb.Analyzers\obj\Debug\netstandard2.0\MultitenantPerDb.Analyzers.csproj.CoreCompileInputs.cache
+c:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb.Analyzers\obj\Debug\netstandard2.0\MultitenantPerDb.Analyzers.sourcelink.json
+c:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb.Analyzers\bin\Debug\netstandard2.0\MultitenantPerDb.Analyzers.deps.json
+c:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb.Analyzers\bin\Debug\netstandard2.0\MultitenantPerDb.Analyzers.dll
+c:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb.Analyzers\bin\Debug\netstandard2.0\MultitenantPerDb.Analyzers.pdb
+c:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb.Analyzers\obj\Debug\netstandard2.0\MultitenantPerDb.Analyzers.dll
+c:\Users\borac\Desktop\DemoCodes\MultiTenantPerDatabase\MultitenantPerDb.Analyzers\obj\Debug\netstandard2.0\MultitenantPerDb.Analyzers.pdb

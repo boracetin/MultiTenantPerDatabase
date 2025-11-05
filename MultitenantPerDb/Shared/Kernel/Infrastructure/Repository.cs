@@ -9,8 +9,9 @@ namespace MultitenantPerDb.Shared.Kernel.Infrastructure;
 /// Generic repository implementation with advanced querying and projection capabilities
 /// Supports efficient DTO projection using Mapster for optimized database queries
 /// Can work with any DbContext (TenantDbContext or ApplicationDbContext)
+/// Implements ICanAccessDbContext to explicitly allow DbContext access
 /// </summary>
-public class Repository<TEntity> : IRepository<TEntity> where TEntity : BaseEntity
+public class Repository<TEntity> : IRepository<TEntity>, ICanAccessDbContext where TEntity : BaseEntity
 {
     protected readonly DbContext _context;
     protected readonly DbSet<TEntity> _dbSet;

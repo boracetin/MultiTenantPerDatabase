@@ -14,8 +14,9 @@ public interface IApplicationDbContextFactory : ITenantDbContextFactory<Applicat
 /// <summary>
 /// Creates ApplicationDbContext with tenant-specific connection string
 /// Resolves tenant from request (subdomain, JWT, header, or query string)
+/// Implements ICanAccessDbContext as infrastructure component creating DbContext
 /// </summary>
-public class ApplicationDbContextFactory : IApplicationDbContextFactory, ITenantDbContextFactory<ApplicationDbContext>
+public class ApplicationDbContextFactory : IApplicationDbContextFactory, ITenantDbContextFactory<ApplicationDbContext>, ICanAccessDbContext
 {
     private readonly ITenantResolver _tenantResolver;
     private readonly MainDbContext _mainDbContext;

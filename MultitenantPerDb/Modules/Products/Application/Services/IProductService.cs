@@ -9,7 +9,7 @@ namespace MultitenantPerDb.Modules.Products.Application.Services;
 /// Product service interface
 /// Handles business logic for product operations
 /// </summary>
-public interface IProductService
+public interface IProductService : ICanAccessUnitOfWork
 {
     // Query methods
     Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default);

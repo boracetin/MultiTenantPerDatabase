@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
 using MultitenantPerDb.Modules.Identity.Domain.Entities;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
+using MultitenantPerDb.Shared.Kernel.Application;
 using MultitenantPerDb.Shared.Kernel.Domain;
 using MultitenantPerDb.Shared.Kernel.Infrastructure;
 
@@ -11,14 +12,13 @@ namespace MultitenantPerDb.Modules.Identity.Application.Services;
 /// User service implementation
 /// Uses IUnitOfWork to access Repository<User> for data access
 /// UnitOfWork manages the ApplicationDbContext and ensures single instance per request
+/// Inherits from BaseService to enforce ICanAccessUnitOfWork constraint
 /// </summary>
-public class UserService : IUserService
+public class UserService : BaseService<ApplicationDbContext>, IUserService
 {
-    private readonly IUnitOfWork<ApplicationDbContext> _unitOfWork;
-
     public UserService(IUnitOfWork<ApplicationDbContext> unitOfWork)
+        : base(unitOfWork)
     {
-        _unitOfWork = unitOfWork;
     }
 
     /// <summary>

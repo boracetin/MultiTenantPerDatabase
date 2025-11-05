@@ -8,8 +8,9 @@ namespace MultitenantPerDb.Shared.Kernel.Infrastructure;
 /// Unit of Work implementation with generic TDbContext support
 /// Provides transaction management and repository creation for any DbContext
 /// Uses factory pattern for lazy DbContext initialization
+/// Implements ICanAccessDbContext to explicitly allow DbContext access
 /// </summary>
-public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>
+public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>, ICanAccessDbContext
     where TDbContext : DbContext
 {
     private readonly ITenantDbContextFactory<TDbContext> _dbContextFactory;

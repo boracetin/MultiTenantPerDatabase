@@ -12,19 +12,17 @@ namespace MultitenantPerDb.Modules.Identity.Application.Services;
 
 /// <summary>
 /// Authentication service implementation (DEPRECATED)
+/// Use LoginCommandHandler instead
 /// </summary>
 public class AuthService : IAuthService
 {
-    private readonly MainDbContext _mainDbContext;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthService> _logger;
 
     public AuthService(
-        MainDbContext mainDbContext,
         IConfiguration configuration,
         ILogger<AuthService> logger)
     {
-        _mainDbContext = mainDbContext;
         _configuration = configuration;
         _logger = logger;
     }

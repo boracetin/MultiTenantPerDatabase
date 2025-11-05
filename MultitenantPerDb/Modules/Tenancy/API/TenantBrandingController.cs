@@ -1,8 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Tenancy.Application.Features.Tenants.GetAllTenants;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
+using MultitenantPerDb.Modules.Tenancy.Application.Services;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 
 namespace MultitenantPerDb.Modules.Tenancy.API;
@@ -16,16 +15,16 @@ namespace MultitenantPerDb.Modules.Tenancy.API;
 [Route("api/[controller]")]
 public class TenantBrandingController : ControllerBase
 {
-    private readonly MainDbContext _mainDbContext;
+    private readonly ITenantService _tenantService;
     private readonly ITenantResolver _tenantResolver;
     private readonly IMediator _mediator;
 
     public TenantBrandingController(
-        MainDbContext mainDbContext, 
+        ITenantService tenantService,
         ITenantResolver tenantResolver,
         IMediator mediator)
     {
-        _mainDbContext = mainDbContext;
+        _tenantService = tenantService;
         _tenantResolver = tenantResolver;
         _mediator = mediator;
     }
@@ -62,22 +61,8 @@ public class TenantBrandingController : ControllerBase
             });
         }
 
-        // Find tenant by subdomain
-        var tenant = await _mainDbContext.Tenants
-            .Where(t => t.Subdomain == subdomain && t.IsActive)
-            .Select(t => new
-            {
-                t.Id,
-                t.Name,
-                t.Subdomain,
-                t.DisplayName,
-                t.LogoUrl,
-                t.BackgroundImageUrl,
-                t.PrimaryColor,
-                t.SecondaryColor,
-                t.CustomCss
-            })
-            .FirstOrDefaultAsync();
+        // Find tenant by subdomain using service
+        var tenant = await _tenantService.GetBySubdomainAsync(subdomain);
 
         if (tenant == null)
         {
@@ -109,21 +94,7 @@ public class TenantBrandingController : ControllerBase
     [HttpGet("by-subdomain/{subdomain}")]
     public async Task<IActionResult> GetBrandingBySubdomain(string subdomain)
     {
-        var tenant = await _mainDbContext.Tenants
-            .Where(t => t.Subdomain == subdomain.ToLower() && t.IsActive)
-            .Select(t => new
-            {
-                t.Id,
-                t.Name,
-                t.Subdomain,
-                t.DisplayName,
-                t.LogoUrl,
-                t.BackgroundImageUrl,
-                t.PrimaryColor,
-                t.SecondaryColor,
-                t.CustomCss
-            })
-            .FirstOrDefaultAsync();
+        var tenant = await _tenantService.GetBySubdomainAsync(subdomain.ToLower());
 
         if (tenant == null)
         {

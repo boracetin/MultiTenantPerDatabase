@@ -9,8 +9,9 @@ namespace MultitenantPerDb.Shared.Kernel.Application.Behaviors;
 /// Pipeline behavior for automatic transaction management with ApplicationDbContext
 /// Wraps commands in database transactions (queries are excluded)
 /// Used for tenant-specific operations (Products, Users, etc.)
+/// Implements ICanAccessUnitOfWork as infrastructure component managing transactions
 /// </summary>
-public class ApplicationDbTransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class ApplicationDbTransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>, ICanAccessUnitOfWork
     where TRequest : IRequest<TResponse>
 {
     private readonly IUnitOfWork<ApplicationDbContext> _unitOfWork;

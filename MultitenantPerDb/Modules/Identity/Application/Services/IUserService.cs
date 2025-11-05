@@ -9,7 +9,7 @@ namespace MultitenantPerDb.Modules.Identity.Application.Services;
 /// User business logic service
 /// Handles user-related operations with business rules and validation
 /// </summary>
-public interface IUserService
+public interface IUserService : ICanAccessUnitOfWork
 {
     // Query methods
     Task<User?> GetByIdAsync(int id, CancellationToken cancellationToken = default);

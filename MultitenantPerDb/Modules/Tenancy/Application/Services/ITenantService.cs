@@ -1,11 +1,12 @@
 using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
+using MultitenantPerDb.Shared.Kernel.Domain;
 
 namespace MultitenantPerDb.Modules.Tenancy.Application.Services;
 
 /// <summary>
 /// Tenant service interface for business operations
 /// </summary>
-public interface ITenantService
+public interface ITenantService : ICanAccessUnitOfWork
 {
     #region Query Methods
     
