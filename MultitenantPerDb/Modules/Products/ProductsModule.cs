@@ -30,11 +30,15 @@ public class ProductsModule : ModuleBase
             cfg.AddOpenBehavior(typeof(ExceptionHandlingBehavior<,>));
             // 2. Logging - Log everything
             cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
-            // 3. Validation - Validate before processing
+            // 3. Authorization - Check permissions and tenant isolation (SECURITY!)
+            cfg.AddOpenBehavior(typeof(AuthorizationBehavior<,>));
+            // 4. Rate Limiting - Prevent API abuse (SECURITY!)
+            cfg.AddOpenBehavior(typeof(RateLimitingBehavior<,>));
+            // 5. Validation - Validate before processing
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
-            // 4. Caching - Check cache before executing
+            // 6. Caching - Check cache before executing
             cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
-            // 5. Transaction - Wrap commands in transaction (with ApplicationDbContext)
+            // 7. Transaction - Wrap commands in transaction (with ApplicationDbContext, innermost)
             cfg.AddOpenBehavior(typeof(ApplicationDbTransactionBehavior<,>));
         });
         

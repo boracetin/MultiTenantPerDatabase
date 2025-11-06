@@ -1,0 +1,78 @@
+## Multi-Tenant Per Database - Root .gitignore
+## Applies to entire repository
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Roslyn Analyzers Output (MultitenantPerDb.Analyzers)
+# Analyzer DLL, PDB, and build artifacts
+MultitenantPerDb.Analyzers/bin/
+MultitenantPerDb.Analyzers/obj/
+*.Analyzers.dll
+*.Analyzers.pdb
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+
+# User-specific files
+*.rsuser
+
+# Environment specific settings
+appsettings.Production.json
+!appsettings.Production.example.json
+.env
+!.env.example
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+*.mdf
+*.ldf
+
+# Logs
+*.log
+[Ll]og/
+[Ll]ogs/
+
+# Test results
+[Tt]est[Rr]esult*/
+TestResult.xml
+*.trx
+
+# Coverage reports
+coverage/
+*.coverage
+*.coveragexml
+
+# Docker volumes (if any local data)
+.docker-data/
+
+# OS files
+.DS_Store
+Thumbs.db

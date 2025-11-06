@@ -110,6 +110,10 @@ builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
 // Encryption Service - TenantId encryption in JWT
 builder.Services.AddSingleton<MultitenantPerDb.Shared.Kernel.Infrastructure.Security.IEncryptionService, MultitenantPerDb.Shared.Kernel.Infrastructure.Security.AesEncryptionService>();
 
+// Security Services - Authorization & Rate Limiting
+builder.Services.AddScoped<MultitenantPerDb.Shared.Kernel.Application.Interfaces.ICurrentUserService, MultitenantPerDb.Shared.Kernel.Infrastructure.Services.CurrentUserService>();
+builder.Services.AddSingleton<MultitenantPerDb.Shared.Kernel.Application.Interfaces.IRateLimitService, MultitenantPerDb.Shared.Kernel.Infrastructure.Services.RateLimitService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,5 +1,6 @@
 using MediatR;
 using System.ComponentModel.DataAnnotations;
+using MultitenantPerDb.Shared.Kernel.Domain.Exceptions;
 
 namespace MultitenantPerDb.Shared.Kernel.Application.Behaviors;
 
@@ -36,9 +37,34 @@ public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<
             );
             throw; // Re-throw to be handled by ValidationBehavior or API layer
         }
+        catch (UnauthorizedException unauthorizedEx)
+        {
+            // Authorization errors - 403 Forbidden
+            _logger.LogWarning(
+                unauthorizedEx,
+                "[AUTHORIZATION ERROR] {RequestName} - Reason: {Reason} - {Message}",
+                typeof(TRequest).Name,
+                unauthorizedEx.Reason ?? "Unknown",
+                unauthorizedEx.Message
+            );
+            throw; // Re-throw to be handled by API middleware
+        }
+        catch (RateLimitExceededException rateLimitEx)
+        {
+            // Rate limit exceeded - 429 Too Many Requests
+            _logger.LogWarning(
+                rateLimitEx,
+                "[RATE LIMIT EXCEEDED] {RequestName} - Limit: {Limit}/{WindowSeconds}s - RetryAfter: {RetryAfter}s",
+                typeof(TRequest).Name,
+                rateLimitEx.Limit,
+                rateLimitEx.WindowSeconds,
+                rateLimitEx.RetryAfterSeconds
+            );
+            throw; // Re-throw to be handled by API middleware
+        }
         catch (UnauthorizedAccessException unauthorizedEx)
         {
-            // Authorization errors - 401/403
+            // Legacy authorization errors - 401 Unauthorized
             _logger.LogWarning(
                 unauthorizedEx,
                 "[UNAUTHORIZED] {RequestName} - {Message}",

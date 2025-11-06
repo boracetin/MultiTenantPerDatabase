@@ -1,0 +1,25 @@
+## Roslyn Analyzer Project - Ignore build outputs
+## These files are generated during build and should not be committed
+
+# Build outputs
+bin/
+obj/
+*.dll
+*.pdb
+*.exe
+
+# NuGet package outputs
+*.nupkg
+*.snupkg
+
+# Visual Studio cache/options
+.vs/
+*.user
+*.suo
+
+# Roslyn analyzer specific
+*.AnalyzerReleases.Shipped.md
+*.AnalyzerReleases.Unshipped.md
+
+# Keep only source code and project files
+# Commit: *.cs, *.csproj, README.md

@@ -407,3 +407,10 @@ appsettings.Production.json
 *.db
 *.db-shm
 *.db-wal
+
+# Roslyn Analyzers
+# Ignore analyzer build outputs that may be copied to main project
+*.Analyzers.dll
+*.Analyzers.pdb
+**/analyzers/**/*.dll
+**/analyzers/**/*.pdb
