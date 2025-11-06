@@ -12,13 +12,15 @@ namespace MultitenantPerDb.Modules.Products.Application.Services;
 /// Product service implementation
 /// Uses IUnitOfWork to access Repository<Product> for data access
 /// UnitOfWork manages the ApplicationDbContext and ensures single instance per request
-/// Inherits from BaseService to enforce ICanAccessUnitOfWork constraint
+/// Inherits from BaseService to enforce ICanAccessUnitOfWork constraint (checked by MTDB003 analyzer)
 /// </summary>
-public class ProductService : BaseService<ApplicationDbContext>, IProductService
+public class ProductService : BaseService, IProductService
 {
-    public ProductService(IUnitOfWork<ApplicationDbContext> unitOfWork) 
-        : base(unitOfWork)
+    private readonly IUnitOfWork<ApplicationDbContext> _unitOfWork;
+
+    public ProductService(IUnitOfWork<ApplicationDbContext> unitOfWork)
     {
+        _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }
 
     /// <summary>
