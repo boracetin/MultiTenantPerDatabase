@@ -1,4 +1,4 @@
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
+using MultitenantPerDb.Modules.Main.Tenancy.Infrastructure.Services;
 
 namespace MultitenantPerDb.Shared.Kernel.Infrastructure;
 

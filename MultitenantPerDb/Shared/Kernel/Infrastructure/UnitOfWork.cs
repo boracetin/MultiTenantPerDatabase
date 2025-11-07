@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
+using MultitenantPerDb.Modules.Main.Tenancy.Infrastructure.Services;
 using MultitenantPerDb.Shared.Kernel.Domain;
 
 namespace MultitenantPerDb.Shared.Kernel.Infrastructure;

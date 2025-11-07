@@ -1,5 +1,5 @@
 using MediatR;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
+using MultitenantPerDb.Modules.Main.Tenancy.Infrastructure.Persistence;
 using MultitenantPerDb.Shared.Kernel.Application.Abstractions;
 using MultitenantPerDb.Shared.Kernel.Domain;
 

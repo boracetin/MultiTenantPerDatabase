@@ -1,5 +1,5 @@
 using MultitenantPerDb.Shared.Kernel.Infrastructure;
-using MultitenantPerDb.Modules.Products.Domain.Services;
+using MultitenantPerDb.Modules.Application.Products.Domain.Services;
 using MultitenantPerDb.Shared.Kernel.Infrastructure.Services;
 using MultitenantPerDb.Shared.Kernel.Infrastructure.Services.Implementations;
 
