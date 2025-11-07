@@ -5,6 +5,11 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>false</InvariantGlobalization>
+    
+    <!-- MTDB004 analyzer hatasını build-breaking error olarak işaretle -->
+    <WarningsAsErrors>MTDB004</WarningsAsErrors>
+    <!-- Analyzer'ları zorla yükle -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
   </PropertyGroup>
 
   <ItemGroup>
