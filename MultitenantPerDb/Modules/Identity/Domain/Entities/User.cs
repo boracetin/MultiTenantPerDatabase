@@ -7,7 +7,7 @@ namespace MultitenantPerDb.Modules.Identity.Domain.Entities;
 /// User entity - Tenant-specific user (stored in tenant's own database)
 /// TenantId is implicit - determined by which database the user is stored in
 /// </summary>
-public class User : BaseEntity
+public class User : BaseEntity<int>
 {
     public string Username { get; private set; }
     public string Email { get; private set; }

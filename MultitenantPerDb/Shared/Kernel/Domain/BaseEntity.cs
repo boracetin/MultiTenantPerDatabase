@@ -1,13 +1,17 @@
 namespace MultitenantPerDb.Shared.Kernel.Domain;
 
 /// <summary>
-/// Base entity class for all domain entities
+/// Base entity class for all domain entities with generic Id type
 /// </summary>
-public abstract class BaseEntity: SoftDeleteAudited
+/// <typeparam name="T">Type of the entity identifier (int, Guid, string, etc.)</typeparam>
+public abstract class BaseEntity<T> : SoftDeleteAudited, IEntity
 {
-    public int Id { get; protected set; }
+    public T Id { get; protected set; } = default!;
     public DateTime CreatedAt { get; protected set; }
     public DateTime? UpdatedAt { get; protected set; }
+
+    // Explicit interface implementation for generic Id access
+    object IEntity.Id => Id!;
 
     private readonly List<IDomainEvent> _domainEvents = new();
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();

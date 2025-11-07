@@ -33,7 +33,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>, ICanAccessDbConte
         return _context;
     }
 
-    public IRepository<TEntity> GetRepository<TEntity>() where TEntity : BaseEntity
+    public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity
     {
         var repositoryType = typeof(IRepository<TEntity>);
 

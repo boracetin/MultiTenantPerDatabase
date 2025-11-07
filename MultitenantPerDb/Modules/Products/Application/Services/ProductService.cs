@@ -43,7 +43,7 @@ public class ProductService : BaseService, IProductService
     public async Task<ProductDto?> GetProductDtoByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var repository = GetRepository();
-        // ✅ Mapster projection - only DTO fields are queried
+        // ✅ Tip vermeden kullanım - overload sayesinde
         return await repository.GetByIdAsync<ProductDto>(id, cancellationToken);
     }
 

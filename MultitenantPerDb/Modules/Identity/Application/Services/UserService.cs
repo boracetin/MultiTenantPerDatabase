@@ -61,7 +61,7 @@ public class UserService : BaseService, IUserService
     public async Task<UserDto?> GetUserDtoByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var repository = GetRepository();
-        // ✅ Mapster projection - only DTO fields are queried
+        // ✅ Tip vermeden kullanım - overload sayesinde
         return await repository.GetByIdAsync<UserDto>(id, cancellationToken);
     }
 

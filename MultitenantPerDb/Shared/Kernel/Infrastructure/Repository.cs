@@ -11,7 +11,7 @@ namespace MultitenantPerDb.Shared.Kernel.Infrastructure;
 /// Can work with any DbContext (TenantDbContext or ApplicationDbContext)
 /// Implements ICanAccessDbContext to explicitly allow DbContext access
 /// </summary>
-public class Repository<TEntity> : IRepository<TEntity>, ICanAccessDbContext where TEntity : BaseEntity
+public class Repository<TEntity> : IRepository<TEntity>, ICanAccessDbContext where TEntity : class, IEntity
 {
     protected readonly DbContext _context;
     protected readonly DbSet<TEntity> _dbSet;
@@ -25,9 +25,17 @@ public class Repository<TEntity> : IRepository<TEntity>, ICanAccessDbContext whe
     #region Query Methods - Entity
 
     /// <summary>
-    /// Get entity by ID (primary key lookup)
+    /// Get entity by ID (primary key lookup) - Generic version
     /// </summary>
-    public virtual async Task<TEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public virtual async Task<TEntity?> GetByIdAsync<TId>(TId id, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet.FindAsync(new object[] { id! }, cancellationToken);
+    }
+
+    /// <summary>
+    /// Get entity by ID (primary key lookup) - Object version
+    /// </summary>
+    public virtual async Task<TEntity?> GetByIdAsync(object id, CancellationToken cancellationToken = default)
     {
         return await _dbSet.FindAsync(new object[] { id }, cancellationToken);
     }
@@ -102,14 +110,27 @@ public class Repository<TEntity> : IRepository<TEntity>, ICanAccessDbContext whe
     #region Query Methods - DTO Projection (Efficient)
 
     /// <summary>
-    /// Get entity by ID and project to DTO using Mapster
+    /// Get entity by ID and project to DTO using Mapster - Generic version
     /// Only selected fields are queried from database (SELECT optimization)
     /// </summary>
-    public virtual async Task<TDto?> GetByIdAsync<TDto>(int id, CancellationToken cancellationToken = default) 
+    public virtual async Task<TDto?> GetByIdAsync<TId, TDto>(TId id, CancellationToken cancellationToken = default) 
         where TDto : class
     {
         return await _dbSet
-            .Where(e => EF.Property<int>(e, "Id") == id)
+            .Where(e => EF.Property<TId>(e, "Id")!.Equals(id))
+            .ProjectToType<TDto>() // Mapster projection - only DTO fields in SELECT
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Get entity by ID and project to DTO using Mapster - Object version
+    /// Only selected fields are queried from database (SELECT optimization)
+    /// </summary>
+    public virtual async Task<TDto?> GetByIdAsync<TDto>(object id, CancellationToken cancellationToken = default) 
+        where TDto : class
+    {
+        return await _dbSet
+            .Where(e => ((IEntity)e).Id.Equals(id))
             .ProjectToType<TDto>() // Mapster projection - only DTO fields in SELECT
             .FirstOrDefaultAsync(cancellationToken);
     }

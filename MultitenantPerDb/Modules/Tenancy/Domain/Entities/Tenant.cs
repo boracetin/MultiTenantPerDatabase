@@ -7,7 +7,7 @@ namespace MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 /// Includes branding and customization settings for subdomain-based UI
 /// Note: Users are NOT in MainDbContext - they're in tenant-specific ApplicationDbContext
 /// </summary>
-public class Tenant : BaseEntity, IAggregateRoot
+public class Tenant : BaseEntity<int>, IAggregateRoot
 {
     public string Name { get; private set; }
     public string ConnectionString { get; private set; }

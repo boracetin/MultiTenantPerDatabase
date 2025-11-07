@@ -6,7 +6,7 @@ namespace MultitenantPerDb.Modules.Products.Domain.Entities;
 /// <summary>
 /// Product aggregate root
 /// </summary>
-public class Product : BaseEntity, IAggregateRoot
+public class Product : BaseEntity<int>, IAggregateRoot
 {
     public string Name { get; private set; }
     public string Description { get; private set; }

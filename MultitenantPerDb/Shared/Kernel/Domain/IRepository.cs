@@ -9,14 +9,19 @@ namespace MultitenantPerDb.Shared.Kernel.Domain;
 /// TEntity: Entity type (Product, User, Tenant, etc.)
 /// Works with any DbContext (ApplicationDbContext, MainDbContext, etc.)
 /// </summary>
-public interface IRepository<TEntity> where TEntity : BaseEntity
+public interface IRepository<TEntity> where TEntity : class, IEntity
 {
     #region Query Methods - Entity
     
     /// <summary>
-    /// Get entity by ID (primary key lookup)
+    /// Get entity by ID (primary key lookup) - Generic version
     /// </summary>
-    Task<TEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+    Task<TEntity?> GetByIdAsync<TId>(TId id, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Get entity by ID (primary key lookup) - Uses object type
+    /// </summary>
+    Task<TEntity?> GetByIdAsync(object id, CancellationToken cancellationToken = default);
     
     /// <summary>
     /// Get all entities with optional tracking
@@ -53,10 +58,16 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
     #region Query Methods - DTO Projection (Efficient)
     
     /// <summary>
-    /// Get entity by ID and project to DTO using Mapster
+    /// Get entity by ID and project to DTO using Mapster - Generic version
     /// Only selected fields are queried from database (SELECT optimization)
     /// </summary>
-    Task<TDto?> GetByIdAsync<TDto>(int id, CancellationToken cancellationToken = default) where TDto : class;
+    Task<TDto?> GetByIdAsync<TId, TDto>(TId id, CancellationToken cancellationToken = default) where TDto : class;
+    
+    /// <summary>
+    /// Get entity by ID and project to DTO using Mapster - Object version
+    /// Only selected fields are queried from database (SELECT optimization)
+    /// </summary>
+    Task<TDto?> GetByIdAsync<TDto>(object id, CancellationToken cancellationToken = default) where TDto : class;
     
     /// <summary>
     /// Get all entities projected to DTO using Mapster
