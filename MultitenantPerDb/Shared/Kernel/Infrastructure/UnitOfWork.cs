@@ -33,20 +33,22 @@ public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>, ICanAccessDbConte
         return _context;
     }
 
-    public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity
+    public IRepository<TEntity, TId> GetRepository<TEntity, TId>() 
+        where TEntity : class, IEntity<TId> 
+        where TId : IEquatable<TId>
     {
-        var repositoryType = typeof(IRepository<TEntity>);
+        var repositoryType = typeof(IRepository<TEntity, TId>);
 
         if (_repositories.ContainsKey(repositoryType))
         {
-            return (IRepository<TEntity>)_repositories[repositoryType];
+            return (IRepository<TEntity, TId>)_repositories[repositoryType];
         }
 
         // Get DbContext (can be any DbContext: ApplicationDbContext, MainDbContext, etc.)
         var context = GetOrCreateContextAsync().GetAwaiter().GetResult();
 
-        // Create Repository<TEntity> instance with generic DbContext
-        var repositoryInstance = new Repository<TEntity>(context);
+        // Create Repository<TEntity, TId> instance with generic DbContext
+        var repositoryInstance = new Repository<TEntity, TId>(context);
 
         _repositories.Add(repositoryType, repositoryInstance);
         return repositoryInstance;

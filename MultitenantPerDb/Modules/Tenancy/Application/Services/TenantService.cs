@@ -23,12 +23,12 @@ public class TenantService : BaseService, ITenantService
     }
 
     /// <summary>
-    /// Gets Repository<Tenant> from UnitOfWork
+    /// Gets Repository<Tenant, int> from UnitOfWork
     /// UnitOfWork ensures same context instance is used for all repositories
     /// </summary>
-    private IRepository<Tenant> GetRepository()
+    private IRepository<Tenant, int> GetRepository()
     {
-        return _unitOfWork.GetRepository<Tenant>();
+        return _unitOfWork.GetRepository<Tenant, int>();
     }
 
     #region Query Methods

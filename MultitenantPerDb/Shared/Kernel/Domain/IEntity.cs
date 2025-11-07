@@ -4,9 +4,9 @@ namespace MultitenantPerDb.Shared.Kernel.Domain;
 /// Marker interface for all entities
 /// Used as generic constraint for Repository and UnitOfWork
 /// </summary>
-public interface IEntity
+public interface IEntity<T>
 {
-    object Id { get; }
+    T Id { get; }
     DateTime CreatedAt { get; }
     DateTime? UpdatedAt { get; }
     void SetUpdatedAt();

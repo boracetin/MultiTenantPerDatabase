@@ -24,12 +24,12 @@ public class UserService : BaseService, IUserService
     }
 
     /// <summary>
-    /// Gets Repository<User> from UnitOfWork
+    /// Gets Repository<User, int> from UnitOfWork
     /// UnitOfWork ensures same context instance is used for all repositories
     /// </summary>
-    private IRepository<User> GetRepository()
+    private IRepository<User, int> GetRepository()
     {
-        return _unitOfWork.GetRepository<User>();
+        return _unitOfWork.GetRepository<User, int>();
     }
 
     #region Query Methods

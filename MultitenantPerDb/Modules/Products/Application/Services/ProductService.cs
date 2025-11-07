@@ -24,12 +24,12 @@ public class ProductService : BaseService, IProductService
     }
 
     /// <summary>
-    /// Gets Repository<Product> from UnitOfWork
+    /// Gets Repository<Product, int> from UnitOfWork
     /// UnitOfWork ensures same context instance is used for all repositories
     /// </summary>
-    private IRepository<Product> GetRepository()
+    private IRepository<Product, int> GetRepository()
     {
-        return _unitOfWork.GetRepository<Product>();
+        return _unitOfWork.GetRepository<Product, int>();
     }
 
     #region Query Methods

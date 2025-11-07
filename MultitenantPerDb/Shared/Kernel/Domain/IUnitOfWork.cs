@@ -11,11 +11,14 @@ public interface IUnitOfWork<TDbContext> : IDisposable
     where TDbContext : DbContext
 {
     /// <summary>
-    /// Gets a Repository<TEntity> for entity TEntity
+    /// Gets a Repository<TEntity, TId> for entity TEntity with primary key type TId
     /// TEntity: Entity type (Product, User, Tenant, etc.)
+    /// TId: Primary key type (int, Guid, string, etc.)
     /// Works with any DbContext injected via factory
     /// </summary>
-    IRepository<TEntity> GetRepository<TEntity>() where TEntity : class, IEntity;
+    IRepository<TEntity, TId> GetRepository<TEntity, TId>() 
+        where TEntity : class, IEntity<TId> 
+        where TId : IEquatable<TId>;
     
     /// <summary>
     /// Saves all changes to the database
