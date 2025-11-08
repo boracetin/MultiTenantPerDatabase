@@ -2,7 +2,7 @@ using MediatR;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
 using MultitenantPerDb.Modules.Products.Application.Services;
 
-namespace MultitenantPerDb.Modules.Products.Application.Features.Products.UpdateProductStock;
+namespace MultitenantPerDb.Modules.Products.Application.Features.UpdateProductStock;
 
 /// <summary>
 /// Handler for UpdateProductStockCommand

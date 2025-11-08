@@ -3,7 +3,7 @@ using MapsterMapper;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
 using MultitenantPerDb.Modules.Products.Application.Services;
 
-namespace MultitenantPerDb.Modules.Products.Application.Features.Products.UpdateProduct;
+namespace MultitenantPerDb.Modules.Products.Application.Features.UpdateProduct;
 
 /// <summary>
 /// Handler for UpdateProductCommand

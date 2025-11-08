@@ -3,7 +3,7 @@ using MultitenantPerDb.Modules.Products.Application.DTOs;
 using MultitenantPerDb.Modules.Products.Application.Services;
 using MultitenantPerDb.Core.Infrastructure;
 
-namespace MultitenantPerDb.Modules.Products.Application.Features.Products.GetProducts;
+namespace MultitenantPerDb.Modules.Products.Application.Features.GetProducts;
 
 /// <summary>
 /// Handler for GetProductsQuery

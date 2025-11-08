@@ -1,6 +1,6 @@
 using FluentValidation;
 
-namespace MultitenantPerDb.Modules.Products.Application.Features.Products.CreateProduct;
+namespace MultitenantPerDb.Modules.Products.Application.Features.CreateProduct;
 
 /// <summary>
 /// Validator for CreateProductCommand

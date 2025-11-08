@@ -6,7 +6,7 @@ using MultitenantPerDb.Modules.Products.Domain.Entities;
 using MultitenantPerDb.Modules.Products.Domain.Services;
 using MultitenantPerDb.Core.Infrastructure.Services;
 
-namespace MultitenantPerDb.Modules.Products.Application.Features.Products.CreateProduct;
+namespace MultitenantPerDb.Modules.Products.Application.Features.CreateProduct;
 
 /// <summary>
 /// Handler for CreateProductCommand

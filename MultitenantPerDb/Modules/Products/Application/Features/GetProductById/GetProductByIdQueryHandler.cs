@@ -2,7 +2,7 @@ using MediatR;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
 using MultitenantPerDb.Modules.Products.Application.Services;
 
-namespace MultitenantPerDb.Modules.Products.Application.Features.Products.GetProductById;
+namespace MultitenantPerDb.Modules.Products.Application.Features.GetProductById;
 
 /// <summary>
 /// Handler for GetProductByIdQuery

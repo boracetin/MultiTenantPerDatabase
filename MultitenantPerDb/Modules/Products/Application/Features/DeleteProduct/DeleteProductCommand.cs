@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace MultitenantPerDb.Modules.Products.Application.Features.Products.DeleteProduct;
+namespace MultitenantPerDb.Modules.Products.Application.Features.DeleteProduct;
 
 /// <summary>
 /// Command to delete a product

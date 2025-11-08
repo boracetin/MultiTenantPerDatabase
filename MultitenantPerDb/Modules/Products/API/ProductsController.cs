@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
-using MultitenantPerDb.Modules.Products.Application.Features.Products.CreateProduct;
-using MultitenantPerDb.Modules.Products.Application.Features.Products.UpdateProduct;
-using MultitenantPerDb.Modules.Products.Application.Features.Products.DeleteProduct;
-using MultitenantPerDb.Modules.Products.Application.Features.Products.GetProductById;
-using MultitenantPerDb.Modules.Products.Application.Features.Products.GetProducts;
-using MultitenantPerDb.Modules.Products.Application.Features.Products.GetInStockProducts;
-using MultitenantPerDb.Modules.Products.Application.Features.Products.GetProductsByPriceRange;
+using MultitenantPerDb.Modules.Products.Application.Features.CreateProduct;
+using MultitenantPerDb.Modules.Products.Application.Features.UpdateProduct;
+using MultitenantPerDb.Modules.Products.Application.Features.DeleteProduct;
+using MultitenantPerDb.Modules.Products.Application.Features.GetProductById;
+using MultitenantPerDb.Modules.Products.Application.Features.GetProducts;
+using MultitenantPerDb.Modules.Products.Application.Features.GetInStockProducts;
+using MultitenantPerDb.Modules.Products.Application.Features.GetProductsByPriceRange;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
 
 namespace MultitenantPerDb.Modules.Products.API;

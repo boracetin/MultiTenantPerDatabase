@@ -3,7 +3,7 @@ using MultitenantPerDb.Modules.Products.Application.DTOs;
 using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Application.Interfaces;
 
-namespace MultitenantPerDb.Modules.Products.Application.Features.Products.CreateProduct;
+namespace MultitenantPerDb.Modules.Products.Application.Features.CreateProduct;
 
 /// <summary>
 /// Command to create a new product

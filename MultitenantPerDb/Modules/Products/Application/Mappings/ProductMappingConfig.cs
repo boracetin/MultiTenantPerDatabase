@@ -1,8 +1,8 @@
 using Mapster;
 using MultitenantPerDb.Modules.Products.Domain.Entities;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
-using MultitenantPerDb.Modules.Products.Application.Features.Products.CreateProduct;
-using MultitenantPerDb.Modules.Products.Application.Features.Products.UpdateProduct;
+using MultitenantPerDb.Modules.Products.Application.Features.CreateProduct;
+using MultitenantPerDb.Modules.Products.Application.Features.UpdateProduct;
 
 namespace MultitenantPerDb.Modules.Products.Application.Mappings;
 

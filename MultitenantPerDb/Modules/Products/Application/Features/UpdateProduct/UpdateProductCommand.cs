@@ -1,7 +1,7 @@
 using MediatR;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
 
-namespace MultitenantPerDb.Modules.Products.Application.Features.Products.UpdateProduct;
+namespace MultitenantPerDb.Modules.Products.Application.Features.UpdateProduct;
 
 /// <summary>
 /// Command to update an existing product
