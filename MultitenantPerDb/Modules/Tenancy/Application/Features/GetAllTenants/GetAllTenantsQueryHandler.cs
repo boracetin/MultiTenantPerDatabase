@@ -2,7 +2,7 @@ using MediatR;
 using MultitenantPerDb.Modules.Tenancy.Application.DTOs;
 using MultitenantPerDb.Modules.Tenancy.Application.Services;
 
-namespace MultitenantPerDb.Modules.Tenancy.Application.Features.Tenants.GetAllTenants;
+namespace MultitenantPerDb.Modules.Tenancy.Application.Features.GetAllTenants;
 
 /// <summary>
 /// Handler for GetAllTenantsQuery
