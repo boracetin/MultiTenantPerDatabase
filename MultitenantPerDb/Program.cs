@@ -2,9 +2,9 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using MultitenantPerDb.Shared.Kernel.Infrastructure;
-using MultitenantPerDb.Shared.Kernel.Domain;
-using MultitenantPerDb.Shared.Kernel.Application;
+using MultitenantPerDb.Core.Infrastructure;
+using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Core.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -108,11 +108,11 @@ builder.Services.AddScoped(typeof(IUnitOfWork<>), typeof(UnitOfWork<>));
 builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
 
 // Encryption Service - TenantId encryption in JWT
-builder.Services.AddSingleton<MultitenantPerDb.Shared.Kernel.Infrastructure.Security.IEncryptionService, MultitenantPerDb.Shared.Kernel.Infrastructure.Security.AesEncryptionService>();
+builder.Services.AddSingleton<MultitenantPerDb.Core.Infrastructure.Security.IEncryptionService, MultitenantPerDb.Core.Infrastructure.Security.AesEncryptionService>();
 
 // Security Services - Authorization & Rate Limiting
-builder.Services.AddScoped<MultitenantPerDb.Shared.Kernel.Application.Interfaces.ICurrentUserService, MultitenantPerDb.Shared.Kernel.Infrastructure.Services.CurrentUserService>();
-builder.Services.AddSingleton<MultitenantPerDb.Shared.Kernel.Application.Interfaces.IRateLimitService, MultitenantPerDb.Shared.Kernel.Infrastructure.Services.RateLimitService>();
+builder.Services.AddScoped<MultitenantPerDb.Core.Application.Interfaces.ICurrentUserService, MultitenantPerDb.Core.Infrastructure.Services.CurrentUserService>();
+builder.Services.AddSingleton<MultitenantPerDb.Core.Application.Interfaces.IRateLimitService, MultitenantPerDb.Core.Infrastructure.Services.RateLimitService>();
 
 var app = builder.Build();
 

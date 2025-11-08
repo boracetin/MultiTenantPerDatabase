@@ -1,0 +1,12 @@
+using MediatR;
+using MultitenantPerDb.Modules.Identity.Application.DTOs;
+using MultitenantPerDb.Core.Application.Abstractions;
+
+namespace MultitenantPerDb.Modules.Identity.Application.Features.Auth.Login;
+
+/// <summary>
+/// Command to login a user
+/// Uses MainDbContext to query tenant information
+/// Implements IMainDbTransactionalCommand to enable database transaction with MainDbContext
+/// </summary>
+public record LoginCommand(string Username, string Password) : IRequest<LoginResponseDto>, IMainDbTransactionalCommand;
