@@ -1,4 +1,4 @@
-namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
+namespace MultitenantPerDb.Core.Application.Abstractions;
 
 /// <summary>
 /// Background işlemler için tenant context wrapper

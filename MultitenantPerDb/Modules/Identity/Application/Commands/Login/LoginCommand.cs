@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
 using MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
 using MultitenantPerDb.Modules.Tenancy.Application.Services;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
+using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Infrastructure.Security;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Application.Interfaces;

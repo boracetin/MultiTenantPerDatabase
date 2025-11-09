@@ -3,6 +3,8 @@ using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Infrastructure;
 using MultitenantPerDb.Modules.Tenancy.Domain.Constants;
+using MultitenantPerDb.Core.Application.Abstractions;
+using MultitenantPerDb.Core.Infrastructure.Services;
 
 namespace MultitenantPerDb.Modules.Tenancy;
 
@@ -16,8 +18,8 @@ public class TenancyModule : ModuleBase
 
     public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
-        // Tenant resolution services
-        services.AddScoped<Infrastructure.Services.ITenantResolver, Infrastructure.Services.TenantResolver>();
+        // Tenant resolution services - MOVED TO CORE (registered in Program.cs)
+        // services.AddScoped<ITenantResolver, TenantResolver>();
         
         // Tenant service - Uses UnitOfWork<TenancyDbContext>
         services.AddScoped<Application.Services.ITenantService, Application.Services.TenantService>();

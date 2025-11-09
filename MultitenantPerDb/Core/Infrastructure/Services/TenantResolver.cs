@@ -1,7 +1,8 @@
 using System.Security.Claims;
+using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Infrastructure.Security;
 
-namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
+namespace MultitenantPerDb.Core.Infrastructure.Services;
 
 /// <summary>
 /// Resolves tenant ID from secure sources ONLY:

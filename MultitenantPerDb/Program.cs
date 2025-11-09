@@ -5,6 +5,8 @@ using Microsoft.OpenApi.Models;
 using MultitenantPerDb.Core.Infrastructure;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Application;
+using MultitenantPerDb.Core.Application.Abstractions;
+using MultitenantPerDb.Core.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +37,9 @@ builder.Services.AddCors(options =>
 
 // HttpContextAccessor - TenantResolver için gerekli
 builder.Services.AddHttpContextAccessor();
+
+// Tenant Resolver - CORE katmanında (tüm modüller kullanabilir)
+builder.Services.AddScoped<ITenantResolver, TenantResolver>();
 
 // JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
