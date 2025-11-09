@@ -116,6 +116,35 @@ builder.Services.AddSingleton<MultitenantPerDb.Core.Application.Interfaces.IRate
 
 var app = builder.Build();
 
+// ===============================================
+// AUTO-MIGRATE MODULES ON STARTUP
+// ===============================================
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    
+    try
+    {
+        logger.LogInformation("[STARTUP] Starting module migrations...");
+        
+        // Get all registered modules
+        var modules = services.GetServices<IModule>();
+        
+        foreach (var module in modules)
+        {
+            await module.MigrateAsync(services);
+        }
+        
+        logger.LogInformation("[STARTUP] All modules migrated successfully");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "[STARTUP] An error occurred during module migration");
+        throw; // Don't start application if migration fails
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
