@@ -34,8 +34,8 @@ public class IdentityModule : ModuleBase
             return factory.CreateDbContext();
         });
         
-        // ASP.NET Core Identity - Configure Identity services
-        services.AddIdentityCore<IdentityUser>(options =>
+        // ASP.NET Core Identity - Configure Identity services with Role support
+        services.AddIdentity<IdentityUser, IdentityRole>(options =>
         {
             // Password settings
             options.Password.RequireDigit = true;
@@ -49,9 +49,6 @@ public class IdentityModule : ModuleBase
         })
         .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
         .AddDefaultTokenProviders();
-        
-        // SignInManager for authentication
-        services.AddScoped<SignInManager<IdentityUser>>();
         
         // MediatR - Register all handlers in this module
         services.AddMediatR(cfg =>

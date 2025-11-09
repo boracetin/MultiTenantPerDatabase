@@ -8,7 +8,13 @@ using MultitenantPerDb.Core.Infrastructure.Security;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Application.Interfaces;
 
-namespace MultitenantPerDb.Modules.Identity.Application.Features.Auth.Login;
+namespace MultitenantPerDb.Modules.Identity.Application.Commands.Login;
+
+/// <summary>
+/// Command to login a user
+/// Uses TenancyDbContext to query tenant information
+/// </summary>
+public record LoginCommand(string Username, string Password) : IRequest<LoginResponseDto>;
 
 public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDto>
 {

@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
-using MultitenantPerDb.Modules.Identity.Application.Features.Auth.Login;
+using MultitenantPerDb.Modules.Identity.Application.Commands.Login;
+using MultitenantPerDb.Modules.Identity.Application.Commands.Role;
+using MultitenantPerDb.Modules.Identity.Application.Queries.Role;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
 using System.Security.Claims;
 
@@ -19,8 +21,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// User login with ASP.NET Core Identity
-    /// Returns JWT token with encrypted TenantId
+    /// Kullanıcı girişi yapar ve JWT token döner (TenantId claim'i içerir)
     /// </summary>
     [HttpPost("login")]
     [AllowAnonymous]
@@ -35,44 +36,5 @@ public class AuthController : ControllerBase
         {
             return Unauthorized(new { message = ex.Message });
         }
-    }
-
-    /// <summary>
-    /// Get current logged in user information (including TenantId)
-    /// Authorization: Bearer {token}
-    /// </summary>
-    [HttpGet("me")]
-    [Authorize]
-    public ActionResult<object> GetCurrentUser()
-    {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var username = User.FindFirst(ClaimTypes.Name)?.Value;
-        var email = User.FindFirst(ClaimTypes.Email)?.Value;
-        var tenantId = User.FindFirst("TenantId")?.Value;
-
-        return Ok(new
-        {
-            userId = userId,
-            username = username,
-            email = email,
-            tenantId = tenantId,
-            claims = User.Claims.Select(c => new { c.Type, c.Value })
-        });
-    }
-
-    /// <summary>
-    /// Test endpoint - Validates token
-    /// Authorization: Bearer {token}
-    /// </summary>
-    [HttpGet("test")]
-    [Authorize]
-    public ActionResult TestAuth()
-    {
-        return Ok(new
-        {
-            message = "Token is valid!",
-            user = User.Identity?.Name,
-            tenantId = User.FindFirst("TenantId")?.Value
-        });
     }
 }
