@@ -4,6 +4,7 @@ using MediatR;
 using MultitenantPerDb.Modules.Identity.Application.Commands.Login;
 using MultitenantPerDb.Modules.Identity.Application.Commands.Role;
 using MultitenantPerDb.Modules.Identity.Application.Queries.Role;
+using MultitenantPerDb.Modules.Identity.Application.Queries.Login;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
 using System.Security.Claims;
 
@@ -36,5 +37,23 @@ public class AuthController : ControllerBase
         {
             return Unauthorized(new { message = ex.Message });
         }
+    }
+
+    /// <summary>
+    /// Kimlik doğrulaması yapılmış kullanıcının bilgilerini döner
+    /// </summary>
+    [HttpGet("whoami")]
+    [Authorize]
+    public async Task<ActionResult<WhoAmIResult>> WhoAmI()
+    {
+        var query = new WhoAmIQuery();
+        var result = await _mediator.Send(query);
+
+        if (!result.Success)
+        {
+            return Unauthorized(result);
+        }
+
+        return Ok(result);
     }
 }
