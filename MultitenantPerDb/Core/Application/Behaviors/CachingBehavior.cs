@@ -1,5 +1,4 @@
 using MediatR;
-using Microsoft.Extensions.Caching.Memory;
 using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Application.Interfaces;
 using System.Text.Json;
@@ -10,21 +9,23 @@ namespace MultitenantPerDb.Core.Application.Behaviors;
 /// Pipeline behavior for caching query results
 /// Only caches queries implementing ICacheQuery interface
 /// Cache is tenant-aware - each tenant has separate cache entries
+/// Supports multiple cache providers (InMemory, Redis) via ICacheService
 /// </summary>
 public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
+    where TResponse : class
 {
-    private readonly IMemoryCache _cache;
+    private readonly ICacheService _cacheService;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<CachingBehavior<TRequest, TResponse>> _logger;
     private readonly TimeSpan _defaultCacheDuration = TimeSpan.FromMinutes(5);
 
     public CachingBehavior(
-        IMemoryCache cache,
+        ICacheService cacheService,
         ICurrentUserService currentUserService,
         ILogger<CachingBehavior<TRequest, TResponse>> logger)
     {
-        _cache = cache;
+        _cacheService = cacheService;
         _currentUserService = currentUserService;
         _logger = logger;
     }
@@ -53,7 +54,8 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         var cacheKey = GenerateCacheKey(request, tenantId, userId);
 
         // Try to get from cache
-        if (_cache.TryGetValue(cacheKey, out TResponse? cachedResponse) && cachedResponse != null)
+        var cachedResponse = await _cacheService.GetAsync<TResponse>(cacheKey, cancellationToken);
+        if (cachedResponse != null)
         {
             _logger.LogInformation("[CACHE HIT] {RequestName} - Tenant: {TenantId} - User: {UserId}", 
                 requestName, tenantId, userId);
@@ -72,11 +74,7 @@ public class CachingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
             : _defaultCacheDuration;
 
         // Cache the response
-        var cacheEntryOptions = new MemoryCacheEntryOptions()
-            .SetAbsoluteExpiration(cacheDuration)
-            .SetPriority(CacheItemPriority.Normal);
-
-        _cache.Set(cacheKey, response, cacheEntryOptions);
+        await _cacheService.SetAsync(cacheKey, response, cacheDuration, cancellationToken);
 
         _logger.LogInformation("[CACHE SET] {RequestName} - Tenant: {TenantId} - Duration: {Duration}",
             requestName, tenantId, cacheDuration);

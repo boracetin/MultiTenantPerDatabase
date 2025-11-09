@@ -11,8 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Memory Cache for caching pipeline behavior
-builder.Services.AddMemoryCache();
+// Cache Services - Factory pattern ile InMemory veya Redis
+builder.Services.AddCacheServices(builder.Configuration);
 
 // CORS Policy
 builder.Services.AddCors(options =>
