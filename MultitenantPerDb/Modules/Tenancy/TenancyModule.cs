@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Infrastructure;
+using MultitenantPerDb.Modules.Tenancy.Domain.Constants;
 
 namespace MultitenantPerDb.Modules.Tenancy;
 
@@ -16,18 +17,19 @@ public class TenancyModule : ModuleBase
     {
         // Tenant resolution services
         services.AddScoped<Infrastructure.Services.ITenantResolver, Infrastructure.Services.TenantResolver>();
-        services.AddScoped<Infrastructure.Services.IApplicationDbContextFactory, Infrastructure.Services.ApplicationDbContextFactory>();
         
-        // Generic factory registrations for UnitOfWork
-        services.AddScoped<ITenantDbContextFactory<ApplicationDbContext>, Infrastructure.Services.ApplicationDbContextFactory>();
-        services.AddScoped<ITenantDbContextFactory<MainDbContext>, Infrastructure.Services.MainDbContextFactory>();
-        
-        // Tenant service - Uses MainDbContext directly (not via UnitOfWork)
+        // Tenant service - Uses UnitOfWork<TenancyDbContext>
         services.AddScoped<Application.Services.ITenantService, Application.Services.TenantService>();
         
-        // Main database context (master database)
-        services.AddDbContext<MainDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("TenantConnection")));
+        // Factory for creating TenancyDbContext (master database)
+        services.AddScoped<ITenantDbContextFactory<TenancyDbContext>, Infrastructure.Services.TenancyDbContextFactory>();
+        
+        // TenancyDbContext registration via factory pattern
+        services.AddScoped<TenancyDbContext>(sp =>
+        {
+            var factory = sp.GetRequiredService<ITenantDbContextFactory<TenancyDbContext>>();
+            return factory.CreateDbContext();
+        });
     }
 
     public override void ConfigureMiddleware(IApplicationBuilder app)

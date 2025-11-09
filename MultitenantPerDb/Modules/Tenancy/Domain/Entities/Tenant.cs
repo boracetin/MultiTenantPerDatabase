@@ -5,7 +5,7 @@ namespace MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 /// <summary>
 /// Tenant aggregate root - Multi-tenancy için ana entity
 /// Includes branding and customization settings for subdomain-based UI
-/// Note: Users are NOT in MainDbContext - they're in tenant-specific ApplicationDbContext
+/// Note: Users are NOT in TenancyDbContext - they're in tenant-specific ApplicationDbContext
 /// </summary>
 public class Tenant : BaseEntity<int>, IAggregateRoot
 {

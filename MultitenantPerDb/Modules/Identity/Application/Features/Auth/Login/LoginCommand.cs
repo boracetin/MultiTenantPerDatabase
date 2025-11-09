@@ -6,7 +6,6 @@ namespace MultitenantPerDb.Modules.Identity.Application.Features.Auth.Login;
 
 /// <summary>
 /// Command to login a user
-/// Uses MainDbContext to query tenant information
-/// Implements IMainDbTransactionalCommand to enable database transaction with MainDbContext
+/// Uses TenancyDbContext to query tenant information
 /// </summary>
-public record LoginCommand(string Username, string Password) : IRequest<LoginResponseDto>, IMainDbTransactionalCommand;
+public record LoginCommand(string Username, string Password) : IRequest<LoginResponseDto>;

@@ -4,7 +4,10 @@ using MapsterMapper;
 using MediatR;
 using MultitenantPerDb.Core.Infrastructure;
 using MultitenantPerDb.Core.Application.Behaviors;
+using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Modules.Products.Application.Services;
+using MultitenantPerDb.Modules.Products.Infrastructure.Persistence;
+using MultitenantPerDb.Modules.Products.Infrastructure.Services;
 using System.Reflection;
 
 namespace MultitenantPerDb.Modules.Products;
@@ -19,6 +22,16 @@ public class ProductsModule : ModuleBase
     public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         var assembly = Assembly.GetExecutingAssembly();
+        
+        // DbContext Factory - Runtime'da tenant bazlı ProductsDbContext oluşturur
+        services.AddScoped<ITenantDbContextFactory<ProductsDbContext>, ProductsDbContextFactory>();
+        
+        // Register ProductsDbContext as scoped service using factory
+        services.AddScoped<ProductsDbContext>(sp =>
+        {
+            var factory = sp.GetRequiredService<ITenantDbContextFactory<ProductsDbContext>>();
+            return factory.CreateDbContext();
+        });
         
         // MediatR - Register all handlers in this module
         services.AddMediatR(cfg =>
@@ -38,8 +51,8 @@ public class ProductsModule : ModuleBase
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
             // 6. Caching - Check cache before executing
             cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
-            // 7. Transaction - Wrap commands in transaction (with ApplicationDbContext, innermost)
-            cfg.AddOpenBehavior(typeof(ApplicationDbTransactionBehavior<,>));
+            // 7. Distributed Transaction - Manage transactions across multiple databases (innermost)
+            cfg.AddOpenBehavior(typeof(DistributedTransactionBehavior<,>));
         });
         
         // FluentValidation - Register all validators in this module
@@ -55,11 +68,8 @@ public class ProductsModule : ModuleBase
         services.AddScoped<IProductNotificationService, ProductNotificationService>();
         
         // Product Service - Business logic for product operations
-        // Uses Repository<Product> for data access
+        // Uses Repository<Product> with ProductsDbContext for data access
         services.AddScoped<IProductService, Application.Services.ProductService>();
-        
-        // NOTE: Repository<Product> is registered in Shared.Kernel but requires ApplicationDbContext per tenant
-        // ApplicationDbContext is tenant-specific and created with tenant's connection string via TenantDbContextFactory
         
         // Product background jobs
         services.AddScoped<Application.Jobs.ProductBackgroundJob>();

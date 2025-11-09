@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using MultitenantPerDb.Modules.Identity.Application.Features.Auth.Login;
-using MultitenantPerDb.Modules.Identity.Application.Features.Auth.Register;
 using MultitenantPerDb.Modules.Identity.Application.DTOs;
 using System.Security.Claims;
 
@@ -20,7 +19,8 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Kullanıcı girişi yapar ve JWT token döner (TenantId claim'i içerir)
+    /// User login with ASP.NET Core Identity
+    /// Returns JWT token with encrypted TenantId
     /// </summary>
     [HttpPost("login")]
     [AllowAnonymous]
@@ -38,25 +38,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Yeni kullanıcı kaydı oluşturur
-    /// </summary>
-    [HttpPost("register")]
-    [AllowAnonymous]
-    public async Task<ActionResult<UserDto>> Register([FromBody] RegisterCommand command)
-    {
-        try
-        {
-            var user = await _mediator.Send(command);
-            return CreatedAtAction(nameof(GetCurrentUser), null, user);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
-    }
-
-    /// <summary>
-    /// Login olmuş kullanıcının bilgilerini döner (TenantId dahil)
+    /// Get current logged in user information (including TenantId)
     /// Authorization: Bearer {token}
     /// </summary>
     [HttpGet("me")]
@@ -79,7 +61,7 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Test endpoint - Token geçerliliğini kontrol eder
+    /// Test endpoint - Validates token
     /// Authorization: Bearer {token}
     /// </summary>
     [HttpGet("test")]
@@ -88,7 +70,7 @@ public class AuthController : ControllerBase
     {
         return Ok(new
         {
-            message = "Token geçerli!",
+            message = "Token is valid!",
             user = User.Identity?.Name,
             tenantId = User.FindFirst("TenantId")?.Value
         });

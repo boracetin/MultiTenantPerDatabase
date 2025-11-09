@@ -62,9 +62,9 @@ public class ProductBackgroundJob
         using var scope = _serviceScopeFactory.CreateScope();
         
         // Tenant listesini al
-        var mainDbContext = scope.ServiceProvider.GetRequiredService<MainDbContext>();
+        var tenancyDbContext = scope.ServiceProvider.GetRequiredService<TenancyDbContext>();
         var tenants = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions
-            .ToListAsync(mainDbContext.Tenants.Where(t => t.IsActive));
+            .ToListAsync(tenancyDbContext.Tenants.Where(t => t.IsActive));
 
         foreach (var tenant in tenants)
         {

@@ -2,14 +2,18 @@ using FluentValidation;
 using Mapster;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using MultitenantPerDb.Core.Infrastructure;
 using MultitenantPerDb.Core.Application.Behaviors;
+using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
+using MultitenantPerDb.Modules.Identity.Infrastructure.Services;
 using System.Reflection;
 
 namespace MultitenantPerDb.Modules.Identity;
 
 /// <summary>
-/// Identity Module - Handles authentication and user management
+/// Identity Module - Handles authentication with ASP.NET Core Identity
 /// </summary>
 public class IdentityModule : ModuleBase
 {
@@ -18,6 +22,36 @@ public class IdentityModule : ModuleBase
     public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         var assembly = Assembly.GetExecutingAssembly();
+        
+        // DbContext Factory - Runtime'da tenant bazlı ApplicationIdentityDbContext oluşturur
+        services.AddScoped<ITenantDbContextFactory<ApplicationIdentityDbContext>, IdentityDbContextFactory>();
+        
+        // Register ApplicationIdentityDbContext as scoped service using factory
+        // This allows ASP.NET Core Identity to resolve the DbContext
+        services.AddScoped<ApplicationIdentityDbContext>(sp =>
+        {
+            var factory = sp.GetRequiredService<ITenantDbContextFactory<ApplicationIdentityDbContext>>();
+            return factory.CreateDbContext();
+        });
+        
+        // ASP.NET Core Identity - Configure Identity services
+        services.AddIdentityCore<IdentityUser>(options =>
+        {
+            // Password settings
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequiredLength = 6;
+            
+            // User settings
+            options.User.RequireUniqueEmail = true;
+        })
+        .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
+        .AddDefaultTokenProviders();
+        
+        // SignInManager for authentication
+        services.AddScoped<SignInManager<IdentityUser>>();
         
         // MediatR - Register all handlers in this module
         services.AddMediatR(cfg =>
@@ -37,11 +71,8 @@ public class IdentityModule : ModuleBase
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
             // 6. Caching - Check cache before executing
             cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
-            // 7. Transaction - Multiple contexts supported
-            // - MainDbContext: Login, tenant validation operations
-            cfg.AddOpenBehavior(typeof(MainDbTransactionBehavior<,>));
-            // - ApplicationDbContext: User CRUD operations (tenant-specific, innermost)
-            cfg.AddOpenBehavior(typeof(ApplicationDbTransactionBehavior<,>));
+            // 7. Distributed Transaction - Manage transactions across multiple databases (innermost)
+            cfg.AddOpenBehavior(typeof(DistributedTransactionBehavior<,>));
         });
         
         // FluentValidation - Register all validators in this module
@@ -52,16 +83,6 @@ public class IdentityModule : ModuleBase
         config.Scan(assembly);
         services.AddSingleton(config);
         services.AddScoped<IMapper, ServiceMapper>();
-        
-        // Authentication service (DEPRECATED - use LoginCommandHandler instead)
-        services.AddScoped<Application.Services.IAuthService, Application.Services.AuthService>();
-        
-        // User Service - Business logic for user operations
-        // Uses Repository<User> for data access
-        services.AddScoped<Application.Services.IUserService, Application.Services.UserService>();
-        
-        // NOTE: Repository<User> is registered in Shared.Kernel but requires ApplicationDbContext per tenant
-        // ApplicationDbContext is tenant-specific and created with tenant's connection string
     }
 
     public override void ConfigureMiddleware(IApplicationBuilder app)

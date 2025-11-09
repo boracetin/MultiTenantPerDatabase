@@ -9,15 +9,15 @@ namespace MultitenantPerDb.Modules.Tenancy.Application.Services;
 
 /// <summary>
 /// Tenant service implementation
-/// Uses IUnitOfWork<MainDbContext> to access Repository<Tenant> for data access
-/// UnitOfWork manages the MainDbContext and ensures single instance per request
+/// Uses IUnitOfWork<TenancyDbContext> to access Repository<Tenant> for data access
+/// UnitOfWork manages the TenancyDbContext and ensures single instance per request
 /// Inherits from BaseService to enforce ICanAccessUnitOfWork constraint (checked by MTDB003 analyzer)
 /// </summary>
 public class TenantService : BaseService, ITenantService
 {
-    private readonly IUnitOfWork<MainDbContext> _unitOfWork;
+    private readonly IUnitOfWork<TenancyDbContext> _unitOfWork;
 
-    public TenantService(IUnitOfWork<MainDbContext> unitOfWork)
+    public TenantService(IUnitOfWork<TenancyDbContext> unitOfWork)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }

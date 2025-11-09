@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MultitenantPerDb.Modules.Products.Application.Jobs;
 using MultitenantPerDb.Modules.Products.Application.Services;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
+using MultitenantPerDb.Modules.Products.Infrastructure.Persistence;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Infrastructure;
 
@@ -79,7 +79,7 @@ public class BackgroundJobController : ControllerBase
             {
                 // İhtiyacınız olan servisleri alın
                 var logger = serviceProvider.GetRequiredService<ILogger<BackgroundJobController>>();
-                var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork<ApplicationDbContext>>();
+                var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork<ProductsDbContext>>();
                 
                 logger.LogInformation("Background işlem çalışıyor: TenantId={TenantId}", tenantContext.TenantId);
                 

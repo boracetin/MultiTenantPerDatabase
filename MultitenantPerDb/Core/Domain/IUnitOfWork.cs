@@ -3,11 +3,23 @@ using Microsoft.EntityFrameworkCore;
 namespace MultitenantPerDb.Core.Domain;
 
 /// <summary>
+/// Base interface for Unit of Work - non-generic transaction management
+/// Used by DistributedTransactionBehavior to manage multiple UnitOfWork instances
+/// </summary>
+public interface IUnitOfWorkBase
+{
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    Task BeginTransactionAsync(CancellationToken cancellationToken = default);
+    Task CommitTransactionAsync(CancellationToken cancellationToken = default);
+    Task RollbackTransactionAsync(CancellationToken cancellationToken = default);
+}
+
+/// <summary>
 /// Unit of Work interface for managing transactions and repositories
 /// Generic interface - works with specific DbContext type (TDbContext)
 /// Transaction yönetimi TransactionBehavior tarafından yapılır
 /// </summary>
-public interface IUnitOfWork<TDbContext> : IDisposable
+public interface IUnitOfWork<TDbContext> : IUnitOfWorkBase, IDisposable
     where TDbContext : DbContext
 {
     /// <summary>
@@ -19,28 +31,4 @@ public interface IUnitOfWork<TDbContext> : IDisposable
     IRepository<TEntity, TId> GetRepository<TEntity, TId>() 
         where TEntity : class, IEntity<TId> 
         where TId : IEquatable<TId>;
-    
-    /// <summary>
-    /// Saves all changes to the database
-    /// Transaction management is handled by TransactionBehavior
-    /// </summary>
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
-    
-    /// <summary>
-    /// Begins a new database transaction
-    /// Used by TransactionBehavior for explicit transaction control
-    /// </summary>
-    Task BeginTransactionAsync(CancellationToken cancellationToken = default);
-    
-    /// <summary>
-    /// Commits the current transaction
-    /// Saves changes and commits in one atomic operation
-    /// </summary>
-    Task CommitTransactionAsync(CancellationToken cancellationToken = default);
-    
-    /// <summary>
-    /// Rolls back the current transaction
-    /// Discards all changes made within the transaction
-    /// </summary>
-    Task RollbackTransactionAsync(CancellationToken cancellationToken = default);
 }

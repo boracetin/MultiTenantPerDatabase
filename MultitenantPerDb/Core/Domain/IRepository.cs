@@ -8,7 +8,7 @@ namespace MultitenantPerDb.Core.Domain;
 /// Follows Repository Pattern with CQRS-friendly methods
 /// TEntity: Entity type (Product, User, Tenant, etc.)
 /// TId: Primary key type (int, Guid, string, etc.)
-/// Works with any DbContext (ApplicationDbContext, MainDbContext, etc.)
+/// Works with any DbContext (ApplicationDbContext, TenancyDbContext, etc.)
 /// </summary>
 public interface IRepository<TEntity, TId> where TEntity : class, IEntity<TId> where TId : IEquatable<TId>
 {

@@ -24,11 +24,11 @@ namespace MultitenantPerDb.Core.Application;
 /// MULTIPLE CONTEXTS:
 /// public class CrossTenantService : BaseService
 /// {
-///     private readonly IUnitOfWork<MainDbContext> _mainUnitOfWork;
+///     private readonly IUnitOfWork<TenancyDbContext> _mainUnitOfWork;
 ///     private readonly IUnitOfWork<ApplicationDbContext> _appUnitOfWork;
 ///     
 ///     public CrossTenantService(
-///         IUnitOfWork<MainDbContext> mainUnitOfWork,
+///         IUnitOfWork<TenancyDbContext> mainUnitOfWork,
 ///         IUnitOfWork<ApplicationDbContext> appUnitOfWork)
 ///     {
 ///         _mainUnitOfWork = mainUnitOfWork;

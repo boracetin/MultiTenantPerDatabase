@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
 using MultitenantPerDb.Modules.Products.Domain.Entities;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
+using MultitenantPerDb.Modules.Products.Infrastructure.Persistence;
 using MultitenantPerDb.Core.Application;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Infrastructure;
@@ -11,14 +11,14 @@ namespace MultitenantPerDb.Modules.Products.Application.Services;
 /// <summary>
 /// Product service implementation
 /// Uses IUnitOfWork to access Repository<Product> for data access
-/// UnitOfWork manages the ApplicationDbContext and ensures single instance per request
+/// UnitOfWork manages the ProductsDbContext and ensures single instance per request
 /// Inherits from BaseService to enforce ICanAccessUnitOfWork constraint (checked by MTDB003 analyzer)
 /// </summary>
 public class ProductService : BaseService, IProductService
 {
-    private readonly IUnitOfWork<ApplicationDbContext> _unitOfWork;
+    private readonly IUnitOfWork<ProductsDbContext> _unitOfWork;
 
-    public ProductService(IUnitOfWork<ApplicationDbContext> unitOfWork)
+    public ProductService(IUnitOfWork<ProductsDbContext> unitOfWork)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
     }

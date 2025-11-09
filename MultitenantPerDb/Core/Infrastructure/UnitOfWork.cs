@@ -24,11 +24,11 @@ public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>, ICanAccessDbConte
         _repositories = new Dictionary<Type, object>();
     }
 
-    private async Task<TDbContext> GetOrCreateContextAsync()
+    private TDbContext GetOrCreateContext()
     {
         if (_context == null)
         {
-            _context = await _dbContextFactory.CreateDbContextAsync();
+            _context = _dbContextFactory.CreateDbContext();
         }
         return _context;
     }
@@ -44,8 +44,8 @@ public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>, ICanAccessDbConte
             return (IRepository<TEntity, TId>)_repositories[repositoryType];
         }
 
-        // Get DbContext (can be any DbContext: ApplicationDbContext, MainDbContext, etc.)
-        var context = GetOrCreateContextAsync().GetAwaiter().GetResult();
+        // Get DbContext (can be any DbContext: ApplicationDbContext, TenancyDbContext, etc.)
+        var context = GetOrCreateContext();
 
         // Create Repository<TEntity, TId> instance with generic DbContext
         var repositoryInstance = new Repository<TEntity, TId>(context);
@@ -56,7 +56,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>, ICanAccessDbConte
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var context = await GetOrCreateContextAsync();
+        var context = GetOrCreateContext();
         // Transaction yönetimi TransactionBehavior'da yapılıyor
         // Burada sadece değişiklikleri kaydet
         return await context.SaveChangesAsync(cancellationToken);
@@ -64,13 +64,13 @@ public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>, ICanAccessDbConte
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
-        var context = await GetOrCreateContextAsync();
+        var context = GetOrCreateContext();
         await context.Database.BeginTransactionAsync(cancellationToken);
     }
 
     public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
     {
-        var context = await GetOrCreateContextAsync();
+        var context = GetOrCreateContext();
         if (context.Database.CurrentTransaction != null)
         {
             await context.SaveChangesAsync(cancellationToken);
@@ -80,7 +80,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>, ICanAccessDbConte
 
     public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
     {
-        var context = await GetOrCreateContextAsync();
+        var context = GetOrCreateContext();
         if (context.Database.CurrentTransaction != null)
         {
             await context.Database.CurrentTransaction.RollbackAsync(cancellationToken);

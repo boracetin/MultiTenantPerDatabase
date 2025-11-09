@@ -6,7 +6,7 @@ namespace MultitenantPerDb.Core.Domain;
 public abstract class SoftDeleteAudited
 {
     public bool IsDeleted { get; protected set; } = false;
-    public DateTime DeletedAt { get; protected set; }
+    public DateTime? DeletedAt { get; protected set; }
 
     public void SetDeleted()
     {
