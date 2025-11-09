@@ -11,6 +11,12 @@ namespace MultitenantPerDb.Modules.Tenancy;
 /// </summary>
 public class TenancyModule : ModuleBase
 {
+    private readonly ILogger<TenancyModule> _logger;
+
+    public TenancyModule(ILogger<TenancyModule> logger)
+    {
+        _logger = logger;
+    }
     public override string Name => "Tenancy";
 
     public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
@@ -36,5 +42,21 @@ public class TenancyModule : ModuleBase
     {
         // Tenant middleware will be configured here
         app.UseMiddleware<Infrastructure.Middleware.TenantMiddleware>();
+    }
+
+    public override async Task MigrateAsync(IServiceProvider serviceProvider)
+    {
+        try
+        {
+            _logger.LogInformation("[{ModuleName}] Starting database migration...", Name);
+            var context = serviceProvider.GetRequiredService<TenancyDbContext>();
+            await context.Database.MigrateAsync();
+            _logger.LogInformation("[{ModuleName}] ✓ Database migrated successfully", Name);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[{ModuleName}] Failed to migrate database", Name);
+            throw;
+        }
     }
 }

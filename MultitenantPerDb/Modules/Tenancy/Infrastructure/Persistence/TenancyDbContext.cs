@@ -7,6 +7,7 @@ namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 /// TenancyDbContext - Master DB - Only tenant metadata
 /// Contains: Tenant configurations, connection strings, branding settings
 /// Lifecycle: Singleton - Connection string ile başlangıçta ayağa kalkar
+/// Migration managed by TenancyModule.MigrateAsync()
 /// </summary>
 public class TenancyDbContext : DbContext
 {

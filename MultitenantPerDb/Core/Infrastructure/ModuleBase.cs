@@ -15,4 +15,10 @@ public abstract class ModuleBase : IModule
     {
         // Default: no middleware
     }
+    
+    public virtual Task MigrateAsync(IServiceProvider serviceProvider)
+    {
+        // Default: no migration needed
+        return Task.CompletedTask;
+    }
 }
