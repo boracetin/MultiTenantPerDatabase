@@ -12,11 +12,6 @@ public interface ITenantResolver
     string? TenantId { get; }
     
     /// <summary>
-    /// Gets subdomain for UI branding/customization purposes only (NOT for tenant identification)
-    /// </summary>
-    string? GetSubdomainForBranding();
-    
-    /// <summary>
     /// Explicitly set tenant ID (for background jobs and internal operations only)
     /// </summary>
     void SetTenant(string tenantId);

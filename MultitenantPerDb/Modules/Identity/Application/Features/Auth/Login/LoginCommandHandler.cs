@@ -6,6 +6,7 @@ using MultitenantPerDb.Modules.Tenancy.Application.Services;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 using MultitenantPerDb.Core.Infrastructure.Security;
 using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Core.Application.Interfaces;
 
 namespace MultitenantPerDb.Modules.Identity.Application.Features.Auth.Login;
 
@@ -15,6 +16,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
     private readonly ITenantService _tenantService;
     private readonly IConfiguration _configuration;
     private readonly IEncryptionService _encryptionService;
+    private readonly ICurrentUserService _currentUserService;
     private readonly ITenantDbContextFactory<ApplicationIdentityDbContext> _identityDbContextFactory;
 
     public LoginCommandHandler(
@@ -22,19 +24,21 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
         ITenantService tenantService,
         IConfiguration configuration,
         IEncryptionService encryptionService,
-        ITenantDbContextFactory<ApplicationIdentityDbContext> identityDbContextFactory)
+        ITenantDbContextFactory<ApplicationIdentityDbContext> identityDbContextFactory,
+        ICurrentUserService currentUserService)
     {
         _tenantResolver = tenantResolver;
         _tenantService = tenantService;
         _configuration = configuration;
         _encryptionService = encryptionService;
         _identityDbContextFactory = identityDbContextFactory;
+        _currentUserService = currentUserService;
     }
 
     public async Task<LoginResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var subdomain = _tenantResolver.GetSubdomainForBranding();
-        var tenant = await _tenantService.GetBySubdomainAsync("tenant1", cancellationToken);
+        var subdomain = _currentUserService.TenantName ?? "tenant1";
+        var tenant = await _tenantService.GetBySubdomainAsync(subdomain, cancellationToken);
         
         if (tenant == null || !tenant.IsActive)
         {
@@ -52,7 +56,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
             var userManager = new UserManager<IdentityUser>(
                 userStore, null, new PasswordHasher<IdentityUser>(), null, null, null, null, null, null);
 
-            var user = await userManager.FindByNameAsync(request.Username);
+            var user = await userManager.FindByEmailAsync(request.Username);
             if (user == null)
             {
                 throw new UnauthorizedAccessException("Invalid username or password");

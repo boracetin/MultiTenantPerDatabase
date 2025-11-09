@@ -30,6 +30,8 @@ public class CurrentUserService : ICurrentUserService
     public string? TenantId => User?.FindFirst("tenantId")?.Value 
                             ?? User?.FindFirst("tenant_id")?.Value;
 
+    public string? TenantName => _httpContextAccessor.HttpContext?.Request.Headers["X-Tenant-Name"].FirstOrDefault();
+
     public string[] Roles => User?.FindAll(ClaimTypes.Role)
         .Select(c => c.Value)
         .ToArray() ?? Array.Empty<string>();

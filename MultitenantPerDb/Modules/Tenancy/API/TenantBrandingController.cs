@@ -16,16 +16,13 @@ namespace MultitenantPerDb.Modules.Tenancy.API;
 public class TenantBrandingController : ControllerBase
 {
     private readonly ITenantService _tenantService;
-    private readonly ITenantResolver _tenantResolver;
     private readonly IMediator _mediator;
 
     public TenantBrandingController(
         ITenantService tenantService,
-        ITenantResolver tenantResolver,
         IMediator mediator)
     {
         _tenantService = tenantService;
-        _tenantResolver = tenantResolver;
         _mediator = mediator;
     }
 
@@ -39,53 +36,6 @@ public class TenantBrandingController : ControllerBase
         var query = new GetAllTenantsQuery(activeOnly);
         var tenants = await _mediator.Send(query);
         return Ok(tenants);
-    }
-
-    /// <summary>
-    /// Get branding settings for current subdomain
-    /// Used by frontend to customize UI (logo, colors, background, etc.)
-    /// Anonymous access allowed - only returns branding info, no sensitive data
-    /// </summary>
-    [HttpGet("current")]
-    public async Task<IActionResult> GetCurrentBranding()
-    {
-        // Get subdomain from request (for UI customization only)
-        var subdomain = _tenantResolver.GetSubdomainForBranding();
-
-        if (string.IsNullOrEmpty(subdomain))
-        {
-            return Ok(new
-            {
-                message = "No subdomain detected. Using default branding.",
-                branding = GetDefaultBranding()
-            });
-        }
-
-        // Find tenant by subdomain using service
-        var tenant = await _tenantService.GetBySubdomainAsync(subdomain);
-
-        if (tenant == null)
-        {
-            return NotFound(new
-            {
-                message = $"Tenant not found for subdomain: {subdomain}",
-                subdomain
-            });
-        }
-
-        return Ok(new
-        {
-            subdomain = tenant.Subdomain,
-            branding = new
-            {
-                displayName = tenant.DisplayName ?? tenant.Name,
-                logoUrl = tenant.LogoUrl,
-                backgroundImageUrl = tenant.BackgroundImageUrl,
-                primaryColor = tenant.PrimaryColor ?? "#1976D2",
-                secondaryColor = tenant.SecondaryColor ?? "#424242",
-                customCss = tenant.CustomCss
-            }
-        });
     }
 
     /// <summary>

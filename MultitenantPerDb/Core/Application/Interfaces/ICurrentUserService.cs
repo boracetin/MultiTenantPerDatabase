@@ -26,6 +26,11 @@ public interface ICurrentUserService
     string? TenantId { get; }
 
     /// <summary>
+    /// Gets the current tenant name from X-Tenant-Name header
+    /// </summary>
+    string? TenantName { get; }
+
+    /// <summary>
     /// Gets all roles of the current user
     /// </summary>
     string[] Roles { get; }
