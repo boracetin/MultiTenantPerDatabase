@@ -72,7 +72,7 @@ public class IdentityModule : ModuleBase
             // 6. Caching - Check cache before executing
             cfg.AddOpenBehavior(typeof(CachingBehavior<,>));
             // 7. Distributed Transaction - Manage transactions across multiple databases (innermost)
-            cfg.AddOpenBehavior(typeof(DistributedTransactionBehavior<,>));
+            cfg.AddOpenBehavior(typeof(TransactionBehavior<,>));
         });
         
         // FluentValidation - Register all validators in this module

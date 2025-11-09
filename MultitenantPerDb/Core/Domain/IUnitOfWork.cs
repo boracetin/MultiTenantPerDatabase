@@ -4,7 +4,7 @@ namespace MultitenantPerDb.Core.Domain;
 
 /// <summary>
 /// Base interface for Unit of Work - non-generic transaction management
-/// Used by DistributedTransactionBehavior to manage multiple UnitOfWork instances
+/// Used by TransactionBehavior to manage multiple UnitOfWork instances
 /// </summary>
 public interface IUnitOfWorkBase
 {

@@ -1,4 +1,4 @@
-namespace MultitenantPerDb.Shared.Kernel.Domain.Constants;
+namespace MultitenantPerDb.Core.Domain.Constants;
 
 /// <summary>
 /// Error codes used across the application
