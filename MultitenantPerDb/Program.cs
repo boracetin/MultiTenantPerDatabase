@@ -62,6 +62,38 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
     };
+    
+    // JWT Bearer events for debugging
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogError(context.Exception, "❌ JWT Authentication FAILED: {Error}", context.Exception.Message);
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            var claims = string.Join(", ", context.Principal?.Claims.Select(c => $"{c.Type}={c.Value}") ?? Array.Empty<string>());
+            logger.LogInformation("✅ JWT Token VALIDATED. Claims: {Claims}", claims);
+            return Task.CompletedTask;
+        },
+        OnMessageReceived = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            var hasToken = context.Request.Headers.ContainsKey("Authorization");
+            logger.LogDebug("📩 JWT Token received: {HasToken}", hasToken);
+            return Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogWarning("⚠️ JWT Challenge: Error={Error}, Description={ErrorDescription}", 
+                context.Error, context.ErrorDescription);
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddAuthorization();

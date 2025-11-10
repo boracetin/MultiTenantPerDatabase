@@ -34,8 +34,10 @@ public class IdentityModule : ModuleBase
             return factory.CreateDbContext();
         });
         
-        // ASP.NET Core Identity - Configure Identity services with Role support
-        services.AddIdentity<IdentityUser, IdentityRole>(options =>
+        // ASP.NET Core Identity - Configure Identity services WITHOUT Cookie Authentication
+        // Using AddIdentityCore instead of AddIdentity to avoid cookie-based authentication
+        // JWT Bearer authentication is configured in Program.cs
+        services.AddIdentityCore<IdentityUser>(options =>
         {
             // Password settings
             options.Password.RequireDigit = true;
@@ -47,6 +49,7 @@ public class IdentityModule : ModuleBase
             // User settings
             options.User.RequireUniqueEmail = true;
         })
+        .AddRoles<IdentityRole>()
         .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
         .AddDefaultTokenProviders();
         

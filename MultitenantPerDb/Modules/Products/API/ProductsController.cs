@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using MediatR;
 using MultitenantPerDb.Modules.Products.Application.Features.CreateProduct;
 using MultitenantPerDb.Modules.Products.Application.Features.UpdateProduct;
@@ -11,6 +12,7 @@ using MultitenantPerDb.Modules.Products.Application.DTOs;
 
 namespace MultitenantPerDb.Modules.Products.API;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class ProductsController : ControllerBase
