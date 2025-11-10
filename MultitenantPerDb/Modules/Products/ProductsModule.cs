@@ -26,13 +26,6 @@ public class ProductsModule : ModuleBase
         // DbContext Factory - Runtime'da tenant bazlı ProductsDbContext oluşturur
         services.AddScoped<ITenantDbContextFactory<ProductsDbContext>, ProductsDbContextFactory>();
         
-        // Register ProductsDbContext as scoped service using factory
-        services.AddScoped<ProductsDbContext>(sp =>
-        {
-            var factory = sp.GetRequiredService<ITenantDbContextFactory<ProductsDbContext>>();
-            return factory.CreateDbContext();
-        });
-        
         // MediatR - Register all handlers in this module
         services.AddMediatR(cfg =>
         {

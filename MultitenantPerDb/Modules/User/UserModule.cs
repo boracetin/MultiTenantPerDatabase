@@ -16,13 +16,6 @@ public class UserModule : ModuleBase
         // Register UserDbContext factory for runtime tenant-specific context creation
         services.AddScoped<ITenantDbContextFactory<UserDbContext>, Infrastructure.Services.UserDbContextFactory>();
         
-        // Register UserDbContext as scoped service using factory
-        services.AddScoped<UserDbContext>(sp =>
-        {
-            var factory = sp.GetRequiredService<ITenantDbContextFactory<UserDbContext>>();
-            return factory.CreateDbContext();
-        });
-        
         // Register UnitOfWork for UserDbContext
         services.AddScoped<IUnitOfWork<UserDbContext>, UnitOfWork<UserDbContext>>();
         
