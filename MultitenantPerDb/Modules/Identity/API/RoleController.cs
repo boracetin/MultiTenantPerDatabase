@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MediatR;
 using MultitenantPerDb.Modules.Identity.Application.Commands.Role;
 using MultitenantPerDb.Modules.Identity.Application.Queries.Role;
+using MultitenantPerDb.Modules.Identity.Application.Commands.DeleteRole;
 
 namespace MultitenantPerDb.Modules.Identity.API;
 

@@ -5,6 +5,6 @@ namespace MultitenantPerDb.Core.Application.Abstractions;
 /// Commands that don't implement this interface will skip transaction management
 /// Use this for commands that only work with external APIs, cache, or in-memory operations
 /// </summary>
-public interface IApplicationDbTransactionalCommand
+public interface IWithoutTransactional
 {
 }

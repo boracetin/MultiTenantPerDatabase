@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace MultitenantPerDb.Modules.Identity.Application.Commands.Role;
+namespace MultitenantPerDb.Modules.Identity.Application.Commands.DeleteRole;
 
 public record DeleteRoleCommand(string RoleId) : IRequest<DeleteRoleResult>;
 

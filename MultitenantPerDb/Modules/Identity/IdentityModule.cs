@@ -1,14 +1,14 @@
 using FluentValidation;
 using Mapster;
 using MapsterMapper;
-using MediatR;
 using Microsoft.AspNetCore.Identity;
+using MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
+using MultitenantPerDb.Modules.Identity.Infrastructure.Services;
 using MultitenantPerDb.Core.Infrastructure;
 using MultitenantPerDb.Core.Application.Behaviors;
 using MultitenantPerDb.Core.Domain;
-using MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
-using MultitenantPerDb.Modules.Identity.Infrastructure.Services;
 using System.Reflection;
+using static MultitenantPerDb.Modules.Identity.Domain.Constants.IdentityConstants;
 
 namespace MultitenantPerDb.Modules.Identity;
 
@@ -17,7 +17,7 @@ namespace MultitenantPerDb.Modules.Identity;
 /// </summary>
 public class IdentityModule : ModuleBase
 {
-    public override string Name => "Identity";
+    public override string Name => ModuleConstants.ModuleName;
 
     public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {

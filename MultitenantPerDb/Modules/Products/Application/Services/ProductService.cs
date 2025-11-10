@@ -18,6 +18,7 @@ public class ProductService : BaseService, IProductService
 {
     private readonly IUnitOfWork<ProductsDbContext> _unitOfWork;
 
+
     public ProductService(IUnitOfWork<ProductsDbContext> unitOfWork)
     {
         _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));

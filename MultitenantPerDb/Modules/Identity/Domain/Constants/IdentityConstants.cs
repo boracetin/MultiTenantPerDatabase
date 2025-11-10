@@ -5,11 +5,9 @@ namespace MultitenantPerDb.Modules.Identity.Domain.Constants;
 /// </summary>
 public static class IdentityConstants
 {
-    public static class Roles
+    public static class ModuleConstants
     {
-        public const string Admin = "Admin";
-        public const string User = "User";
-        public const string Manager = "Manager";
+        public const string ModuleName = "Identity";
     }
 
     public static class ClaimTypes

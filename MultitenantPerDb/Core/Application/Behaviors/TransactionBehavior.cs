@@ -29,6 +29,13 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
     {
         var requestName = typeof(TRequest).Name;
 
+        // Skip transaction if request implements IWithoutTransactional
+        if (request is IWithoutTransactional)
+        {
+            _logger.LogDebug("[TX SKIP] {RequestName} - Implements IWithoutTransactional, skipping transaction", requestName);
+            return await next();
+        }
+
         // Get UnitOfWork instances that are actually used by the handler
         var unitOfWorks = GetHandlerUnitOfWorks(request);
 
@@ -223,4 +230,6 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
         
         return "Unknown";
     }
+
+
 }

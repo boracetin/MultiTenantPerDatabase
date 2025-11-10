@@ -7,6 +7,7 @@ using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Infrastructure.Security;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Application.Interfaces;
+using MultitenantPerDb.Core.Application.Extensions;
 
 namespace MultitenantPerDb.Modules.Identity.Application.Commands.Login;
 
@@ -24,6 +25,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
     private readonly IEncryptionService _encryptionService;
     private readonly ICurrentUserService _currentUserService;
     private readonly ITenantDbContextFactory<ApplicationIdentityDbContext> _identityDbContextFactory;
+    private readonly ILogger<UserManager<IdentityUser>> _userManagerLogger;
 
     public LoginCommandHandler(
         ITenantResolver tenantResolver,
@@ -31,7 +33,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
         IConfiguration configuration,
         IEncryptionService encryptionService,
         ITenantDbContextFactory<ApplicationIdentityDbContext> identityDbContextFactory,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        ILogger<UserManager<IdentityUser>> userManagerLogger)
     {
         _tenantResolver = tenantResolver;
         _tenantService = tenantService;
@@ -39,6 +42,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
         _encryptionService = encryptionService;
         _identityDbContextFactory = identityDbContextFactory;
         _currentUserService = currentUserService;
+        _userManagerLogger = userManagerLogger;
     }
 
     public async Task<LoginResponseDto> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -60,9 +64,10 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
             var tenantDbContext = _identityDbContextFactory.CreateDbContext();
             var userStore = new Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore<IdentityUser>(tenantDbContext);
             var userManager = new UserManager<IdentityUser>(
-                userStore, null, new PasswordHasher<IdentityUser>(), null, null, null, null, null, null);
-
-            var user = await userManager.FindByEmailAsync(request.Username);
+                userStore, null, new PasswordHasher<IdentityUser>(), null, null, null, null, null, _userManagerLogger);
+            
+            var normalizedUsername = request.Username.NormalizeTurkishUpper();
+            var user = await userManager.FindByEmailAsync(normalizedUsername);
             if (user == null)
             {
                 throw new UnauthorizedAccessException("Invalid username or password");

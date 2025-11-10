@@ -8,12 +8,11 @@ namespace MultitenantPerDb.Modules.Products.Application.Features.CreateProduct;
 /// <summary>
 /// Command to create a new product
 /// Uses ApplicationDbContext for tenant-specific data
-/// Implements IApplicationDbTransactionalCommand to enable database transaction with ApplicationDbContext
 /// Implements IAuthorizedRequest for authorization check (requires "products:write" permission)
 /// Implements IRateLimitedRequest for rate limiting (100 requests per minute per user per tenant)
 /// </summary>
 public record CreateProductCommand : IRequest<ProductDto>, 
-    IApplicationDbTransactionalCommand,
+    IWithoutTransactional,
     IAuthorizedRequest,
     IRateLimitedRequest
 {
