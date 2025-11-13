@@ -7,11 +7,16 @@ using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Application;
 using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Infrastructure.Services;
+using MultitenantPerDb.Core.Infrastructure.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+// Logger Factory - appsettings.json'dan Provider seçimi
+var loggingProvider = builder.Configuration["Logging:Provider"] ?? "Microsoft";
+builder.Services.AddConfiguredLogger(loggingProvider);
 
 // Cache Services - Factory pattern ile InMemory veya Redis
 builder.Services.AddCacheServices(builder.Configuration);
