@@ -2,7 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Infrastructure;
+using MultitenantPerDb.Core.Application.Interfaces;
 using MultitenantPerDb.Modules.Tenancy.Domain.Constants;
+using MultitenantPerDb.Modules.Tenancy.Infrastructure.Hubs;
 using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Infrastructure.Services;
 
@@ -33,6 +35,9 @@ public class TenancyModule : ModuleBase
             var factory = sp.GetRequiredService<ITenantDbContextFactory<TenancyDbContext>>();
             return factory.CreateDbContext();
         });
+        
+        // SignalR Hub Notification Service
+        services.AddScoped<TenantHubNotificationService>();
     }
 
     public override void ConfigureMiddleware(IApplicationBuilder app)

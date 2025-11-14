@@ -8,6 +8,8 @@ using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Modules.Products.Application.Services;
 using MultitenantPerDb.Modules.Products.Infrastructure.Persistence;
 using MultitenantPerDb.Modules.Products.Infrastructure.Services;
+using MultitenantPerDb.Modules.Products.Infrastructure.Hubs;
+using MultitenantPerDb.Core.Application.Interfaces;
 using System.Reflection;
 
 namespace MultitenantPerDb.Modules.Products;
@@ -66,6 +68,9 @@ public class ProductsModule : ModuleBase
         
         // Product background jobs
         services.AddScoped<Application.Jobs.ProductBackgroundJob>();
+        
+        // SignalR Hub Notification Service
+        services.AddScoped<ProductHubNotificationService>();
     }
 
     public override void ConfigureMiddleware(IApplicationBuilder app)

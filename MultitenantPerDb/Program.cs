@@ -8,6 +8,7 @@ using MultitenantPerDb.Core.Application;
 using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Infrastructure.Services;
 using MultitenantPerDb.Core.Infrastructure.Logging;
+using MultitenantPerDb.Core.Infrastructure.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,9 @@ builder.Services.AddControllers();
 // Logger Factory - appsettings.json'dan Provider seçimi
 var loggingProvider = builder.Configuration["Logging:Provider"] ?? "Microsoft";
 builder.Services.AddConfiguredLogger(loggingProvider);
+
+// SignalR - Real-time notifications
+builder.Services.AddSignalR();
 
 // Cache Services - Factory pattern ile InMemory veya Redis
 builder.Services.AddCacheServices(builder.Configuration);
@@ -205,6 +209,11 @@ app.UseCors("AllowAll");
 // Authentication & Authorization
 app.UseAuthentication();
 app.UseAuthorization();
+
+// ===============================================
+// SignalR Hub Endpoints - Single generic hub for all entities
+// ===============================================
+app.MapHub<NotificationHub>("/hubs/notifications");
 
 // ===============================================
 // MODULAR MONOLITH - Module Middleware Pipeline

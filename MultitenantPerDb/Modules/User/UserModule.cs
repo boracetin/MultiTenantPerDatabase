@@ -1,6 +1,8 @@
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Infrastructure;
+using MultitenantPerDb.Core.Application.Interfaces;
 using MultitenantPerDb.Modules.User.Infrastructure.Persistence;
+using MultitenantPerDb.Modules.User.Infrastructure.Hubs;
 
 namespace MultitenantPerDb.Modules.User;
 
@@ -21,6 +23,9 @@ public class UserModule : ModuleBase
         
         // Register generic repository for User entities
         services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
+        
+        // SignalR Hub Notification Service
+        services.AddScoped<UserHubNotificationService>();
     }
 
     public override void ConfigureMiddleware(IApplicationBuilder app)

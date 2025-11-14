@@ -2,6 +2,8 @@ using MultitenantPerDb.Core.Infrastructure;
 using MultitenantPerDb.Modules.Products.Domain.Services;
 using MultitenantPerDb.Core.Infrastructure.Services;
 using MultitenantPerDb.Core.Infrastructure.Services.Implementations;
+using MultitenantPerDb.Core.Application.Interfaces;
+using MultitenantPerDb.Core.Infrastructure.Hubs;
 
 namespace MultitenantPerDb.Core.Application;
 
@@ -59,6 +61,9 @@ public static class SharedServicesRegistration
         {
             services.AddScoped<IHttpClientService, HttpClientService>();
         }
+
+        // Hub Notification Service (SignalR)
+        services.AddScoped<IHubNotificationService, HubNotificationService>();
 
         // ===== DOMAIN SERVICES (SHARED) =====
         // Stateless business logic - thread-safe
