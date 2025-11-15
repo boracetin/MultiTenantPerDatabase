@@ -2,6 +2,7 @@ using FluentValidation;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
 using MultitenantPerDb.Core.Infrastructure;
 using MultitenantPerDb.Core.Application.Behaviors;
@@ -25,18 +26,53 @@ public class IdentityModule : ModuleBase
         // DbContext Factory - Runtime'da tenant bazlı ApplicationIdentityDbContext oluşturur
         services.AddScoped<IModuleDbContextFactory<ApplicationIdentityDbContext>, ModuleDbContextFactory<ApplicationIdentityDbContext>>();
         
-        // Register ApplicationIdentityDbContext as scoped service using factory
-        // This allows ASP.NET Core Identity to resolve the DbContext
-        services.AddScoped<ApplicationIdentityDbContext>(sp =>
+
+        // Manually register UserManager and RoleManager without AddEntityFrameworkStores
+        // This avoids eager DbContext resolution during startup
+        services.AddScoped<UserManager<IdentityUser>>(sp =>
         {
-            var factory = sp.GetRequiredService<IModuleDbContextFactory<ApplicationIdentityDbContext>>();
-            return factory.CreateDbContext();
+            var context = sp.GetRequiredService<ApplicationIdentityDbContext>();
+            var userStore = new Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore<IdentityUser>(context);
+            var options = sp.GetRequiredService<IOptions<IdentityOptions>>();
+            var passwordHasher = new PasswordHasher<IdentityUser>();
+            var userValidators = sp.GetServices<IUserValidator<IdentityUser>>();
+            var passwordValidators = sp.GetServices<IPasswordValidator<IdentityUser>>();
+            var keyNormalizer = sp.GetRequiredService<ILookupNormalizer>();
+            var errors = sp.GetRequiredService<IdentityErrorDescriber>();
+            var services = sp;
+            var logger = sp.GetRequiredService<ILogger<UserManager<IdentityUser>>>();
+            
+            return new UserManager<IdentityUser>(
+                userStore,
+                options,
+                passwordHasher,
+                userValidators,
+                passwordValidators,
+                keyNormalizer,
+                errors,
+                services,
+                logger);
         });
         
-        // ASP.NET Core Identity - Configure Identity services WITHOUT Cookie Authentication
-        // Using AddIdentityCore instead of AddIdentity to avoid cookie-based authentication
-        // JWT Bearer authentication is configured in Program.cs
-        services.AddIdentityCore<IdentityUser>(options =>
+        services.AddScoped<RoleManager<IdentityRole>>(sp =>
+        {
+            var context = sp.GetRequiredService<ApplicationIdentityDbContext>();
+            var roleStore = new Microsoft.AspNetCore.Identity.EntityFrameworkCore.RoleStore<IdentityRole>(context);
+            var roleValidators = sp.GetServices<IRoleValidator<IdentityRole>>();
+            var keyNormalizer = sp.GetRequiredService<ILookupNormalizer>();
+            var errors = sp.GetRequiredService<IdentityErrorDescriber>();
+            var logger = sp.GetRequiredService<ILogger<RoleManager<IdentityRole>>>();
+            
+            return new RoleManager<IdentityRole>(
+                roleStore,
+                roleValidators,
+                keyNormalizer,
+                errors,
+                logger);
+        });
+        
+        // Configure Identity options
+        services.Configure<IdentityOptions>(options =>
         {
             // Password settings
             options.Password.RequireDigit = true;
@@ -47,10 +83,11 @@ public class IdentityModule : ModuleBase
             
             // User settings
             options.User.RequireUniqueEmail = true;
-        })
-        .AddRoles<IdentityRole>()
-        .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
-        .AddDefaultTokenProviders();
+        });
+        
+        // Register required Identity services
+        services.AddScoped<ILookupNormalizer, UpperInvariantLookupNormalizer>();
+        services.AddScoped<IdentityErrorDescriber>();
         
         // MediatR - Register all handlers in this module
         services.AddMediatR(cfg =>
