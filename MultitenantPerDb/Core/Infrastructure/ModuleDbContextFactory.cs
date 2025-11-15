@@ -11,7 +11,7 @@ namespace MultitenantPerDb.Core.Infrastructure;
 /// Caches tenant information to avoid database lookups on every request
 /// Uses Activator.CreateInstance to instantiate DbContext - no need for module-specific factories
 /// </summary>
-public class ModuleDbContextFactory<TContext> : IModuleDbContextFactory<TContext>, ICanAccessDbContext
+public class ModuleDbContextFactory<TContext> : IModuleDbContextFactory<TContext>
     where TContext : DbContext
 {
     private readonly ITenantResolver _tenantResolver;

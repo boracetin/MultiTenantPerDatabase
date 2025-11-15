@@ -9,9 +9,8 @@ namespace MultitenantPerDb.Core.Infrastructure;
 /// Generic repository implementation with advanced querying and projection capabilities
 /// Supports efficient DTO projection using Mapster for optimized database queries
 /// Can work with any DbContext (TenantDbContext or ApplicationDbContext)
-/// Implements ICanAccessDbContext to explicitly allow DbContext access
 /// </summary>
-public class Repository<TEntity, TId> : IRepository<TEntity, TId>, ICanAccessDbContext 
+public class Repository<TEntity, TId> : IRepository<TEntity, TId> 
     where TEntity : class, IEntity<TId> 
     where TId : IEquatable<TId>
 {
