@@ -2,31 +2,32 @@ using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
+using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 
 namespace MultitenantPerDb.Core.Infrastructure;
 
 /// <summary>
-/// Base factory class for creating tenant-specific DbContext instances with caching support
+/// Generic factory for creating tenant-specific DbContext instances with caching support
 /// Caches tenant information to avoid database lookups on every request
+/// Uses Activator.CreateInstance to instantiate DbContext - no need for module-specific factories
 /// </summary>
-public abstract class CachedTenantDbContextFactory<TContext> : ITenantDbContextFactory<TContext>, ICanAccessDbContext
+public class TenantDbContextFactory<TContext> : ITenantDbContextFactory<TContext>, ICanAccessDbContext
     where TContext : DbContext
 {
     private readonly ITenantResolver _tenantResolver;
-    private readonly TenancyDbContext _tenancyDbContext;
+    private readonly ITenancyDbContextFactory _tenancyDbContextFactory;
     private readonly ICacheService _cacheService;
-    private readonly ILogger _logger;
+    private readonly ILogger<TenantDbContextFactory<TContext>> _logger;
     private readonly TimeSpan _tenantCacheDuration = TimeSpan.FromMinutes(30); // Tenant bilgileri nadiren değişir
 
-    protected CachedTenantDbContextFactory(
+    public TenantDbContextFactory(
         ITenantResolver tenantResolver,
-        TenancyDbContext tenancyDbContext,
+        ITenancyDbContextFactory tenancyDbContextFactory,
         ICacheService cacheService,
-        ILogger logger)
+        ILogger<TenantDbContextFactory<TContext>> logger)
     {
         _tenantResolver = tenantResolver;
-        _tenancyDbContext = tenancyDbContext;
+        _tenancyDbContextFactory = tenancyDbContextFactory;
         _cacheService = cacheService;
         _logger = logger;
     }
@@ -46,7 +47,9 @@ public abstract class CachedTenantDbContextFactory<TContext> : ITenantDbContextF
             // Cache miss - load from database
             _logger.LogDebug("Tenant {TenantId} not found in cache, loading from database", tenantId);
             
-            tenant = _tenancyDbContext.Tenants.Find(tenantId);
+            // Use factory to create TenancyDbContext on-demand
+            using var tenancyDbContext = _tenancyDbContextFactory.CreateDbContext();
+            tenant = tenancyDbContext.Tenants.Find(tenantId);
 
             if (tenant == null)
             {
@@ -64,18 +67,13 @@ public abstract class CachedTenantDbContextFactory<TContext> : ITenantDbContextF
 
         // Create DbContext with tenant's connection string
         var optionsBuilder = new DbContextOptionsBuilder<TContext>();
-        ConfigureDbContext(optionsBuilder, tenant.ConnectionString);
+        optionsBuilder.UseSqlServer(tenant.ConnectionString);
 
-        return CreateDbContextInstance(optionsBuilder.Options);
+        // Use Activator to create DbContext instance - works for any DbContext with DbContextOptions<TContext> constructor
+        var context = (TContext)Activator.CreateInstance(typeof(TContext), optionsBuilder.Options)!;
+        
+        _logger.LogDebug("Created {ContextType} for tenant {TenantId}", typeof(TContext).Name, tenantId);
+        
+        return context;
     }
-
-    /// <summary>
-    /// Configure DbContext options (e.g., UseSqlServer, UseNpgsql, etc.)
-    /// </summary>
-    protected abstract void ConfigureDbContext(DbContextOptionsBuilder<TContext> optionsBuilder, string connectionString);
-
-    /// <summary>
-    /// Create instance of the specific DbContext
-    /// </summary>
-    protected abstract TContext CreateDbContextInstance(DbContextOptions<TContext> options);
 }

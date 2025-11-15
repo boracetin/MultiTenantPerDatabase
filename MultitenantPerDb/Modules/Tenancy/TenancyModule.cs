@@ -28,14 +28,8 @@ public class TenancyModule : ModuleBase
         
         // Factory for creating TenancyDbContext (master database)
         services.AddScoped<ITenantDbContextFactory<TenancyDbContext>, Infrastructure.Services.TenancyDbContextFactory>();
-        
-        // TenancyDbContext registration via factory pattern
-        services.AddScoped<TenancyDbContext>(sp =>
-        {
-            var factory = sp.GetRequiredService<ITenantDbContextFactory<TenancyDbContext>>();
-            return factory.CreateDbContext();
-        });
-        
+        services.AddScoped<Infrastructure.Services.ITenancyDbContextFactory, Infrastructure.Services.TenancyDbContextFactory>();
+    
         // SignalR Hub Notification Service
         services.AddScoped<TenantHubNotificationService>();
     }

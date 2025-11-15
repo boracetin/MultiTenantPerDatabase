@@ -3,7 +3,6 @@ using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Identity;
 using MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
-using MultitenantPerDb.Modules.Identity.Infrastructure.Services;
 using MultitenantPerDb.Core.Infrastructure;
 using MultitenantPerDb.Core.Application.Behaviors;
 using MultitenantPerDb.Core.Domain;
@@ -24,7 +23,7 @@ public class IdentityModule : ModuleBase
         var assembly = Assembly.GetExecutingAssembly();
         
         // DbContext Factory - Runtime'da tenant bazlı ApplicationIdentityDbContext oluşturur
-        services.AddScoped<ITenantDbContextFactory<ApplicationIdentityDbContext>, IdentityDbContextFactory>();
+        services.AddScoped<ITenantDbContextFactory<ApplicationIdentityDbContext>, TenantDbContextFactory<ApplicationIdentityDbContext>>();
         
         // Register ApplicationIdentityDbContext as scoped service using factory
         // This allows ASP.NET Core Identity to resolve the DbContext

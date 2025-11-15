@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using MultitenantPerDb.Core.Domain;
 
 namespace MultitenantPerDb.Core.Infrastructure;
 
@@ -42,26 +43,42 @@ public abstract class ModuleBase : IModule
             {
                 logger.LogInformation("[{ModuleName}] Checking migrations for {ContextType}...", Name, contextType.Name);
                 
-                var context = serviceProvider.GetRequiredService(contextType) as DbContext;
-                if (context == null)
+                // Try to resolve factory for the context type
+                var factoryType = typeof(ITenantDbContextFactory<>).MakeGenericType(contextType);
+                var factory = serviceProvider.GetService(factoryType);
+                
+                if (factory == null)
                 {
-                    logger.LogWarning("[{ModuleName}] Could not resolve {ContextType} as DbContext", Name, contextType.Name);
+                    logger.LogWarning("[{ModuleName}] No factory found for {ContextType}", Name, contextType.Name);
                     continue;
                 }
                 
-                // Check if database exists and has pending migrations
-                var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+                // Create DbContext using factory
+                var createMethod = factoryType.GetMethod("CreateDbContext");
+                var context = createMethod?.Invoke(factory, null) as DbContext;
                 
-                if (pendingMigrations.Any())
+                if (context == null)
                 {
-                    logger.LogInformation("[{ModuleName}] Applying {Count} pending migrations to {ContextType}...", 
-                        Name, pendingMigrations.Count(), contextType.Name);
-                    await context.Database.MigrateAsync();
-                    logger.LogInformation("[{ModuleName}] ✓ {ContextType} migrated successfully", Name, contextType.Name);
+                    logger.LogWarning("[{ModuleName}] Could not create {ContextType} from factory", Name, contextType.Name);
+                    continue;
                 }
-                else
+                
+                using (context)
                 {
-                    logger.LogInformation("[{ModuleName}] {ContextType} is up to date", Name, contextType.Name);
+                    // Check if database exists and has pending migrations
+                    var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+                    
+                    if (pendingMigrations.Any())
+                    {
+                        logger.LogInformation("[{ModuleName}] Applying {Count} pending migrations to {ContextType}...", 
+                            Name, pendingMigrations.Count(), contextType.Name);
+                        await context.Database.MigrateAsync();
+                        logger.LogInformation("[{ModuleName}] ✓ {ContextType} migrated successfully", Name, contextType.Name);
+                    }
+                    else
+                    {
+                        logger.LogInformation("[{ModuleName}] {ContextType} is up to date", Name, contextType.Name);
+                    }
                 }
             }
             catch (Exception ex)

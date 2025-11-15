@@ -7,7 +7,6 @@ using MultitenantPerDb.Core.Application.Behaviors;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Modules.Products.Application.Services;
 using MultitenantPerDb.Modules.Products.Infrastructure.Persistence;
-using MultitenantPerDb.Modules.Products.Infrastructure.Services;
 using MultitenantPerDb.Modules.Products.Infrastructure.Hubs;
 using MultitenantPerDb.Core.Application.Interfaces;
 using System.Reflection;
@@ -26,7 +25,7 @@ public class ProductsModule : ModuleBase
         var assembly = Assembly.GetExecutingAssembly();
         
         // DbContext Factory - Runtime'da tenant bazlı ProductsDbContext oluşturur
-        services.AddScoped<ITenantDbContextFactory<ProductsDbContext>, ProductsDbContextFactory>();
+        services.AddScoped<ITenantDbContextFactory<ProductsDbContext>, TenantDbContextFactory<ProductsDbContext>>();
         
         // MediatR - Register all handlers in this module
         services.AddMediatR(cfg =>
