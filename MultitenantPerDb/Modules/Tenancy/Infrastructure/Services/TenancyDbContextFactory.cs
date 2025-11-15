@@ -6,19 +6,10 @@ using MultitenantPerDb.Core.Domain;
 namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 
 /// <summary>
-/// Factory interface for creating TenancyDbContext
-/// </summary>
-public interface ITenancyDbContextFactory : ITenantDbContextFactory<TenancyDbContext>
-{
-}
-
-/// <summary>
 /// Creates TenancyDbContext for master database operations
 /// No tenant resolution required - always uses master connection string
-/// Implements ICanAccessDbContext as infrastructure component creating DbContext
-/// Synchronous factory - DbContext creation is CPU-bound operation
 /// </summary>
-public class TenancyDbContextFactory : ITenancyDbContextFactory, ITenantDbContextFactory<TenancyDbContext>, ICanAccessDbContext
+public class TenancyDbContextFactory : ITenantDbContextFactory<TenancyDbContext>, ICanAccessDbContext
 {
     private readonly IConfiguration _configuration;
 

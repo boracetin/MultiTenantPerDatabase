@@ -9,6 +9,8 @@ using MultitenantPerDb.Modules.Products.Application.Services;
 using MultitenantPerDb.Modules.Products.Infrastructure.Persistence;
 using MultitenantPerDb.Modules.Products.Infrastructure.Hubs;
 using MultitenantPerDb.Core.Application.Interfaces;
+using MultitenantPerDb.Core.Application.Abstractions;
+using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 using System.Reflection;
 
 namespace MultitenantPerDb.Modules.Products;

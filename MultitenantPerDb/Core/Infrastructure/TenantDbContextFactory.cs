@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
+using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 
 namespace MultitenantPerDb.Core.Infrastructure;
 
@@ -15,14 +15,14 @@ public class TenantDbContextFactory<TContext> : ITenantDbContextFactory<TContext
     where TContext : DbContext
 {
     private readonly ITenantResolver _tenantResolver;
-    private readonly ITenancyDbContextFactory _tenancyDbContextFactory;
+    private readonly ITenantDbContextFactory<TenancyDbContext> _tenancyDbContextFactory;
     private readonly ICacheService _cacheService;
     private readonly ILogger<TenantDbContextFactory<TContext>> _logger;
     private readonly TimeSpan _tenantCacheDuration = TimeSpan.FromMinutes(30); // Tenant bilgileri nadiren değişir
 
     public TenantDbContextFactory(
         ITenantResolver tenantResolver,
-        ITenancyDbContextFactory tenancyDbContextFactory,
+        ITenantDbContextFactory<TenancyDbContext> tenancyDbContextFactory,
         ICacheService cacheService,
         ILogger<TenantDbContextFactory<TContext>> logger)
     {
