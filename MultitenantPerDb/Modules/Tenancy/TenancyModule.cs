@@ -29,7 +29,7 @@ public class TenancyModule : ModuleBase
         services.AddScoped<ITenantService, TenantService>();
         
         // Factory for creating TenancyDbContext (master database)
-        services.AddScoped<ITenantDbContextFactory<TenancyDbContext>, TenancyDbContextFactory>();
+        services.AddScoped<IModuleDbContextFactory<TenancyDbContext>, ModuleDbContextFactory>();
     
         // SignalR Hub Notification Service
         services.AddScoped<TenantHubNotificationService>();

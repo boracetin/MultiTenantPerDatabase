@@ -27,7 +27,7 @@ public class ProductsModule : ModuleBase
         var assembly = Assembly.GetExecutingAssembly();
         
         // DbContext Factory - Runtime'da tenant bazlı ProductsDbContext oluşturur
-        services.AddScoped<ITenantDbContextFactory<ProductsDbContext>, TenantDbContextFactory<ProductsDbContext>>();
+        services.AddScoped<IModuleDbContextFactory<ProductsDbContext>, ModuleDbContextFactory<ProductsDbContext>>();
         
         // MediatR - Register all handlers in this module
         services.AddMediatR(cfg =>

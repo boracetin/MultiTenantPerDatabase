@@ -9,11 +9,11 @@ namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 /// Creates TenancyDbContext for master database operations
 /// No tenant resolution required - always uses master connection string
 /// </summary>
-public class TenancyDbContextFactory : ITenantDbContextFactory<TenancyDbContext>, ICanAccessDbContext
+public class ModuleDbContextFactory : IModuleDbContextFactory<TenancyDbContext>, ICanAccessDbContext
 {
     private readonly IConfiguration _configuration;
 
-    public TenancyDbContextFactory(IConfiguration configuration)
+    public ModuleDbContextFactory(IConfiguration configuration)
     {
         _configuration = configuration;
     }

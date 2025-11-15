@@ -23,13 +23,13 @@ public class IdentityModule : ModuleBase
         var assembly = Assembly.GetExecutingAssembly();
         
         // DbContext Factory - Runtime'da tenant bazlı ApplicationIdentityDbContext oluşturur
-        services.AddScoped<ITenantDbContextFactory<ApplicationIdentityDbContext>, TenantDbContextFactory<ApplicationIdentityDbContext>>();
+        services.AddScoped<IModuleDbContextFactory<ApplicationIdentityDbContext>, ModuleDbContextFactory<ApplicationIdentityDbContext>>();
         
         // Register ApplicationIdentityDbContext as scoped service using factory
         // This allows ASP.NET Core Identity to resolve the DbContext
         services.AddScoped<ApplicationIdentityDbContext>(sp =>
         {
-            var factory = sp.GetRequiredService<ITenantDbContextFactory<ApplicationIdentityDbContext>>();
+            var factory = sp.GetRequiredService<IModuleDbContextFactory<ApplicationIdentityDbContext>>();
             return factory.CreateDbContext();
         });
         

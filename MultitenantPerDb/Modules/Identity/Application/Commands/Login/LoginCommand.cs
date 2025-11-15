@@ -24,7 +24,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
     private readonly IConfiguration _configuration;
     private readonly IEncryptionService _encryptionService;
     private readonly ICurrentUserService _currentUserService;
-    private readonly ITenantDbContextFactory<ApplicationIdentityDbContext> _identityDbContextFactory;
+    private readonly IModuleDbContextFactory<ApplicationIdentityDbContext> _identityDbContextFactory;
     private readonly ILogger<UserManager<IdentityUser>> _userManagerLogger;
 
     public LoginCommandHandler(
@@ -32,7 +32,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponseDt
         ITenantService tenantService,
         IConfiguration configuration,
         IEncryptionService encryptionService,
-        ITenantDbContextFactory<ApplicationIdentityDbContext> identityDbContextFactory,
+        IModuleDbContextFactory<ApplicationIdentityDbContext> identityDbContextFactory,
         ICurrentUserService currentUserService,
         ILogger<UserManager<IdentityUser>> userManagerLogger)
     {

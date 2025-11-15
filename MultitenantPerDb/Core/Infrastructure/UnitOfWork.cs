@@ -13,12 +13,12 @@ namespace MultitenantPerDb.Core.Infrastructure;
 public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>, ICanAccessDbContext
     where TDbContext : DbContext
 {
-    private readonly ITenantDbContextFactory<TDbContext> _dbContextFactory;
+    private readonly IModuleDbContextFactory<TDbContext> _dbContextFactory;
     private TDbContext? _context;
     private readonly Dictionary<Type, object> _repositories;
     private bool _disposed;
 
-    public UnitOfWork(ITenantDbContextFactory<TDbContext> dbContextFactory)
+    public UnitOfWork(IModuleDbContextFactory<TDbContext> dbContextFactory)
     {
         _dbContextFactory = dbContextFactory;
         _repositories = new Dictionary<Type, object>();

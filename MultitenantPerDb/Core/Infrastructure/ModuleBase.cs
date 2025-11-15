@@ -44,7 +44,7 @@ public abstract class ModuleBase : IModule
                 logger.LogInformation("[{ModuleName}] Checking migrations for {ContextType}...", Name, contextType.Name);
                 
                 // Try to resolve factory for the context type
-                var factoryType = typeof(ITenantDbContextFactory<>).MakeGenericType(contextType);
+                var factoryType = typeof(IModuleDbContextFactory<>).MakeGenericType(contextType);
                 var factory = serviceProvider.GetService(factoryType);
                 
                 if (factory == null)

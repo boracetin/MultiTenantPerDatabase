@@ -11,20 +11,20 @@ namespace MultitenantPerDb.Core.Infrastructure;
 /// Caches tenant information to avoid database lookups on every request
 /// Uses Activator.CreateInstance to instantiate DbContext - no need for module-specific factories
 /// </summary>
-public class TenantDbContextFactory<TContext> : ITenantDbContextFactory<TContext>, ICanAccessDbContext
+public class ModuleDbContextFactory<TContext> : IModuleDbContextFactory<TContext>, ICanAccessDbContext
     where TContext : DbContext
 {
     private readonly ITenantResolver _tenantResolver;
-    private readonly ITenantDbContextFactory<TenancyDbContext> _tenancyDbContextFactory;
+    private readonly IModuleDbContextFactory<TenancyDbContext> _tenancyDbContextFactory;
     private readonly ICacheService _cacheService;
-    private readonly ILogger<TenantDbContextFactory<TContext>> _logger;
+    private readonly ILogger<ModuleDbContextFactory<TContext>> _logger;
     private readonly TimeSpan _tenantCacheDuration = TimeSpan.FromMinutes(30); // Tenant bilgileri nadiren değişir
 
-    public TenantDbContextFactory(
+    public ModuleDbContextFactory(
         ITenantResolver tenantResolver,
-        ITenantDbContextFactory<TenancyDbContext> tenancyDbContextFactory,
+        IModuleDbContextFactory<TenancyDbContext> tenancyDbContextFactory,
         ICacheService cacheService,
-        ILogger<TenantDbContextFactory<TContext>> logger)
+        ILogger<ModuleDbContextFactory<TContext>> logger)
     {
         _tenantResolver = tenantResolver;
         _tenancyDbContextFactory = tenancyDbContextFactory;

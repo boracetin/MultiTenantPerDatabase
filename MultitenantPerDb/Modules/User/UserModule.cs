@@ -16,7 +16,7 @@ public class UserModule : ModuleBase
     public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         // Register UserDbContext factory for runtime tenant-specific context creation
-        services.AddScoped<ITenantDbContextFactory<UserDbContext>, TenantDbContextFactory<UserDbContext>>();
+        services.AddScoped<IModuleDbContextFactory<UserDbContext>, ModuleDbContextFactory<UserDbContext>>();
         
         // Register UnitOfWork for UserDbContext
         services.AddScoped<IUnitOfWork<UserDbContext>, UnitOfWork<UserDbContext>>();
