@@ -7,6 +7,8 @@ using MultitenantPerDb.Modules.Tenancy.Domain.Constants;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Hubs;
 using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Infrastructure.Services;
+using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
+using MultitenantPerDb.Modules.Tenancy.Application.Services;
 
 namespace MultitenantPerDb.Modules.Tenancy;
 
@@ -24,11 +26,11 @@ public class TenancyModule : ModuleBase
         // services.AddScoped<ITenantResolver, TenantResolver>();
         
         // Tenant service - Uses UnitOfWork<TenancyDbContext>
-        services.AddScoped<Application.Services.ITenantService, Application.Services.TenantService>();
+        services.AddScoped<ITenantService, TenantService>();
         
         // Factory for creating TenancyDbContext (master database)
-        services.AddScoped<ITenantDbContextFactory<TenancyDbContext>, Infrastructure.Services.TenancyDbContextFactory>();
-        services.AddScoped<Infrastructure.Services.ITenancyDbContextFactory, Infrastructure.Services.TenancyDbContextFactory>();
+        services.AddScoped<ITenantDbContextFactory<TenancyDbContext>, TenancyDbContextFactory>();
+        services.AddScoped<ITenancyDbContextFactory, TenancyDbContextFactory>();
     
         // SignalR Hub Notification Service
         services.AddScoped<TenantHubNotificationService>();
