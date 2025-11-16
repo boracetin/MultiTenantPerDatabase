@@ -12,7 +12,7 @@ namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 /// Migration managed by TenancyModule.MigrateAsync()
 /// DatabaseType: Main (master/system data)
 /// </summary>
-public class TenancyDbContext : DbContext, ITransactionContext
+public class TenancyDbContext : DbContext, IDbContextTransactionType
 {
     public static DatabaseType DatabaseType => DatabaseType.Main;
 

@@ -24,6 +24,11 @@ public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>
         _repositories = new Dictionary<Type, object>();
     }
 
+    /// <summary>
+    /// Get the underlying DbContext - eliminates reflection in TransactionBehavior
+    /// </summary>
+    public DbContext GetDbContext() => _context;
+
     public IRepository<TEntity, TId> GetRepository<TEntity, TId>() 
         where TEntity : class, IEntity<TId> 
         where TId : IEquatable<TId>

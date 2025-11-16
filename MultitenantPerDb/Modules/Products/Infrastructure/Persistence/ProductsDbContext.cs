@@ -11,7 +11,7 @@ namespace MultitenantPerDb.Modules.Products.Infrastructure.Persistence;
 /// Lifecycle: Scoped - Runtime'da tenant bazlı oluşturulur
 /// DatabaseType: Application (tenant-specific data)
 /// </summary>
-public class ProductsDbContext : DbContext, ITransactionContext
+public class ProductsDbContext : DbContext, IDbContextTransactionType
 {
     public static DatabaseType DatabaseType => DatabaseType.Application;
     

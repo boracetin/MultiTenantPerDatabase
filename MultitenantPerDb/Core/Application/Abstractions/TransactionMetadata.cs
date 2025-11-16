@@ -25,6 +25,12 @@ public class TransactionMetadata
     public HashSet<Type> RequiredDbContextTypes { get; init; } = new();
     
     /// <summary>
+    /// DbContextType → DatabaseType mapping (O(1) lookup)
+    /// PERFORMANCE: Eliminates GetDatabaseType() reflection at runtime
+    /// </summary>
+    public Dictionary<Type, DatabaseType> DbContextTypeToDatabaseType { get; init; } = new();
+    
+    /// <summary>
     /// Whether this request is read-only (no transaction needed)
     /// </summary>
     public bool IsReadOnly { get; init; }

@@ -11,7 +11,7 @@ namespace MultitenantPerDb.Modules.User.Infrastructure.Persistence;
 /// Lifecycle: Runtime - Created via factory per tenant
 /// DatabaseType: Application (tenant-specific data)
 /// </summary>
-public class UserDbContext : DbContext, ITransactionContext
+public class UserDbContext : DbContext, IDbContextTransactionType
 {
     public static DatabaseType DatabaseType => DatabaseType.Application;
 

@@ -12,7 +12,7 @@ namespace MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
 /// Lifecycle: Scoped - Runtime'da tenant bazlı oluşturulur
 /// DatabaseType: Main (identity/auth master data)
 /// </summary>
-public class ApplicationIdentityDbContext : IdentityDbContext<IdentityUser>, ITransactionContext
+public class ApplicationIdentityDbContext : IdentityDbContext<IdentityUser>, IDbContextTransactionType
 {
     public static DatabaseType DatabaseType => DatabaseType.Application;
     

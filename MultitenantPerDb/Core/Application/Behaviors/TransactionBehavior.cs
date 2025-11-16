@@ -63,7 +63,7 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
             if (uow != null)
             {
                 unitOfWorks.Add(uow);
-                var context = GetDbContextFromUnitOfWork(uow);
+                var context = uow.GetDbContext(); // ✅ Direct method call - no reflection!
                 if (context != null)
                     contexts.Add(context);
             }
@@ -75,9 +75,9 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
             return await next();
         }
 
-        // Group by DatabaseType (pre-computed at startup!)
+        // Group by DatabaseType (O(1) cached lookup - NO REFLECTION!)
         var groups = contexts
-            .GroupBy(ctx => GetDatabaseType(ctx.GetType()))
+            .GroupBy(ctx => metadata.DbContextTypeToDatabaseType.GetValueOrDefault(ctx.GetType(), DatabaseType.None))
             .Where(g => g.Key != DatabaseType.None)
             .ToList();
 
@@ -141,37 +141,5 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
             foreach (var tx in transactions)
                 await tx.DisposeAsync();
         }
-    }
-
-    /// <summary>
-    /// Extract DbContext from UnitOfWork (minimal reflection - once per request)
-    /// </summary>
-    private static DbContext? GetDbContextFromUnitOfWork(IUnitOfWorkBase unitOfWork)
-    {
-        var contextField = unitOfWork.GetType().GetField("_context", 
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        
-        return contextField?.GetValue(unitOfWork) as DbContext;
-    }
-
-    /// <summary>
-    /// Get DatabaseType from DbContext type (uses static property - NO REFLECTION!)
-    /// </summary>
-    private static DatabaseType GetDatabaseType(Type dbContextType)
-    {
-        try
-        {
-            var property = dbContextType.GetProperty("DatabaseType", 
-                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
-            
-            if (property != null)
-                return (DatabaseType)(property.GetValue(null) ?? DatabaseType.None);
-        }
-        catch
-        {
-            // Ignore
-        }
-
-        return DatabaseType.None;
     }
 }

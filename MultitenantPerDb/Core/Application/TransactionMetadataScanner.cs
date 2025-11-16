@@ -84,6 +84,7 @@ public class TransactionMetadataScanner
         var parameters = constructor.GetParameters();
         var dbContextTypes = new HashSet<Type>();
         var databaseTypes = new HashSet<DatabaseType>();
+        var dbContextTypeToDatabaseType = new Dictionary<Type, DatabaseType>();
 
         foreach (var param in parameters)
         {
@@ -99,7 +100,10 @@ public class TransactionMetadataScanner
                 // Get DatabaseType from DbContext
                 var databaseType = GetDatabaseType(dbContextType);
                 if (databaseType != DatabaseType.None)
+                {
                     databaseTypes.Add(databaseType);
+                    dbContextTypeToDatabaseType[dbContextType] = databaseType;
+                }
             }
         }
 
@@ -108,7 +112,8 @@ public class TransactionMetadataScanner
             RequestType = requestType,
             IsReadOnly = false,
             RequiredDatabases = databaseTypes,
-            RequiredDbContextTypes = dbContextTypes
+            RequiredDbContextTypes = dbContextTypes,
+            DbContextTypeToDatabaseType = dbContextTypeToDatabaseType
         };
     }
 
@@ -117,8 +122,8 @@ public class TransactionMetadataScanner
     /// </summary>
     private static DatabaseType GetDatabaseType(Type dbContextType)
     {
-        // Check if DbContext implements ITransactionContext
-        if (!typeof(ITransactionContext).IsAssignableFrom(dbContextType))
+        // Check if DbContext implements IDbContextTransactionType
+        if (!typeof(IDbContextTransactionType).IsAssignableFrom(dbContextType))
             return DatabaseType.None;
 
         try

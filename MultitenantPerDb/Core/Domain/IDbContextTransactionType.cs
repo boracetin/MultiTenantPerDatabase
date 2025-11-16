@@ -7,7 +7,7 @@ namespace MultitenantPerDb.Core.Domain;
 /// Marker interface for DbContext to declare its database type
 /// Enables zero-reflection transaction grouping at runtime
 /// </summary>
-public interface ITransactionContext
+public interface IDbContextTransactionType
 {
     /// <summary>
     /// Database type for transaction grouping
