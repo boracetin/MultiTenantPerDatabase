@@ -1,5 +1,6 @@
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Infrastructure;
+using Core.Infrastructure.Persistence.Concrete;
 using MultitenantPerDb.Core.Application.Interfaces;
 using MultitenantPerDb.Modules.User.Infrastructure.Persistence;
 using MultitenantPerDb.Modules.User.Infrastructure.Hubs;
@@ -16,7 +17,7 @@ public class UserModule : ModuleBase
     public override void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         // Register UserDbContext factory for runtime tenant-specific context creation
-        services.AddScoped<IModuleDbContextFactory<UserDbContext>, ModuleDbContextFactory<UserDbContext>>();
+        services.AddScoped<IModuleDbContextFactory<UserDbContext>, ApplicationDbContextFactory<UserDbContext>>();
         
         // Register UnitOfWork for UserDbContext
         services.AddScoped<IUnitOfWork<UserDbContext>, UnitOfWork<UserDbContext>>();

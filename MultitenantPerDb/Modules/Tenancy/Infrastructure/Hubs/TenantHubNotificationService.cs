@@ -1,4 +1,5 @@
 using MultitenantPerDb.Core.Application.Interfaces;
+using MultitenantPerDb.Core.Domain.Entity.Concrete;
 using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 
 namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Hubs;

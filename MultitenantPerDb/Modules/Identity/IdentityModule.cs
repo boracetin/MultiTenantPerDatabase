@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
 using MultitenantPerDb.Core.Infrastructure;
+using Core.Infrastructure.Persistence.Concrete;
 using MultitenantPerDb.Core.Application.Behaviors;
 using MultitenantPerDb.Core.Domain;
 using System.Reflection;
@@ -24,7 +25,7 @@ public class IdentityModule : ModuleBase
         var assembly = Assembly.GetExecutingAssembly();
         
         // DbContext Factory - Runtime'da tenant bazlı ApplicationIdentityDbContext oluşturur
-        services.AddScoped<IModuleDbContextFactory<ApplicationIdentityDbContext>, ModuleDbContextFactory<ApplicationIdentityDbContext>>();
+        services.AddScoped<IModuleDbContextFactory<ApplicationIdentityDbContext>, ApplicationDbContextFactory<ApplicationIdentityDbContext>>();
         
 
         // Manually register UserManager and RoleManager without AddEntityFrameworkStores

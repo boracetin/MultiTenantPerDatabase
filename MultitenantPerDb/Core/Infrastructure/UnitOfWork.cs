@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 using MultitenantPerDb.Core.Domain;
 
 namespace MultitenantPerDb.Core.Infrastructure;

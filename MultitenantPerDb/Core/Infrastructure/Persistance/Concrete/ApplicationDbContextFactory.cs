@@ -1,30 +1,30 @@
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Core.Domain.Entity.Concrete;
 using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 
-namespace MultitenantPerDb.Core.Infrastructure;
+namespace Core.Infrastructure.Persistence.Concrete;
 
 /// <summary>
 /// Generic factory for creating tenant-specific DbContext instances with caching support
 /// Caches tenant information to avoid database lookups on every request
 /// Uses Activator.CreateInstance to instantiate DbContext - no need for module-specific factories
 /// </summary>
-public class ModuleDbContextFactory<TContext> : IModuleDbContextFactory<TContext>
+public class ApplicationDbContextFactory<TContext> : IModuleDbContextFactory<TContext>
     where TContext : DbContext
 {
     private readonly ITenantResolver _tenantResolver;
-    private readonly IModuleDbContextFactory<TenancyDbContext> _tenancyDbContextFactory;
+    private readonly IModuleDbContextFactory<MainDbContext<Tenant>> _tenancyDbContextFactory;
     private readonly ICacheService _cacheService;
-    private readonly ILogger<ModuleDbContextFactory<TContext>> _logger;
+    private readonly ILogger<ApplicationDbContextFactory<TContext>> _logger;
     private readonly TimeSpan _tenantCacheDuration = TimeSpan.FromMinutes(30); // Tenant bilgileri nadiren değişir
 
-    public ModuleDbContextFactory(
+    public ApplicationDbContextFactory(
         ITenantResolver tenantResolver,
-        IModuleDbContextFactory<TenancyDbContext> tenancyDbContextFactory,
+        IModuleDbContextFactory<MainDbContext<Tenant>> tenancyDbContextFactory,
         ICacheService cacheService,
-        ILogger<ModuleDbContextFactory<TContext>> logger)
+        ILogger<ApplicationDbContextFactory<TContext>> logger)
     {
         _tenantResolver = tenantResolver;
         _tenancyDbContextFactory = tenancyDbContextFactory;

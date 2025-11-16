@@ -1,5 +1,6 @@
-using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
+using MultitenantPerDb.Core.Domain.Entity.Concrete;
 using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 
 namespace MultitenantPerDb.Modules.Tenancy.Application.Services;
 

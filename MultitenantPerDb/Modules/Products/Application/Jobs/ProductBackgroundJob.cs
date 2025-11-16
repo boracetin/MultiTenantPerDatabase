@@ -1,4 +1,4 @@
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
+using MultitenantPerDb.Modules.Tenancy.Application.Services;
 using MultitenantPerDb.Modules.Products.Application.Services;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;

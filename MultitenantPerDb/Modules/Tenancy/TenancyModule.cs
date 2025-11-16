@@ -2,13 +2,14 @@ using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Infrastructure;
+using Core.Infrastructure.Persistence.Concrete;
 using MultitenantPerDb.Core.Application.Interfaces;
 using MultitenantPerDb.Modules.Tenancy.Domain.Constants;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Hubs;
 using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Infrastructure.Services;
-using MultitenantPerDb.Modules.Tenancy.Infrastructure.Services;
 using MultitenantPerDb.Modules.Tenancy.Application.Services;
+using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 
 namespace MultitenantPerDb.Modules.Tenancy;
 
@@ -27,9 +28,10 @@ public class TenancyModule : ModuleBase
         
         // Tenant service - Uses UnitOfWork<TenancyDbContext>
         services.AddScoped<ITenantService, TenantService>();
+        services.AddScoped<IModuleDbContextFactory<TenancyDbContext>, MainDbContextFactory<TenancyDbContext>>();
         
-        // Factory for creating TenancyDbContext (master database)
-        services.AddScoped<IModuleDbContextFactory<TenancyDbContext>, ModuleDbContextFactory>();
+        // Register MainDbContext<Tenant> factory for ApplicationDbContextFactory dependency
+        services.AddScoped<IModuleDbContextFactory<MainDbContext<Tenant>>, MainDbContextFactory<MainDbContext<Tenant>>>();
     
         // SignalR Hub Notification Service
         services.AddScoped<TenantHubNotificationService>();

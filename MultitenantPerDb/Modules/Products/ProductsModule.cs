@@ -3,6 +3,7 @@ using Mapster;
 using MapsterMapper;
 using MediatR;
 using MultitenantPerDb.Core.Infrastructure;
+using Core.Infrastructure.Persistence.Concrete;
 using MultitenantPerDb.Core.Application.Behaviors;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Modules.Products.Application.Services;
@@ -27,7 +28,7 @@ public class ProductsModule : ModuleBase
         var assembly = Assembly.GetExecutingAssembly();
         
         // DbContext Factory - Runtime'da tenant bazlı ProductsDbContext oluşturur
-        services.AddScoped<IModuleDbContextFactory<ProductsDbContext>, ModuleDbContextFactory<ProductsDbContext>>();
+        services.AddScoped<IModuleDbContextFactory<ProductsDbContext>, ApplicationDbContextFactory<ProductsDbContext>>();
         
         // MediatR - Register all handlers in this module
         services.AddMediatR(cfg =>

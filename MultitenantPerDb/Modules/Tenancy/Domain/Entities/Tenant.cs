@@ -1,4 +1,5 @@
 using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Core.Domain.Entity.Concrete;
 
 namespace MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 
@@ -7,13 +8,10 @@ namespace MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 /// Includes branding and customization settings for subdomain-based UI
 /// Note: Users are NOT in TenancyDbContext - they're in tenant-specific ApplicationDbContext
 /// </summary>
-public class Tenant : BaseEntity<int>, IAggregateRoot
+public class Tenant : BaseTenant, IAggregateRoot
 {
-    public string Name { get; private set; }
-    public string ConnectionString { get; private set; }
     public bool IsActive { get; private set; }
-    
-    // Subdomain for tenant identification (e.g., "tenant1" in tenant1.myapp.com)
+
     public string? Subdomain { get; private set; }
     
     // Branding & Customization
@@ -114,7 +112,6 @@ public class Tenant : BaseEntity<int>, IAggregateRoot
         Name = name;
         Subdomain = subdomain?.ToLowerInvariant();
         ConnectionString = connectionString;
-        
-        
+
     }
 }
