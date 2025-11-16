@@ -52,18 +52,17 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
             string.Join(", ", metadata.RequiredDatabases));
 
         // Resolve UnitOfWork for each required DbContext type
-        var unitOfWorks = new List<IUnitOfWorkBase>();
         var contexts = new List<DbContext>();
 
         foreach (var dbContextType in metadata.RequiredDbContextTypes)
         {
             var uowType = typeof(IUnitOfWork<>).MakeGenericType(dbContextType);
-            var uow = _serviceProvider.GetService(uowType) as IUnitOfWorkBase;
+            var uow = _serviceProvider.GetService(uowType);
             
             if (uow != null)
             {
-                unitOfWorks.Add(uow);
-                var context = uow.GetDbContext(); // ✅ Direct method call - no reflection!
+                // Use dynamic to call GetDbContext() on generic interface
+                var context = ((dynamic)uow).GetDbContext() as DbContext;
                 if (context != null)
                     contexts.Add(context);
             }
