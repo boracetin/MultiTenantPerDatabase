@@ -13,8 +13,6 @@ namespace MultitenantPerDb.Modules.Products.Application.Features.CreateProduct;
 /// Implements IRateLimitedRequest for rate limiting (100 requests per minute per user per tenant)
 /// </summary>
 public record CreateProductCommand : IRequest<ProductDto>, 
-    IWithoutTransactional,
-    IAuthorizedRequest,
     IRateLimitedRequest
 {
     public string Name { get; init; } = string.Empty;
@@ -22,10 +20,6 @@ public record CreateProductCommand : IRequest<ProductDto>,
     public decimal Price { get; init; }
     public int Stock { get; init; }
 
-    // Authorization configuration
-    string[]? IAuthorizedRequest.RequiredPermissions => new[] { "products:write" };
-    string[]? IAuthorizedRequest.RequiredRoles => null; // No specific role required, permission is enough
-    bool IAuthorizedRequest.RequireTenantIsolation => true; // Enforce tenant isolation
 
     // Rate limiting configuration
     int IRateLimitedRequest.Limit => 100; // 100 requests

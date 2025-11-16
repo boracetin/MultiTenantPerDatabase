@@ -27,8 +27,7 @@ public class CurrentUserService : ICurrentUserService
     public string? Email => User?.FindFirst(ClaimTypes.Email)?.Value 
                          ?? User?.FindFirst("email")?.Value;
 
-    public string? TenantId => User?.FindFirst("tenantId")?.Value 
-                            ?? User?.FindFirst("tenant_id")?.Value;
+    public string? TenantId => User?.FindFirst("TenantId")?.Value;
 
     public string? TenantName => _httpContextAccessor.HttpContext?.Request.Headers["X-Tenant-Name"].FirstOrDefault();
 
