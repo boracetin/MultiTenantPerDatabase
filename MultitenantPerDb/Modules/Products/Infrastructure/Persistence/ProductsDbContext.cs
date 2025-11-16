@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Products.Domain.Entities;
+using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Core.Domain.Constants;
 
 namespace MultitenantPerDb.Modules.Products.Infrastructure.Persistence;
 
@@ -7,9 +9,12 @@ namespace MultitenantPerDb.Modules.Products.Infrastructure.Persistence;
 /// ProductsDbContext - Tenant-specific database context
 /// Contains: Products and related entities
 /// Lifecycle: Scoped - Runtime'da tenant bazlı oluşturulur
+/// DatabaseType: Application (tenant-specific data)
 /// </summary>
-public class ProductsDbContext : DbContext
+public class ProductsDbContext : DbContext, ITransactionContext
 {
+    public static DatabaseType DatabaseType => DatabaseType.Application;
+    
     public ProductsDbContext(DbContextOptions<ProductsDbContext> options) : base(options)
     {
     }

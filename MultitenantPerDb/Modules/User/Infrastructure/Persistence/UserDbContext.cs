@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using UserEntity = MultitenantPerDb.Modules.User.Domain.Entities.User;
+using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Core.Domain.Constants;
 
 namespace MultitenantPerDb.Modules.User.Infrastructure.Persistence;
 
@@ -7,9 +9,12 @@ namespace MultitenantPerDb.Modules.User.Infrastructure.Persistence;
 /// UserDbContext - Tenant-specific database for User management
 /// Contains: User entities
 /// Lifecycle: Runtime - Created via factory per tenant
+/// DatabaseType: Application (tenant-specific data)
 /// </summary>
-public class UserDbContext : DbContext
+public class UserDbContext : DbContext, ITransactionContext
 {
+    public static DatabaseType DatabaseType => DatabaseType.Application;
+
     public UserDbContext(DbContextOptions<UserDbContext> options) : base(options)
     {
     }

@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Core.Domain.Constants;
 
 namespace MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
 
@@ -8,9 +10,12 @@ namespace MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
 /// ApplicationIdentityDbContext - Tenant-specific database context with ASP.NET Core Identity
 /// Contains: AspNetUsers, AspNetRoles, AspNetUserRoles, etc.
 /// Lifecycle: Scoped - Runtime'da tenant bazlı oluşturulur
+/// DatabaseType: Main (identity/auth master data)
 /// </summary>
-public class ApplicationIdentityDbContext : IdentityDbContext<IdentityUser>
+public class ApplicationIdentityDbContext : IdentityDbContext<IdentityUser>, ITransactionContext
 {
+    public static DatabaseType DatabaseType => DatabaseType.Application;
+    
     public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options) : base(options)
     {
     }

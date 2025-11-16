@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
+using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Core.Domain.Constants;
 
 namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 
@@ -8,9 +10,12 @@ namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 /// Contains: Tenant configurations, connection strings, branding settings
 /// Lifecycle: Singleton - Connection string ile başlangıçta ayağa kalkar
 /// Migration managed by TenancyModule.MigrateAsync()
+/// DatabaseType: Main (master/system data)
 /// </summary>
-public class TenancyDbContext : DbContext
+public class TenancyDbContext : DbContext, ITransactionContext
 {
+    public static DatabaseType DatabaseType => DatabaseType.Main;
+
     public TenancyDbContext(DbContextOptions<TenancyDbContext> options) : base(options)
     {
     }

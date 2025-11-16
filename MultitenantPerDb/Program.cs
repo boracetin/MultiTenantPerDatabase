@@ -159,8 +159,11 @@ builder.Services.AddSharedServices(builder.Configuration);
 builder.Services.AddScoped(typeof(IUnitOfWork<>), typeof(UnitOfWork<>));
 builder.Services.AddScoped<IBackgroundJobService, BackgroundJobService>();
 
-// PERFORMANCE OPTIMIZATION: Handler Type Resolver (Singleton - scans assemblies once at startup)
-builder.Services.AddSingleton<IHandlerTypeResolver, HandlerTypeResolver>();
+// PERFORMANCE OPTIMIZATION: Transaction Metadata Scanner (Singleton - scans all handlers at startup)
+var metadataScanner = new TransactionMetadataScanner();
+metadataScanner.ScanHandlers(builder.Services);
+builder.Services.AddSingleton(metadataScanner);
+
 
 // Encryption Service - TenantId encryption in JWT
 builder.Services.AddSingleton<MultitenantPerDb.Core.Infrastructure.Security.IEncryptionService, MultitenantPerDb.Core.Infrastructure.Security.AesEncryptionService>();
