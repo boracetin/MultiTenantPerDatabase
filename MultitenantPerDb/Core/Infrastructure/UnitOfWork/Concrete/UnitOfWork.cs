@@ -14,24 +14,14 @@ namespace MultitenantPerDb.Core.Infrastructure.UnitOfWork.Concrete;
 public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>
     where TDbContext : DbContext
 {
-    private readonly IModuleDbContextFactory<TDbContext> _dbContextFactory;
-    private TDbContext? _context;
+    private readonly TDbContext _context;
     private readonly Dictionary<Type, object> _repositories;
     private bool _disposed;
 
     public UnitOfWork(IModuleDbContextFactory<TDbContext> dbContextFactory)
     {
-        _dbContextFactory = dbContextFactory;
+        _context = dbContextFactory.CreateDbContext();
         _repositories = new Dictionary<Type, object>();
-    }
-
-    private TDbContext GetOrCreateContext()
-    {
-        if (_context == null)
-        {
-            _context = _dbContextFactory.CreateDbContext();
-        }
-        return _context;
     }
 
     public IRepository<TEntity, TId> GetRepository<TEntity, TId>() 
@@ -45,11 +35,8 @@ public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>
             return (IRepository<TEntity, TId>)_repositories[repositoryType];
         }
 
-        // Get DbContext (can be any DbContext: ApplicationDbContext, TenancyDbContext, etc.)
-        var context = GetOrCreateContext();
-
         // Create Repository<TEntity, TId> instance with generic DbContext
-        var repositoryInstance = new Repository<TEntity, TId>(context);
+        var repositoryInstance = new Repository<TEntity, TId>(_context);
 
         _repositories.Add(repositoryType, repositoryInstance);
         return repositoryInstance;
@@ -57,34 +44,30 @@ public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var context = GetOrCreateContext();
         // Transaction yönetimi TransactionBehavior'da yapılıyor
         // Burada sadece değişiklikleri kaydet
-        return await context.SaveChangesAsync(cancellationToken);
+        return await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
-        var context = GetOrCreateContext();
-        await context.Database.BeginTransactionAsync(cancellationToken);
+        await _context.Database.BeginTransactionAsync(cancellationToken);
     }
 
     public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)
     {
-        var context = GetOrCreateContext();
-        if (context.Database.CurrentTransaction != null)
+        if (_context.Database.CurrentTransaction != null)
         {
-            await context.SaveChangesAsync(cancellationToken);
-            await context.Database.CurrentTransaction.CommitAsync(cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
+            await _context.Database.CurrentTransaction.CommitAsync(cancellationToken);
         }
     }
 
     public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
     {
-        var context = GetOrCreateContext();
-        if (context.Database.CurrentTransaction != null)
+        if (_context.Database.CurrentTransaction != null)
         {
-            await context.Database.CurrentTransaction.RollbackAsync(cancellationToken);
+            await _context.Database.CurrentTransaction.RollbackAsync(cancellationToken);
         }
     }
 
@@ -98,7 +81,7 @@ public class UnitOfWork<TDbContext> : IUnitOfWork<TDbContext>
     {
         if (!_disposed && disposing)
         {
-            _context?.Dispose();
+            _context.Dispose();
             _repositories.Clear();
         }
         _disposed = true;
