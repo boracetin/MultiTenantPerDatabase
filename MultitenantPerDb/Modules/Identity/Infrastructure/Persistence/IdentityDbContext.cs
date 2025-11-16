@@ -10,7 +10,8 @@ namespace MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
 /// ApplicationIdentityDbContext - Tenant-specific database context with ASP.NET Core Identity
 /// Contains: AspNetUsers, AspNetRoles, AspNetUserRoles, etc.
 /// Lifecycle: Scoped - Runtime'da tenant bazlı oluşturulur
-/// DatabaseType: Main (identity/auth master data)
+/// DatabaseType: Application (identity/auth master data)
+/// NOTE: Cannot inherit BaseDbContext due to IdentityDbContext<T> base class
 /// </summary>
 public class ApplicationIdentityDbContext : IdentityDbContext<IdentityUser>, IDbContextTransactionType
 {

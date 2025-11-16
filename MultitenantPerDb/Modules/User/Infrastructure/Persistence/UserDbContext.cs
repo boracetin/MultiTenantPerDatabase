@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using UserEntity = MultitenantPerDb.Modules.User.Domain.Entities.User;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Domain.Constants;
+using MultitenantPerDb.Core.Infrastructure.Persistance;
 
 namespace MultitenantPerDb.Modules.User.Infrastructure.Persistence;
 
@@ -11,7 +12,7 @@ namespace MultitenantPerDb.Modules.User.Infrastructure.Persistence;
 /// Lifecycle: Runtime - Created via factory per tenant
 /// DatabaseType: Application (tenant-specific data)
 /// </summary>
-public class UserDbContext : DbContext, IDbContextTransactionType
+public class UserDbContext : BaseDbContext
 {
     public static DatabaseType DatabaseType => DatabaseType.Application;
 

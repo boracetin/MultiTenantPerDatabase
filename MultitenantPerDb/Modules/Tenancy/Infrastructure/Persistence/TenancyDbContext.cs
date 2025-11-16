@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Domain.Constants;
+using MultitenantPerDb.Core.Infrastructure.Persistance;
 
 namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 
@@ -12,7 +13,7 @@ namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 /// Migration managed by TenancyModule.MigrateAsync()
 /// DatabaseType: Main (master/system data)
 /// </summary>
-public class TenancyDbContext : DbContext, IDbContextTransactionType
+public class TenancyDbContext : BaseDbContext
 {
     public static DatabaseType DatabaseType => DatabaseType.Main;
 
