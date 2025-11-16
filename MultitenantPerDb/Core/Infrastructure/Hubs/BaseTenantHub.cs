@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.SignalR;
-using MultitenantPerDb.Core.Application.Abstractions;
+using MultitenantPerDb.Core.Infrastructure.Tenancy.Contract;
 
 namespace MultitenantPerDb.Core.Infrastructure.Hubs;
 

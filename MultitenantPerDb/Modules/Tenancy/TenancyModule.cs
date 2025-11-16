@@ -6,10 +6,11 @@ using Core.Infrastructure.Persistence.Concrete;
 using MultitenantPerDb.Core.Application.Interfaces;
 using MultitenantPerDb.Modules.Tenancy.Domain.Constants;
 using MultitenantPerDb.Modules.Tenancy.Infrastructure.Hubs;
-using MultitenantPerDb.Core.Application.Abstractions;
+using MultitenantPerDb.Core.Infrastructure.Tenancy.Contract;
 using MultitenantPerDb.Core.Infrastructure.Services;
 using MultitenantPerDb.Modules.Tenancy.Application.Services;
 using MultitenantPerDb.Modules.Tenancy.Domain.Entities;
+using MultitenantPerDb.Core.Application.Module.Concrete;
 
 namespace MultitenantPerDb.Modules.Tenancy;
 

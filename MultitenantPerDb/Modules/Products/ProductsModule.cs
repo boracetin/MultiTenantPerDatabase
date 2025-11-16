@@ -3,6 +3,7 @@ using Mapster;
 using MapsterMapper;
 using MediatR;
 using MultitenantPerDb.Core.Infrastructure;
+using MultitenantPerDb.Core.Application.Module.Concrete;
 using Core.Infrastructure.Persistence.Concrete;
 using MultitenantPerDb.Core.Application.Behaviors;
 using MultitenantPerDb.Core.Domain;

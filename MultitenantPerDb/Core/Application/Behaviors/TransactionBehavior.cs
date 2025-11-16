@@ -1,7 +1,8 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using MultitenantPerDb.Core.Application.Abstractions;
+using MultitenantPerDb.Core.Infrastructure.UnitOfWork.Contract;
 using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Core.Application.Abstractions;
 using System.Reflection;
 
 namespace MultitenantPerDb.Core.Application.Behaviors;
@@ -12,7 +13,7 @@ namespace MultitenantPerDb.Core.Application.Behaviors;
 /// No attributes needed - analyzes handler's constructor dependencies
 /// PERFORMANCE OPTIMIZED: Uses pre-scanned handler cache for ~150x faster lookups
 /// </summary>
-public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>, ICanAccessUnitOfWork
+public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
     private readonly IServiceProvider _serviceProvider;

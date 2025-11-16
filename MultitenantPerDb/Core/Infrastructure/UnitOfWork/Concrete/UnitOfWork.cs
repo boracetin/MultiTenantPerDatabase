@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Core.Infrastructure.Repository.Contract;
+using MultitenantPerDb.Core.Infrastructure.Repository.Concrete;
+using MultitenantPerDb.Core.Infrastructure.UnitOfWork.Contract;
 
-namespace MultitenantPerDb.Core.Infrastructure;
+namespace MultitenantPerDb.Core.Infrastructure.UnitOfWork.Concrete;
 
 /// <summary>
 /// Unit of Work implementation with generic TDbContext support

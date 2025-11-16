@@ -1,9 +1,14 @@
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Infrastructure;
+using MultitenantPerDb.Core.Application.Module.Concrete;
 using Core.Infrastructure.Persistence.Concrete;
 using MultitenantPerDb.Core.Application.Interfaces;
 using MultitenantPerDb.Modules.User.Infrastructure.Persistence;
 using MultitenantPerDb.Modules.User.Infrastructure.Hubs;
+using MultitenantPerDb.Core.Infrastructure.UnitOfWork.Contract;
+using MultitenantPerDb.Core.Infrastructure.UnitOfWork.Concrete;
+using MultitenantPerDb.Core.Infrastructure.Repository.Contract;
+using MultitenantPerDb.Core.Infrastructure.Repository.Concrete;
 
 namespace MultitenantPerDb.Modules.User;
 

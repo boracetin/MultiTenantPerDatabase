@@ -1,7 +1,8 @@
 using MediatR;
 using MultitenantPerDb.Modules.Products.Application.DTOs;
-using MultitenantPerDb.Core.Application.Abstractions;
+using MultitenantPerDb.Core.Infrastructure.Tenancy.Contract;
 using MultitenantPerDb.Core.Application.Interfaces;
+using MultitenantPerDb.Core.Application.Abstractions;
 
 namespace MultitenantPerDb.Modules.Products.Application.Features.CreateProduct;
 

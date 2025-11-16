@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MultitenantPerDb.Core.Infrastructure.Tenancy.Contract;
 using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Domain.Entity.Concrete;

@@ -1,4 +1,6 @@
+using MultitenantPerDb.Core.Infrastructure.Tenancy.Contract;
 using MultitenantPerDb.Core.Application.Abstractions;
+using MultitenantPerDb.Core.Infrastructure.Hubs;
 
 namespace MultitenantPerDb.Core.Infrastructure;
 

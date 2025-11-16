@@ -1,9 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Core.Infrastructure.Repository.Contract;
 using Mapster;
 
-namespace MultitenantPerDb.Core.Infrastructure;
+namespace MultitenantPerDb.Core.Infrastructure.Repository.Concrete;
 
 /// <summary>
 /// Generic repository implementation with advanced querying and projection capabilities

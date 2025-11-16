@@ -1,4 +1,4 @@
-using MultitenantPerDb.Core.Application.Abstractions;
+using MultitenantPerDb.Core.Infrastructure.Tenancy.Contract;
 
 namespace MultitenantPerDb.Modules.Tenancy.Infrastructure.Middleware;
 

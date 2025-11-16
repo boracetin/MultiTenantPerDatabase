@@ -4,6 +4,8 @@ using MultitenantPerDb.Modules.Tenancy.Infrastructure.Persistence;
 using MultitenantPerDb.Core.Application;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Infrastructure;
+using MultitenantPerDb.Core.Infrastructure.Repository.Contract;
+using MultitenantPerDb.Core.Infrastructure.UnitOfWork.Contract;
 
 namespace MultitenantPerDb.Modules.Tenancy.Application.Services;
 

@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
-using MultitenantPerDb.Core.Infrastructure;
+using MultitenantPerDb.Core.Domain;
 
-namespace MultitenantPerDb.Core.Domain;
+namespace MultitenantPerDb.Core.Infrastructure.Repository.Contract;
 
 /// <summary>
 /// Generic repository interface with advanced querying and DTO projection capabilities

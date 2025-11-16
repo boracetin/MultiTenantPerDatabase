@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using MultitenantPerDb.Modules.Identity.Infrastructure.Persistence;
 using MultitenantPerDb.Core.Infrastructure;
+using MultitenantPerDb.Core.Application.Module.Concrete;
 using Core.Infrastructure.Persistence.Concrete;
 using MultitenantPerDb.Core.Application.Behaviors;
 using MultitenantPerDb.Core.Domain;

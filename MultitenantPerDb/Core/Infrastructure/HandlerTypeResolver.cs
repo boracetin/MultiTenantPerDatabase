@@ -1,4 +1,5 @@
 using MediatR;
+using MultitenantPerDb.Core.Infrastructure.UnitOfWork.Contract;
 using MultitenantPerDb.Core.Application.Abstractions;
 using System.Collections.Concurrent;
 using System.Reflection;

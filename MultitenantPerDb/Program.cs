@@ -5,10 +5,16 @@ using Microsoft.OpenApi.Models;
 using MultitenantPerDb.Core.Infrastructure;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Application;
-using MultitenantPerDb.Core.Application.Abstractions;
+using MultitenantPerDb.Core.Infrastructure.Tenancy.Contract;
+using MultitenantPerDb.Core.Infrastructure.Tenancy.Concrete;
 using MultitenantPerDb.Core.Infrastructure.Services;
 using MultitenantPerDb.Core.Infrastructure.Logging;
 using MultitenantPerDb.Core.Infrastructure.Hubs;
+using MultitenantPerDb.Core.Application.Module.Concrete;
+using MultitenantPerDb.Core.Application.Module.Contract;
+using MultitenantPerDb.Core.Infrastructure.UnitOfWork.Contract;
+using MultitenantPerDb.Core.Infrastructure.UnitOfWork.Concrete;
+using MultitenantPerDb.Core.Application.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
 

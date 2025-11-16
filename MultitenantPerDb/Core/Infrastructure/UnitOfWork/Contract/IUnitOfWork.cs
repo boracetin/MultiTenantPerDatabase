@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using MultitenantPerDb.Core.Infrastructure.Repository.Contract;
+using MultitenantPerDb.Core.Domain;
 
-namespace MultitenantPerDb.Core.Domain;
+namespace MultitenantPerDb.Core.Infrastructure.UnitOfWork.Contract;
 
 /// <summary>
 /// Base interface for Unit of Work - non-generic transaction management

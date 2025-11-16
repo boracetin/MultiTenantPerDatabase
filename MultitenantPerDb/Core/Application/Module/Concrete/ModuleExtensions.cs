@@ -1,6 +1,7 @@
 using System.Reflection;
+using MultitenantPerDb.Core.Application.Module.Contract;
 
-namespace MultitenantPerDb.Core.Infrastructure;
+namespace MultitenantPerDb.Core.Application.Module.Concrete;
 
 /// <summary>
 /// Extension methods for registering modules

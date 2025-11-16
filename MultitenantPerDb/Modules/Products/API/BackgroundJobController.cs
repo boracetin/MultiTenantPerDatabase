@@ -5,6 +5,7 @@ using MultitenantPerDb.Modules.Products.Application.Services;
 using MultitenantPerDb.Modules.Products.Infrastructure.Persistence;
 using MultitenantPerDb.Core.Domain;
 using MultitenantPerDb.Core.Infrastructure;
+using MultitenantPerDb.Core.Infrastructure.UnitOfWork.Contract;
 
 namespace MultitenantPerDb.Modules.Products.API;
 

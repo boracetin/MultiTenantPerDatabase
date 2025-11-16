@@ -1,3 +1,4 @@
+using MultitenantPerDb.Core.Infrastructure.Tenancy.Contract;
 using MultitenantPerDb.Core.Application.Abstractions;
 using StackExchange.Redis;
 using System.Text.Json;

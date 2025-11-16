@@ -7,7 +7,7 @@ namespace MultitenantPerDb.Modules.Tenancy.Application.Services;
 /// <summary>
 /// Tenant service interface for business operations
 /// </summary>
-public interface ITenantService : ICanAccessUnitOfWork
+public interface ITenantService 
 {
     #region Query Methods
     

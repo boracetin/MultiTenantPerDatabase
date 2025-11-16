@@ -2,7 +2,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using MultitenantPerDb.Modules.Tenancy.Application.Features.GetAllTenants;
 using MultitenantPerDb.Modules.Tenancy.Application.Services;
-using MultitenantPerDb.Modules.Tenancy.Application.Services;
 
 namespace MultitenantPerDb.Modules.Tenancy.API;
 

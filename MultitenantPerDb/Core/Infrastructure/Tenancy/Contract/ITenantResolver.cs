@@ -1,4 +1,4 @@
-namespace MultitenantPerDb.Core.Application.Abstractions;
+namespace MultitenantPerDb.Core.Infrastructure.Tenancy.Contract;
 
 /// <summary>
 /// Interface for resolving current tenant from HTTP context or background jobs

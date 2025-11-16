@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Caching.Memory;
+using MultitenantPerDb.Core.Infrastructure.Tenancy.Contract;
 using MultitenantPerDb.Core.Application.Abstractions;
 using System.Text.Json;
 

@@ -1,4 +1,5 @@
 using MediatR;
+using MultitenantPerDb.Core.Infrastructure.Tenancy.Contract;
 using MultitenantPerDb.Core.Application.Abstractions;
 using MultitenantPerDb.Core.Application.Interfaces;
 using System.Text.Json;

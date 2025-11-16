@@ -36,7 +36,7 @@ namespace MultitenantPerDb.Core.Application;
 ///     }
 /// }
 /// </summary>
-public abstract class BaseService : Domain.ICanAccessUnitOfWork
+public abstract class BaseService
 {
     protected BaseService()
     {

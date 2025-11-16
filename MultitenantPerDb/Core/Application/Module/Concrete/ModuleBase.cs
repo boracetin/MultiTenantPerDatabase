@@ -2,8 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MultitenantPerDb.Core.Domain;
+using MultitenantPerDb.Core.Application.Module.Contract;
 
-namespace MultitenantPerDb.Core.Infrastructure;
+namespace MultitenantPerDb.Core.Application.Module.Concrete;
 
 /// <summary>
 /// Base abstract class for modules with default implementations

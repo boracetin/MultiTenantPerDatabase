@@ -1,4 +1,4 @@
-namespace MultitenantPerDb.Core.Infrastructure;
+namespace MultitenantPerDb.Core.Application.Module.Contract;
 
 /// <summary>
 /// Base interface for all modules
